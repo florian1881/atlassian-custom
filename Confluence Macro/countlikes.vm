@@ -1,0 +1,26 @@
+## Macro Name: countlikes
+## Visibility: all users
+## Macro Title: Count Likes
+## Description: Will count the number of likes
+## Categories: Reporting
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: Kim Poulsen
+## Date created: 02/02/2018
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @noparams
+
+## get like manager...
+#set($containerManagerClass=$content.class.forName('com.atlassian.spring.container.ContainerManager'))
+#set($getInstanceMethod=$containerManagerClass.getDeclaredMethod('getInstance',null))
+#set($containerManager=$getInstanceMethod.invoke(null,null))
+#set($containerContext=$containerManager.containerContext)
+#set($likeManager=$containerContext.getComponent('likeManager'))
+#set($count = $likeManager.countLikes($action.page))
+#if ($likeManager)
+<div class="likecount">$count</div>
+#end

@@ -1,0 +1,116 @@
+## Macro Name: button
+## Visibility: all users
+## Macro Title: Button
+## Description: Create buttons as you like them.
+## Categories: Confluence Content, Navigation
+## Body processing: No macro body
+##
+## Output: HTML
+##
+## Developed by: Kim Poulsen
+## Date created: 02/02/2018
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param Button_title:title=Button Title|type=string|required=true|desc=The text on the button
+## @param Button_page_link:title=Page link|type=confluence-content|desc=Link to a Confluence page
+## @param Button_link:title=or external link|type=string|desc=You can also link to any website instead of a confluence page
+## @param Title_fontsz:title=Text size|type=string|desc=The size of the text
+## @param Padding:title=Padding|type=string|desc=The padding from the button edge to the button text
+## @param Border_radius:title=Border Radius|type=string|desc=Set the border radius for more or less rounded corners.
+## @param Use_preset:title=Use a button colour preset|type=enum|enumValues=Specify own colors below...,red,green,blue,blue 2,orange,yellow,grey, grey 2|default=Specify own colors below...|desc=You can select your own colours or use a preset
+## @param Colour:title=Button colour|type=string|desc=The colour of the button
+## @param Colour_border:title=Button border colour|type=string|desc=The colour of the button border
+## @param Colour_hover:title=Button hover-over colour|type=string|desc=The colour of the button when hovering over it
+## @param Colour_hover_border:title=Button hover-over border colour|type=string|desc=The colour of the button border when hovering over it
+## @param Title_colour:title=Text colour|type=string|desc=The colour of the text on the button
+
+#set($link = "")
+#if($paramButton_page_link)
+  #set ($ss='')
+  #set ($sp='')
+  #foreach ($p in $paramButton_page_link.split(":"))
+     #if ($ss=='')
+       #set ($ss=$p)
+     #else
+       #set ($sp=$p)  
+     #end
+  #end
+  #if ($sp=='')
+    #set ($sp=$ss)  
+    #set ($ss=$space.key)
+  #end
+  #set( $link = $pageManager.getPage($ss, $sp).urlPath )
+#else
+  #set($link = $paramButton_link)
+#end
+
+#if($paramUse_preset == "red")
+  #set($paramColour = "#e80306")
+  #set($paramColour_border = "#d80206")
+  #set($paramColour_hover = "#b60205")
+  #set($paramColour_hover_border = "#a50205")
+  #set($paramTitle_colour = "rgb(255, 255, 255)")
+#elseif($paramUse_preset == "green")
+  #set($paramColour = "#52c603")
+  #set($paramColour_border = "#4bb503")
+  #set($paramColour_hover = "#3d9402")
+  #set($paramColour_hover_border = "#368302")
+  #set($paramTitle_colour = "rgb(255, 255, 255)")
+#elseif($paramUse_preset == "blue")
+  #set($paramColour = "#0620ad")
+  #set($paramColour_border = "#051d9d")
+  #set($paramColour_hover = "#03115b")
+  #set($paramColour_hover_border = "#020e4b")
+  #set($paramTitle_colour = "rgb(255, 255, 255)")
+#elseif($paramUse_preset == "blue 2")
+  #set($paramColour = "#25a2ce")
+  #set($paramColour_border = "#208bb1")
+  #set($paramColour_hover = "#186986")
+  #set($paramColour_hover_border = "#155e78")
+  #set($paramTitle_colour = "rgb(255, 255, 255)")
+#elseif($paramUse_preset == "orange")
+  #set($paramColour = "#eb8b0f")
+  #set($paramColour_border = "#db820e")
+  #set($paramColour_hover = "#9c5c0a")
+  #set($paramColour_hover_border = "#8c5309")
+  #set($paramTitle_colour = "rgb(255, 255, 255)")
+#elseif($paramUse_preset == "yellow")
+  #set($paramColour = "#efb422")
+  #set($paramColour_border = "#dfa310")
+  #set($paramColour_hover = "#a0750c")
+  #set($paramColour_hover_border = "#805e09")
+  #set($paramTitle_colour = "rgb(255, 255, 255)")
+#elseif($paramUse_preset == "grey")
+  #set($paramColour = "#b1b9ba")
+  #set($paramColour_border = "#9fa9aa")
+  #set($paramColour_hover = "#849192")
+  #set($paramColour_hover_border = "#738082")
+  #set($paramTitle_colour = "rgb(255, 255, 255)")
+#elseif($paramUse_preset == "grey 2")
+  #set($paramColour = "#828282")
+  #set($paramColour_border = "#717171")
+  #set($paramColour_hover = "#585858")
+  #set($paramColour_hover_border = "#474747")
+  #set($paramTitle_colour = "rgb(255, 255, 255)")
+#end
+
+#set($prop="color_button_"+$action.dateFormatter.calendar.timeInMillis)
+<style>
+  .$prop {
+    padding: $paramPadding !important;
+    border-radius: $paramBorder_radius;
+    display: inline-block;
+    font-size: $paramTitle_fontsz;
+    color: $paramTitle_colour !important;
+    background: $paramColour;
+    border: 1px solid $paramColour_border;
+  }
+
+  .$prop:hover {
+    text-decoration: none;
+    background: $paramColour_hover;
+    border: 1px solid $paramColour_hover_border;
+  }
+</style>
+<a href="$link" class="$prop">$paramButton_title</a>

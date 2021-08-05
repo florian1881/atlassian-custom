@@ -1,0 +1,38 @@
+## Macro Name: jira-issue-filter-vars
+## Visibility: all users
+## Macro Title: JIRA JQL filter allowing variables.
+## Description: This macro creates the JIRA filter macro but injects the query using the body of the macro instead of the macro dialog. This is good for template pages using variables to generate reports over e.g. fixVersions.
+## Categories: External Content, Reporting
+## Body processing: Rendered
+##
+## Output: JIRA Issues/Filter Macro w/ injected variables
+##
+## Developed by: Adam Barylak
+## Date created: 2016-05-27
+## Modified by: Kim Poulsen
+##    Added better input parsing by removing <span> too.
+## Installed by: Kim Poulsen
+
+## Note the "serverId" in the macro. If the JIRA server changes, the Id need to change too.
+## Got the macro from here:
+##  https://answers.atlassian.com/questions/154920/answers/41468830
+## This macro will prompt for max number of rows and the column option, then the body will require the JQL with injected variables
+
+## Parameters:
+## @param maxRows:title=Max Rows|type=int|required=true|default=20|desc=Enter the max rows, anything above 1000 will only display 1000 rows.
+## @param columns:title=Columns|type=string|required=true|default=key,summary,type,status,assignee|desc=Enter  the columns you want returned.  Must be separated by commas, all lowercase, and no quotes. e.g. key,summary,assignee,test author,reporter
+
+#set ($body = $body.replaceAll("\Q<p>\E",""))
+#set ($body = $body.replaceAll("\Q</p>\E",""))
+#set ($body = $body.replaceAll("\Q<span>\E",""))
+#set ($body = $body.replaceAll("\Q</span>\E",""))
+#set ($body = $body.trim())
+<p>
+<ac:structured-macro ac:name="jira" ac:schema-version="1">
+    <ac:parameter ac:name="server">JIRA</ac:parameter>
+    <ac:parameter ac:name="columns">$paramcolumns</ac:parameter>
+    <ac:parameter ac:name="maximumIssues">$parammaxRows</ac:parameter>
+    <ac:parameter ac:name="jqlQuery">$body</ac:parameter>
+    <ac:parameter ac:name="serverId">4e99a176-5ac5-318d-ad00-4281f9c08819</ac:parameter>
+</ac:structured-macro>
+</p>

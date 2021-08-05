@@ -1,0 +1,41 @@
+## Macro Name: excerpt-tooltip
+## Visibility: all users
+## Macro Title: Tooltip from excerpt
+## Description: This macro can be used to create tool-tips from e.g. a glossary of excerpts.
+## Categories: Confluence Content
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: Kim Poulsen based on Steven Deutch
+## Date created: 2016-09-21
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param page:title=Page|type=confluence-content|required=true|desc=enter page to extract data from
+
+#foreach ($p in $parampage.split(":"))
+    #set ($pagename = $p)
+#end
+ 
+<style>
+.tipsy-inner {
+max-width: 400px !important;
+text-align: left !important;
+}
+</style>
+ 
+<script type="text/javascript">
+AJS.$(document).ready(function(){
+    AJS.$('.excerpttip').filter(function() {
+        return AJS.$(this).offset().left >= AJS.$(window).width() / 2;
+        })
+        .tooltip({ html:true, gravity: 'e' });
+    AJS.$('.excerpttip').filter(function() {
+        return AJS.$(this).offset().left < AJS.$(window).width() / 2;
+        })
+        .tooltip({ html:true, gravity: 'w' });
+});
+</script>
+ 
+<a class="excerpttip" style="text-decoration:none; border-bottom:2px dotted;" title='$action.getHelper().renderConfluenceMacro("{excerpt-include:$parampage|nopanel=true}")'>$pagename</a>

@@ -1,0 +1,79 @@
+## Macro Name: pdf-header-and-footer
+## Visibility: all users
+## Macro Title: PDF Header and Footer
+## Description: User Macro to set page header and footer on PDF page exports.
+## Categories: Formatting
+## Documentation URL: https://answers.atlassian.com/questions/40007690/how-can-i-create-a-macro-that-edits-the-pdf-export-stylesheet-header-and-footers
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: Kim Poulsen
+## Date created: 02/02/2018
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @noparams
+
+#set($servletPath=$req.getServletPath())
+#if ($servletPath =="/spaces/flyingpdf/pdfpageexport.action")
+#set($pageTitle=$content.getTitle())
+## @param LHead:title=Left Header|type=string|required=false|default=
+## @param CHead:title=Center Header|type=string|required=false|default=
+## @param RHead:title=Right Header|type=string|required=false|default=
+## @param LFoot:title=Left Footer|type=string|required=false|default=
+## @param CFoot:title=Center Footer|type=string|required=false|default=
+## @param RFoot:title=Right Footer|type=string|required=false|default=
+<div class="header">
+ <div id="leftH" class="head">$paramLHead</div>
+ <div id="centerH" class="head">$paramCHead</div>
+ <div id="rightH" class="head">replaceme</div>
+</div>
+
+<style>
+ @page {
+  @top-right{
+   content: element(headRHead);
+/*   content: counter(page) " / " counter(pages); */
+   font-size: 8pt;
+  }
+  @top-left{
+   content: element(headLHead);
+   font-size: 8pt;
+  }
+  @top-center{
+   content: element(headCHead);
+   font-size: 8pt;
+  }
+ }
+
+ div.header{
+  position: running(headRHead);
+  position: running(headLHead);
+  position: running(headCHead);
+  font-family: ConfluenceInstalledFont, Helvetica, Arial, sans-serif;
+ }
+
+ #leftH {
+  width: 33%;
+  float:left;
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+ }
+  #rightH {
+  width: 33%;
+  float:right;
+  text-align: right;  
+  padding: 0px;
+  margin: 0px;
+  border: 0px;
+ }
+ #centerH {
+  text-align: center;
+  padding: 0;
+  margin: 0;
+  border: 0;  
+ }
+</style>
+#end 

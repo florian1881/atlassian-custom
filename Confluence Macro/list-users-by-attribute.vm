@@ -1,0 +1,194 @@
+## Macro Name: list-users-by-attribute
+## Visibility: all users
+## Macro Title: List Users By Attributes
+## Description: Select attributes to list users by. This could be Department or Position etc.
+## Categories: Reporting
+## Body processing: No macro body
+##
+## Output: A table with user profiles with various pieces of information
+##
+## Developed by: Kim Poulsen
+## Adapted and modified by: Kim Poulsen
+## Date created: 09/02/2018, updated 2018/02/28
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param TableType:title=Table Type|type=enum|enumValues=Tabular list,User profile table,Profile pictures,Profile pictures initials and position|default=User profile table|desc=Select the table type to render
+## @param Department:title=Department|type=string|required=false|desc=Type the department to generate table for. Leave empty to list all users (warning, may become a large table!).
+## @param Position:title=Position|type=string|required=false|desc=Type the position to generate table for. Leave empty to list all users (warning, may become a large table!).
+## @param RegexpMatch:title=Match by regular expression?|type=boolean|required=false|desc=Select to match by regular expression. Deselect to match exactly.|default=false
+## @param UserOrFullName:title=Show Full Name or User Name|type=boolean|required=false|desc=Select to show Full name. Deselect to show user name.|default=true
+## @param ShowPosition:title=Show Position|type=boolean|required=false|desc=Select to show Position. Deselect to not display position.|default=true
+## @param MaxUsers:title=Maximum users to list|desc=Maximum users to include in the table. Leave empty to list all matching users
+## @param MaxCols:title=Columns in User profile table|desc=Set the number of columns in table if the type is "User profile table"|default=4
+## @param Group:title=Only use users in a specific group|desc=Choose a user group to list members of. Normally you wouldn't touch this.|default=confluence-users
+
+## Get access to user data
+#set($containerManagerClass = $content.class.forName('com.atlassian.spring.container.ContainerManager'))
+#set($getInstanceMethod = $containerManagerClass.getDeclaredMethod('getInstance',null))
+#set($containerManager = $getInstanceMethod.invoke(null,null))
+#set($containerContext = $containerManager.containerContext)
+#set($userDetailsManager = $containerContext.getComponent('userDetailsManager'))
+##unused: set($loginManager = $containerContext.getComponent('loginManager'))
+##unused: set($users = $userAccessor.getUsers())
+
+## Get members of a certain group
+##set($userAccessor = $containerManager.containerContext.getComponent('userAccessor'))
+#set($groupManager = $containerManager.containerContext.getComponent("groupManager"))
+#set($group = $groupManager.getGroup($paramGroup))
+#set($users = $userAccessor.getMemberNames($group))
+
+#if($paramTableType == "Tabular list")
+<table class="confluenceTable">
+    <tr>
+        <th class="confluenceTh">Username</th>
+    #if($paramUserOrFullName == true)
+        <th class="confluenceTh">Full name</th>
+    #else
+        <th class="confluenceTh">User name</th>
+    #end
+        <th class="confluenceTh">Email</th>
+        <th class="confluenceTh">Location</th>
+        <th class="confluenceTh">Department</th>
+        <th class="confluenceTh">Position</th>
+        <th class="confluenceTh">Phone</th>
+        <th class="confluenceTh">AvatarUrl</th>
+      </tr>
+#elseif($paramTableType == "User profile table")
+<table class="confluenceTable">
+    <colgroup><col /><col /><col /><col /></colgroup>
+    <tbody>
+#elseif($paramTableType == "Profile pictures initials and position")
+   <table class="confluenceTable">
+#else
+#end
+
+#set($count = 0)
+#set($countTr = 0)  ## counter for table row columns
+#set($tableRow1 = "") ## These 3 are used for the profile picture, initials and position table type
+#set($tableRow2 = "")
+#set($tableRow3 = "")
+
+#foreach($username in $users)
+    #set($user = $userAccessor.getUserByName($username))
+
+    #if($paramMaxUsers && $count == $paramMaxUsers)
+        #break
+    #end
+    #set($count = $count + 1)
+
+    ## Check if department matches criteria
+    #set($tDepartment = "")
+    #set($tDepartment = $userDetailsManager.getStringProperty($user, 'department'))
+    #set($DepartmentMatch = false)
+    #if( $paramRegexpMatch == true && $paramDepartment)
+        #set($DepartmentMatch = $tDepartment.matches($paramDepartment))
+    #else
+        #set($DepartmentMatch = $tDepartment == $paramDepartment || !$paramDepartment)
+    #end
+
+    ## Check if position matches criteria
+    #set($tPosition = "")
+    #set($tPosition = $userDetailsManager.getStringProperty($user, 'position'))
+    #set($PositionMatch = false)
+    #if( $paramRegexpMatch == true && $paramPosition)
+        #set($PositionMatch = $tPosition.matches($paramPosition))
+    #else
+        #set($PositionMatch = $tPosition == $paramPosition || !$paramPosition)
+    #end
+
+    #if($PositionMatch && $DepartmentMatch)
+        #set($profile_pic = $userAccessor.getUserProfilePicture($user))
+        #set($pic_src = $profile_pic.getDownloadPath())
+        #set($tLocation = "")
+        #set($tLocation = $userDetailsManager.getStringProperty($user, 'location'))
+        #set($tPhone = "")
+        #set($tPhone = $userDetailsManager.getStringProperty($user, 'phone'))
+        #set($tAvatarUrl = "")
+        #set($tAvatarUrl = $pic_src)
+
+        ## Determine user name to show: Full or account name
+        #set( $tUserName = "")
+        #if($paramUserOrFullName == true)
+            #set( $tUserName = $user.fullName)
+        #else
+            #set( $tUserName = $username)
+        #end
+
+        #if($paramTableType == "Tabular list")
+            <tr>
+                <td class="confluenceTd">$user.name</td>
+                <td class="confluenceTd">$tUserName</td>
+                <td class="confluenceTd">$user.email</td>
+                <td class="confluenceTd">$tLocation</td>
+                <td class="confluenceTd">$tDepartment</td>
+                <td class="confluenceTd">$tPosition</td>
+                <td class="confluenceTd">$tPhone</td>
+                <td class="confluenceTd">$tAvatarUrl</td>
+            </tr>
+        #elseif($paramTableType == "User profile table")
+            #if($countTr == 0)
+            <tr>
+            #end
+                <td>
+                    <div class="content-wrapper">
+                        <p style="text-align: center;">
+                            <ac:structured-macro ac:name="profile-picture" ac:schema-version="1">
+                                <ac:parameter ac:name="User"><ri:user ri:userkey="$user.key" /></ac:parameter>
+                            </ac:structured-macro>
+                        </p>
+                        <p style="text-align: center;"><strong><a href="mailto:$user.email">$tUserName</a></strong></p>
+            #if( $paramShowPosition == true )
+                        <p style="text-align: center;"><strong>$tPosition</strong></p></div>
+            #end
+                </td>
+            #set($countTr = $countTr + 1)
+            #if($countTr == $paramMaxCols)
+            </tr>
+                #set($countTr = 0)
+            #end
+        #elseif($paramTableType == "Profile pictures initials and position")
+            #set($tableRow1 = $tableRow1 + '
+                <td>
+                    <div class="content-wrapper">
+                        <p style="text-align: center;">
+                            <ac:structured-macro ac:name="profile-picture" ac:schema-version="1">
+                                <ac:parameter ac:name="User"><ri:user ri:userkey="' + $user.key + '" /></ac:parameter>
+                            </ac:structured-macro>
+                        </p>
+                    </div>
+                </td>')
+            #set($tableRow2 = $tableRow2 + '
+                <td>
+                    <p style="text-align: center;"><strong><a href="mailto:' + $user.email + '">' + $tUserName + '</a></strong></p>
+                </td>')
+            #if( $paramShowPosition == true )
+                #set($tableRow3 = $tableRow3 + '
+                <td>
+                    <p style="text-align: center;"><strong>' + $tPosition + '</strong></p>
+                </td>')
+            #end
+        #else
+            ## Just the short profile list
+            <ac:structured-macro ac:name="profile-picture"><ac:parameter ac:name="User"><ri:user ri:userkey="$user.key" /></ac:parameter></ac:structured-macro>
+        #end
+    #end  ##if($tdepartment ...)
+
+    ## 'fun fact' about Velocity: If a 'null' value is assigned a variable it will keep its old value.
+    ## setting it to false will make it evaluate correctly in expresions that rely on this 'null' value.
+    #set($tLocation = false)
+    #set($tDepartment = false)
+    #set($tPhone = false)
+    #set($tAvatarUrl = false)
+#end  ## foreach(...
+
+#if($paramTableType == "User profile table")
+    </tbody>
+#elseif($paramTableType == "Profile pictures initials and position")
+    <tr>$tableRow1</tr>
+    <tr>$tableRow2</tr>
+    #if( $paramShowPosition == true )
+    <tr>$tableRow3</tr>
+    #end
+#end
+</table>

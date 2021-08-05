@@ -1,0 +1,27 @@
+## Macro Name: userprofile_no_email
+## Visibility: all users
+## Macro Title: User Profile without email
+## Description: Show a User Profile without supplying an email address as well.
+## Categories: Confluence Content
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: Kim Poulsen
+## Date created: 2016-01-26
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param user:title=Username|type=username|required=true|desc=Type user initials
+
+#set ($confluenceUser=$userAccessor.getUserByName("$paramuser"))
+
+## This one provides the profile picvture, complete with link to email, public profile etc.:
+## <ac:structured-macro ac:macro-id="593a1309-c63d-4111-a3be-710931f93ba3" ac:name="profile-picture" ac:schema-version="1"><ac:parameter ac:name="User"><ri:user ri:userkey="$confluenceUser.getKey()" /></ac:parameter></ac:structured-macro>&nbsp;
+
+<strong>
+## This one provides only the profile picture:
+  <span style="color: rgb(51,153,102);"><img src="$userAccessor.getUserProfilePicture($confluenceUser).getDownloadPath()" height="48" width="48" </img></span>
+## Extract the name of the User:
+  <span style="color: rgb(51,153,102);">$confluenceUser.getFullName()</span>
+</strong>

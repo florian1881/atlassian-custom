@@ -1,0 +1,18 @@
+## Macro Name: countpages
+## Visibility: admins only
+## Macro Title: Count pages in a given space
+## Description: Use this macro to count pages in a space: {countpages:spaceKey=test}
+## Categories: Reporting
+## URL: https://confluence.atlassian.com/display/DISC/Count+pages+in+space
+## Body processing: No macro body
+##
+## Output: Number of pages in a space
+##
+## Developed by: Kim Poulsen
+## Date created: 04/05/2018
+## Installed by: 
+
+## Parameters:
+## @param spaceKey:title=Space to count|type=string|required=true|desc=Type the Space name to count pages in.
+
+The $paramspaceKey space contains $spaceManager.findPageTotal($spaceManager.getSpace($paramspaceKey)) pages.

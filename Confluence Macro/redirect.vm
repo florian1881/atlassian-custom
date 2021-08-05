@@ -1,0 +1,28 @@
+## Macro Name: redirect
+## Visibility: all users
+## Macro Title: Redirect page to another URL
+## Description: The macro redirects a page to another, when it is accessed. This is useful if content moved, and people are still using old URLs.
+## Categories: Navigation
+## Documentation URL: usermacro-url-redirect.vm <https://gist.github.com/dvdsmpsn/8804146>
+## Body processing: No macro body
+##
+## Output: HTML
+##
+## Developed by: David Simpson <david@davidsimpson.me>
+## Date created: 2014-02-04
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param Title:title=Link text|type=string|desc=The text shown on the link|required=true|multiple=false|default=Redirection link
+## @param Url:title=Redirect URL|type=string|required=true|desc=The target URL
+## @param Timeout:title=Timeout in ms|type=int|desc=Set the timeout for the redirect in milliseconds|required=true|multiple=false|default=10000
+
+<a id="url-redirect" href="$paramUrl">$paramTitle</a>
+
+<script>
+  AJS.toInit(function ($) {
+      setTimeout(function() {
+        location.replace($('#url-redirect').attr('href'));
+      }, $paramTimeout);
+  });
+</script>

@@ -1,0 +1,21 @@
+## Macro Name: link-to-parent
+## Visibility: all users
+## Macro Title: Link to Parent
+## Description: Insert a link to the parent page
+## Categories: Navigation
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: Peter Soendergaard
+## Date created: 20/12/2016
+## Installed by: Peter Soendergaard
+
+## Parameters:
+## @noparams
+
+#if (!$content.getParent())
+  <b>No parent page found</b>
+#else
+  #contentLink2($content.getParent() false false)
+#end

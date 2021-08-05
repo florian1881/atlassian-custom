@@ -1,0 +1,39 @@
+## Macro Name: statusdropdown
+## Visibility: all users
+## Macro Title: Dropdown list
+## Description: Define a status with a predefined dropdown list.
+## Categories: Confluence Content, Formatting
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: Unknown
+## Date created: 2016-04-28
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param Status:title=Status|type=enum|required=true|enumValues=DRAFT,INVESTIGATING,DECIDED,REJECTED,COMPLETED|desc=Product Requirement Status.
+ 
+#if ( $paramStatus == "DRAFT" )
+#set ( $color = "Grey" )
+ 
+#elseif ( $paramStatus == "INVESTIGATING" )
+#set ( $color = "Yellow" )
+ 
+#elseif ( $paramStatus == "DECIDED" )
+#set ( $color = "Green" )
+ 
+#elseif ( $paramStatus == "REJECTED" )
+#set ( $color = "Red" )
+ 
+#elseif ( $paramStatus == "COMPLETED" )
+#set ( $color = "Blue" )
+ 
+#else
+#set ( $color = "Grey" )
+#end
+ 
+<ac:macro ac:name="status">
+<ac:parameter ac:name="colour">$color</ac:parameter>
+<ac:parameter ac:name="title">$paramStatus</ac:parameter>
+</ac:macro>

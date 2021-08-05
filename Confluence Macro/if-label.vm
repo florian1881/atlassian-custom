@@ -1,0 +1,52 @@
+## Macro Name: if-label
+## Visibility: all users
+## Macro Title: if-label
+## Description: Display content if the page has a specified label
+## This macro looks for the presence of a particular label, passed in as the first
+## (unnamed) parameter.
+## The unnamed parameter is signed, that is it can be prefixed by a '+' or '-'
+## There are not separate actions for + and - .  The rules for action are as
+## follows:
+## 1) If the sign is +, and the label is present, then the body is displayed
+## 2) if the sign is -, and the label is NOT present, then the body is displayed.
+## This can be used as a crude approval system, so that if the "approved" label is ## present, an approved "badge" is displayed, for example.  If no unnamed
+## parameter is present, nothing is displayed
+## RegEx pattern to look for either a + or - sign, followed by a label.
+##
+## Categories: Formatting
+## Documentation URL: https://confluence.atlassian.com/display/DISC/if-label
+## Body processing: Rendered
+##
+## Output: 
+##
+## Developed by: Chris van Hasselt, FHI 360
+## Updated by: Martin Cleaver, Blended Perspectives
+## Date created: 14/03/2012
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param label:title=Label Required|type=string|desc=label required for body to show|required=true|multiple=true|default=
+  
+#set ($myPattern =  '[+-]?.*' )
+#if ( $paramlabel &&  $paramlabel.matches( $myPattern ) )
+  ## first determine the label to look for
+  #if ($paramlabel.startsWith('+') || $paramlabel.startsWith('-') )
+    #set ($sign = $paramlabel.substring(0,1) )
+    #set ($pLabel = $paramlabel.substring(1))
+  #else
+    #set ($sign = "+")
+    #set ($pLabel = $paramlabel)
+  #end
+  ## bodyPrint default is false if +, true if -
+  #set ( $bodyPrint = ( $sign == '-' ) )
+  #foreach ( $label in $content.getLabels() )
+     #if ( ( $label == $pLabel ) )
+       #set ($bodyPrint = !$bodyPrint)
+     #end
+  #end
+#end
+#if ( $bodyPrint == true )
+$body
+#end
+  
+## NOTE:  If the unnamed parameter is not present, nothing happens.

@@ -1,0 +1,63 @@
+## Macro Name: spaces-by-category
+## Visibility: all users
+## Macro Title: List Spaces with a specific category
+## Description: This macro lists spaces which have a specific category. This enables having tables of spaces instead one with everything in it.
+## Categories: Navigation
+## Documentation URL: https://gist.github.com/dvdsmpsn/f660d548a1d89522fc6c
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: David Simpson <david@appfusions.com>
+## Adapted from Remo Siegwart's answer at http://web.archive.org/web/20140813094412/https://answers.atlassian.com/questions/274837/show-a-space-list-within-a-page-using-category-label
+## Date created: 08/2014
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param Label:title=Space Category|type=string|required=true|desc=The category you want to list spaces from.
+ 
+## try to get space category
+#set ( $spaceLabel = $action.labelManager.getLabel( "team:${paramLabel}" ) )
+ 
+## check if space category exists
+#if ( $!spaceLabel )
+	## try to get spaces by category
+	#set ( $spaces = $action.labelManager.getSpacesWithLabel( $spaceLabel ) )
+	<ul class="spaces-by-category-user-macro">
+	#foreach ( $space in $spaces )
+		## check if current user can view space
+		#if ( $permissionHelper.canView( $action.remoteUser, $space ) )
+			<li><a href="$!space.urlPath">$!space.name</a></li>
+		#end
+	#end
+	</ul>
+
+	#set ( $d = "$") ## escape the dollar sign for jQuery in velocity
+	<script>
+		## Sort the list client side as this can't be done server side in a user macro.
+		AJS.toInit(function (${d}) {
+			${d}('.spaces-by-category-user-macro').each(function(){
+				var ${d}me = ${d}(this);
+				// Sort the list items
+				var listItems = ${d}me.children('li').get();
+				listItems.sort(function(x,y) {
+					var compareX = ${d}(x).text().toUpperCase();
+					var compareY = ${d}(y).text().toUpperCase();
+					return (compareX < compareY) ? -1 : (compareX > compareY) ? 1 : 0;
+				});
+
+				// Write the list items back to the DOM
+				${d}.each(listItems, function(index, item) { ${d}me.append(item); });
+			});
+		});
+	</script>
+	
+#else
+	<div class="aui-message warning">
+		<p class="title">
+			<span class="aui-icon icon-warning">Warning</span>
+			<strong>Space category not found</strong>
+		</p>
+		<p>Couldn't find space category <strong>$paramLabel</strong>!</p>
+	</div>
+#end

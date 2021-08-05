@@ -1,0 +1,60 @@
+## Macro Name: applytemplatevars
+## Visibility: all users
+## Macro Title: Apply Template Variables
+## Description: This macro encases other macros so that template variables can be transferred to them.
+## Categories: Confluence Content
+## Body processing: Rendered
+##
+## Output: body with replaced variables
+##
+## Developed by: Kim Poulsen
+## Date created: 28/09/2015
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @noparams
+
+## Fish out the parameter section of the body:
+######################################
+#set ($lbody = $body)
+#set ($idx = $lbody.indexOf("</p"))
+#set ($params = $lbody.substring(3, $idx))
+
+## Replace the body with the real body (without the variable section)
+#set ($body = $lbody.substring($idx))
+
+## This version accepts <name>=<value>|<name>=<value>|... type specification
+#################################################################
+#foreach($v in $params.split("[|]"))
+  ## Fish out variable names and values:
+  #######
+  #set ($varArr = [])
+  #foreach($i in $v.split("[=]"))
+    #set ($retval = $varArr.add($i) )
+  #end
+  #set ($vn = $varArr.get(0) )
+  #set ($vv = $varArr.get(1) )
+  ## And do the replacement:
+  ########
+  #set ($body = $body.replaceAll($vn, $vv) )
+#*
+  ##  Change the page title as well (dangerous: The page will change title, and possibly get lost.)
+  #set ($title = $content.getTitle() )
+  #set ($title = $title.replaceAll($vn, $vv) )
+  $content.setTitle($title)
+*#
+#end
+
+$body
+##
+## Iterate through the variables and replace throughout the body
+##  This version relies on macro variables being named "VAR<number>"
+#####################################################
+#*
+#set ($varName = "VAR")
+#set ($count = 1)
+#foreach($v in $params.split("[|]"))
+   #set ($body = $body.replaceAll($varName.concat($count.toString()), $v) )
+   #set ($count =  $count + 1)
+#end
+*#

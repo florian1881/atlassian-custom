@@ -1,0 +1,164 @@
+## Macro Name: include_children
+## Visibility: all users
+## Macro Title: Include Children
+## Description: This will include the content from from the child pages onto the parent page that this macro is placed on.
+## Categories: Confluence Content
+## Documentation URL: https://bitbucket.org/fredclown/confluence-user-macros
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed By: Davin Studer
+## Date Created: 12/4/2014
+## Updated by: Milo Grika
+## Added: show/hide title, link/unlink title.
+## Updated by: Gregor Mirai
+## Date updated: 26/1/2016
+## Added: page separator, PDF split page marker options.
+## Updated by: Kim Poulsen
+## Date updated: 01/12/2016
+## Added: Add Header size choice
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param ShowTitle:title=Show Title|type=boolean|desc=Deselect to remove the title of the child page.|default=true
+## @param LinkTitle:title=Link Title|type=boolean|desc=Select to turn the titles of the child pages into links to those pages (Show Title must be selected).|default=false
+## @param PageSeparator:title=Page Separator|type=boolean|desc=Separate pages with horizontal ruler.|default=false
+## @param SplitPages:title=Split Pages|type=boolean|desc=Split pages marker for PDF export will be inserted.|default=false
+## @param HeaderSize:title=Header Size|type=enum|enumValues=h1,h2,h3,h4,h5,h6|default=h1|desc=Select the header size of included page titles.
+## @param Collapsible:title=Collapsible|type=boolean|desc=Should the included pages be collapsible?|default=false
+## @param FilterLabel:title=Filter on Page Label|type=string|desc=Include only subpages with the specified label.
+## @param Order:title=Order|type=enum|enumValues=Nav Order,Reverse Nav Order,Alphabetical,Reverse Alphabetical,Create Date,Reverse Create Date|default=nav order|desc=In what order should the child pages be displayed? Nav Order refers to the order of the child pages in the page tree. Reverse Nav Order simply reverses that.
+## @param Limit:title=Limit|type=int|default=|desc=The number of pages to include. If number is not specified all pages will be included.
+
+#set( $containerManagerClass=$content.class.forName('com.atlassian.spring.container.ContainerManager') )
+#set( $getInstanceMethod=$containerManagerClass.getDeclaredMethod('getInstance',null) )
+#set( $containerManager=$getInstanceMethod.invoke(null,null) )
+#set( $containerContext=$containerManager.containerContext )
+#set( $pageManager=$containerContext.getComponent('pageManager') )
+## Find the array of (sorted) child pages.
+#set( $data = "" )
+#if( $paramOrder == "Nav Order" || $paramOrder == "Reverse Nav Order" )
+    #set( $children =  $pageManager.getPage($content.id).getSortedChildren() )
+#elseif( $paramOrder == "Alphabetical" || $paramOrder == "Reverse Alphabetical" )
+    #set( $array =  $pageManager.getPage($content.id).getChildren() )
+    ###############################################################
+    ## Could not find a method to get them in Alphabetical order ##
+    ## Must sort them myself ... Bubble sort                     ##
+    ###############################################################
+    #set( $size = $array.size() )
+    #foreach( $junk in $array )
+        #set( $count = -1 )
+        #foreach( $line in $array )
+            #set( $count = $count + 1 )
+            #if( $velocityCount < $size )
+                #if( $line.getTitle().compareToIgnoreCase($array.get($velocityCount).getTitle()) > 0 )
+                    #set( $tmp = $array.get($velocityCount) )
+                    #set( $junk = $array.set($velocityCount, $line) )
+                    #set( $junk = $array.set($count, $tmp) )
+                #end
+            #end
+        #end
+    #end
+    #set( $children = $array )
+#elseif( $paramOrder == "Create Date" || $paramOrder == "Reverse Create Date" )
+    #set( $children =  $pageManager.getPage($content.id).getChildren() )
+#end
+## Prepare children data.
+#set( $count = -1 )
+#set( $skipped = 0 )
+#set( $size = $children.size() )
+#foreach( $child in $children )
+    ## Create the map of labels for the page.
+    #set( $labelsMap = {} )
+    #foreach( $label in $child.getLabels() )
+        #set( $dummy = $labelsMap.put($label.toString(), 1) )
+    #end
+
+    ## Include all pages (when no filter label is specified) or pages with a specific label.
+    #if( ($paramFilterLabel && !$labelsMap.containsKey($paramFilterLabel)) ||
+         ($inOrder && $paramLimit != "" && $count+1 >= $Integer.parseInt($paramLimit)) ||
+         (!$inOrder && $paramLimit != "" && $skipped < $size - $Integer.parseInt($paramLimit) ))
+        #set( $skipped = $skipped + 1)
+    #else
+        #set( $count = $count + 1 )
+        #set( $include = "" )
+        #if ( $paramCollapsible == true )
+            #set( $include = $include + '<ac:structured-macro ac:name="expand">' )
+            #set( $include = $include + '<ac:parameter ac:name="title">' + $child.getTitle() + '</ac:parameter>' )
+            #set( $include = $include + '<ac:rich-text-body>' )
+            #set( $include = $include + '<p>' )
+        #end
+        #set( $include = $include + '<div class="included-child-page">' )
+ 
+        ## Show title and links.
+        #if( $paramShowTitle == true )
+            #if( $paramLinkTitle == true )
+                #set( $include = $include + '<'+$paramHeaderSize+' class="included-child-page-title"><a href="' + $child.getUrlPath() + '">' + $child.getTitle() + '</a></'+$paramHeaderSize+'>' )
+            #else
+                #set( $include = $include + '<'+$paramHeaderSize+' class="included-child-page-title">' + $child.getTitle() + '</'+$paramHeaderSize+'>' )
+            #end
+        #end
+
+        ## Include sub page.
+        #set( $include = $include + '<div class="included-child-page-body">' )
+            #set( $include = $include + '<ac:structured-macro ac:name="include">' )
+                #set( $include = $include + '<ac:parameter ac:name="">' )
+                    #set( $include = $include + '<ac:link>' )
+                        #set( $include = $include + '<ri:page ri:content-title="' + $child.getTitle() + '" ri:space-key="' + $content.spaceKey + '"/>' )
+                    #set( $include = $include + '</ac:link>' )
+                #set( $include = $include + '</ac:parameter>' )
+            #set( $include = $include + '</ac:structured-macro>' )
+        #set( $include = $include + '</div>' )
+        #set( $include = $include + '</div>' )
+
+        #if ( $paramCollapsible == true )
+            #set( $include = $include + '</p>' )
+            #set( $include = $include + '</ac:rich-text-body>' )
+            #set( $include = $include + '</ac:structured-macro>' )
+        #end
+
+        ## Define sorting order.
+        #set( $inOrder = false )
+        #if( $paramOrder == "Nav Order" || $paramOrder == "Alphabetical" || $paramOrder == "Create Date" )
+            #set( $inOrder = true )
+        #end
+
+        ## Find out, whether we are in between pages or not.
+        #set( $betweenPages = false )
+        #if( $inOrder == true && $count < $size - $skipped - 1 )
+            #set( $betweenPages = true )
+        #elseif( $inOrder == false && $count > 0 && $count < $size - $skipped )
+            #set( $betweenPages = true )
+        #end
+
+        ## Include page separator or include page split marker used for PDF exports.
+        #if( $betweenPages == true )
+            #if( $paramPageSeparator == true )
+                #set( $include = $include + '<hr/><br/>' )
+            #end
+            #if( $paramSplitPages == true )
+                #set( $include = $include + '<div style="page-break-before:always;"></div>' )
+            #end
+        #end
+
+        ## Add page content in order or in reverse order.
+        #if( $inOrder == true )
+            #set( $data = $data + $include )
+        #else
+            #set( $data = $include + $data)
+        #end
+    #end
+#end
+  
+$data
+  
+<style type="text/css">
+    .included-child-page {
+        margin-bottom: 30px;
+        overflow: hidden;
+    }
+    @media print {
+        .noprint { display: none; }
+    }
+</style>

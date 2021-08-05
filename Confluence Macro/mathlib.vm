@@ -1,0 +1,22 @@
+## Macro Name: mathlib
+## Visibility: all users
+## Macro Title: Math Formula Library
+## Description: Include a library to allow mathematical formulas on page.
+## Categories: Confluence Content
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: Kim Poulsen
+## Date created: 02/02/2018
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @noparams
+
+<ac:structured-macro ac:macro-id="52b8af17-59fe-4d4c-90e7-0ca04d41f6d9" ac:name="html" ac:schema-version="1"><ac:plain-text-body><![CDATA[<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.1/MathJax.js?config=TeX-AMS_CHTML">
+</script>]]></ac:plain-text-body></ac:structured-macro>

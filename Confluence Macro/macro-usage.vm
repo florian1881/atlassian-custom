@@ -1,0 +1,169 @@
+## Macro Name: macro-usage
+## Visibility: Admin
+## Macro Title: Macro Usage
+## Description: Shows information about macros used in the wiki.
+## Categories: Administration
+## Body processing: No macro body
+##
+## Output: 
+##
+## Developed by: Davin Studer
+## Date created: 12/17/2014
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @param Space:title=Space|type=spacekey|desc=This will restrict the macro usage report to a specific space.
+## @param Filter:title=Filter|type=boolean|desc=Filter away Confluence built-in macros.
+   
+#set($containerManagerClass = $content.class.forName('com.atlassian.spring.container.ContainerManager'))
+#set($getInstanceMethod = $containerManagerClass.getDeclaredMethod('getInstance',null))
+#set($containerManager = $getInstanceMethod.invoke(null,null))
+#set($containerContext = $containerManager.containerContext)
+#set($macroBrowserManager = $containerContext.getComponent('macroBrowserManager'))
+#set($allMacros = $macroBrowserManager.getMacroSummaries())
+  
+#########################################################################################
+## This is used for getting around velocity issues when writing jQuery.                ##
+#########################################################################################
+#set( $d = '$' )
+  
+#########################################################################################
+## Populate the macro information into a string that we will use as a JS object array. ##
+#########################################################################################
+#set ($i = 0)
+#set($macroObjects = "")
+#set($confluenceMacroPrefixes = (['com.atlassian.confluence', 'confluence.macros', 'confluence.extra', 'confluence.xhtml']))
+
+#foreach($macro in $allMacros)
+  #set($macroTitle = $macro.getTitle().getKey().replace("'","\'"))
+
+  ## Start of filtering Confluence built-in away. Need time to do this.
+  #set($continue = false)
+  #if($!paramFilter == true)
+    #foreach ($cma in $confluenceMacroPrefixes)
+      #if($macroTitle.contains($cma))
+        #set($continue = true)
+      #end
+    #end
+  #end
+
+  #if($continue == false)
+    #if($i != 0)
+      #set($macroObjects = $macroObjects + ",")
+    #end
+    #set($macroObjects = $macroObjects + "{title:'" + $macroTitle + "', name:'" + $macro.getMacroName().replace("'","\'") + "'}")
+    #set ($i = $i + 1)
+  #end
+#end
+
+#########################################################################################
+## Decide which space to search.                                                       ##
+#########################################################################################
+#if ($!paramSpace && $!paramSpace != "")
+    #set ($searchSpace = $!paramSpace)
+#else
+    #set ($searchSpace = "conf_all")
+#end
+<script type="text/javascript">
+var queue = {
+    macros: [$macroObjects],
+    current: 0,
+    start: function () {
+        this.macros.sort(compare);
+        this.current = 0;
+        this.next();
+    },
+    next: function () {
+        if (this.current >= this.macros.length) {
+            AJS.$('#queryStatus span').removeClass('aui-lozenge-current');
+            AJS.$('#queryStatus span').addClass('aui-lozenge-success');
+            AJS.$('#queryStatus span').text('Report Complete');
+            AJS.tablessortable.setTableSortable(AJS.$('#macroUsageReport table'));
+            return null;
+        }
+        else {
+            this.current += 1;
+            lookupMacro(this.macros[this.current - 1]);
+        }
+    }
+};
+  
+function lookupMacro(macro) {
+    var html = '';
+    var searchURL = '';
+      
+    AJS.$('#queryStatus span').text('Getting counts for macro: ' + macro.title);
+      
+    searchURL = AJS.params.baseUrl + '/rest/searchv3/1.0/search?where=${searchSpace}&spaceSearch=true&queryString=macroName:' + encodeURIComponent(macro.name);
+
+    AJS.${d}.ajax(
+        {
+            type: 'GET',
+            url: searchURL,
+            dataType: "json",
+            timeout:60000,
+            success: function(data) {
+                if(data.total > 0) {
+                    var spaces = '';
+                    for(var i = 0; i < data.results.length; i++)
+                    {
+                        if(spaces.indexOf(data.results[i].searchResultContainer.name) == -1)
+                        {
+                            spaces = spaces == '' ? '' : spaces + ', ';
+                            spaces = spaces + data.results[i].searchResultContainer.name;
+                        }
+                    }
+                    html = '<tr>';
+                    html += '   <td class="confluenceTd">' + macro.title + '</td>';
+                    html += '   <td class="confluenceTd">' + macro.name + '</td>';
+                    html += '   <td class="confluenceTd">' + data.total + '</td>';
+                    html += '   <td class="confluenceTd">' + spaces + '</td>';
+                    html += '   <td class="confluenceTd"><a href="' + AJS.params.baseUrl + '/dosearchsite.action?where=conf_all&spaceSearch=true&queryString=macroName:' + encodeURIComponent(macro.name) + '" target="_blank">macro usage</a></td>';
+                    html += '</tr>';
+                }
+                AJS.$('#macroUsageReport table tbody').append(html);
+                  
+                queue.next();
+            },
+            error: function (x, y, z) {
+                AJS.$('#queryStatus span').removeClass('aui-lozenge-current');
+                AJS.$('#queryStatus span').addClass('aui-lozenge-error');
+                AJS.$('#queryStatus span').text('Error getting counts for macro:' + macro.title);
+            }
+        }
+    );
+}
+  
+function compare(a, b) {
+    if (a.title < b.title) {
+        return -1;
+    }
+    if (a.title > b.title) {
+        return 1;
+    }
+    return 0;
+}
+  
+AJS.toInit(function(){
+    queue.start();  
+});
+</script>
+  
+<div id="queryStatus">
+    <span class="status-macro aui-lozenge aui-lozenge-current"></span>
+</div>
+<div id="macroUsageReport">
+    <table class="confluenceTable">
+        <thead>
+            <tr>
+                <th>Macro Title</th>
+                <th>Macro Name</th>
+                <th>Times Used</th>
+                <th>Spaces Used In</th>
+                <th>Pages Used On</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+</div>

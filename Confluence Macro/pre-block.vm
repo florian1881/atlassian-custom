@@ -1,0 +1,16 @@
+## Macro Name: pre-block
+## Visibility: all users
+## Macro Title: Preformatted Block
+## Description: Create a block of preformatted text. This will render as monospace text.
+## Categories: Formatting
+## Body processing: rendered
+##
+## Output: 
+##
+## Developed by: Kim Poulsen
+## Date created: 2016-09-22
+## Installed by: Kim Poulsen
+
+## Parameters:
+## @noparams
+<pre>$body</pre>
