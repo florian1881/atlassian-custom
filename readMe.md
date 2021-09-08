@@ -2,11 +2,11 @@ Greeting !
 
 I'm Florian PEREZ, Atlassian passionate & Atlassian specialist.
 
-This repo is a compilation of all the content I've found during my research about Atlassian product.
+This repo is a compilation of all the content I've found during my research about Atlassian products.
 
-Some of the script are also created by me, needed for some use case in missions
+Some of the scripts are also personnals creations, needed for some uses cases in missions
 
-Feel free to Fork this repo, ask for modifications on some script, report bug or mistake or make a pull request. 
+Feel free to fork this repo, ask for modifications on some scripts, report bugs or mistakes or make a pull request. 
 
 Thanks you ! 
 
