@@ -1,0 +1,312 @@
+// Fields
+
+import com.onresolve.jira.groovy.user.FormField
+
+
+def field1 = getFieldByName("Change Description")
+def field2 = getFieldById("customfield_10904")
+def field3 = getFieldById("customfield_10905")
+def field4 = getFieldByName("Change Impact")
+def field5 = getFieldByName("Communication")
+def field6 = getFieldById("customfield_10908")
+def result = 0 
+def value1=field1.getValue()
+def value2=field2.getValue()
+def value3=field3.getValue()
+def value4=field4.getValue()
+def value5=field5.getValue()
+def value6=field6.getValue()
+
+def count =0
+
+if(value1=="Yes"){
+    count++
+         
+}
+
+if(value2=="Yes"){
+    count++
+}
+if(value3=="Yes"){
+    count++
+}
+
+if(value4=="Yes"){
+    count++
+         
+}
+if(value5=="Yes"){
+    count++
+         
+}
+if(value6=="Yes"){
+    count++
+        
+}
+
+FormField resultField =getFieldById("customfield_10708")
+resultField.setFormValue(count)
+
+
+
+//Change Description
+
+
+import com.onresolve.jira.groovy.user.FormField
+
+
+def field1 = getFieldByName("Change Description")
+def field2 = getFieldById("customfield_10904")
+def field3 = getFieldById("customfield_10905")
+def field4 = getFieldByName("Change Impact")
+def field5 = getFieldByName("Communication")
+def field6 = getFieldById("customfield_10908")
+def result = 0 
+def value1=field1.getValue()
+def value2=field2.getValue()
+def value3=field3.getValue()
+def value4=field4.getValue()
+def value5=field5.getValue()
+def value6=field6.getValue()
+
+def count =0
+
+if(value1=="Yes"){
+    count++
+         
+}
+
+if(value2=="Yes"){
+    count++
+}
+if(value3=="Yes"){
+    count++
+}
+
+if(value4=="Yes"){
+    count++
+         
+}
+if(value5=="Yes"){
+    count++
+         
+}
+if(value6=="Yes"){
+    count++
+        
+}
+
+FormField resultField =getFieldById("customfield_10708")
+resultField.setFormValue(count)
+
+
+
+//Test Plan 
+
+
+import com.onresolve.jira.groovy.user.FormField
+
+
+def field1 = getFieldByName("Change Description")
+def field2 = getFieldById("customfield_10904")
+def field3 = getFieldById("customfield_10905")
+def field4 = getFieldByName("Change Impact")
+def field5 = getFieldByName("Communication")
+def field6 = getFieldById("customfield_10908")
+def result = 0 
+def value1=field1.getValue()
+def value2=field2.getValue()
+def value3=field3.getValue()
+def value4=field4.getValue()
+def value5=field5.getValue()
+def value6=field6.getValue()
+
+def count =0
+
+if(value1=="Yes"){
+    count++
+         
+}
+
+if(value2=="Yes"){
+    count++
+}
+if(value3=="Yes"){
+    count++
+}
+
+if(value4=="Yes"){
+    count++
+         
+}
+if(value5=="Yes"){
+    count++
+         
+}
+if(value6=="Yes"){
+    count++
+        
+}
+
+FormField resultField =getFieldById("customfield_10708")
+resultField.setFormValue(count)
+
+
+
+//Change Impact
+
+import com.onresolve.jira.groovy.user.FormField
+
+
+def field1 = getFieldByName("Change Description")
+def field2 = getFieldById("customfield_10904")
+def field3 = getFieldById("customfield_10905")
+def field4 = getFieldByName("Change Impact")
+def field5 = getFieldByName("Communication")
+def field6 = getFieldById("customfield_10908")
+def result = 0 
+def value1=field1.getValue()
+def value2=field2.getValue()
+def value3=field3.getValue()
+def value4=field4.getValue()
+def value5=field5.getValue()
+def value6=field6.getValue()
+
+def count =0
+
+if(value1=="Yes"){
+    count++
+         
+}
+
+if(value2=="Yes"){
+    count++
+}
+if(value3=="Yes"){
+    count++
+}
+
+if(value4=="Yes"){
+    count++
+         
+}
+if(value5=="Yes"){
+    count++
+         
+}
+if(value6=="Yes"){
+    count++
+        
+}
+
+FormField resultField =getFieldById("customfield_10708")
+resultField.setFormValue(count)
+
+
+
+//Change Plan 
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+
+
+def field1 = getFieldByName("Change Description")
+def field2 = getFieldById("customfield_10904")
+def field3 = getFieldById("customfield_10905")
+def field4 = getFieldByName("Change Impact")
+def field5 = getFieldByName("Communication")
+def field6 = getFieldById("customfield_10908")
+def result = 0 
+def value1=field1.getValue()
+def value2=field2.getValue()
+def value3=field3.getValue()
+def value4=field4.getValue()
+def value5=field5.getValue()
+def value6=field6.getValue()
+
+def count =0
+
+if(value1=="Yes"){
+    count++
+         
+}
+
+if(value2=="Yes"){
+    count++
+}
+if(value3=="Yes"){
+    count++
+}
+
+if(value4=="Yes"){
+    count++
+         
+}
+if(value5=="Yes"){
+    count++
+         
+}
+if(value6=="Yes"){
+    count++
+        
+}
+
+FormField resultField =getFieldById("customfield_10708")
+resultField.setFormValue(count)
+
+
+
+//Communication
+
+
+import com.onresolve.jira.groovy.user.FormField
+
+
+def field1 = getFieldByName("Change Description")
+def field2 = getFieldById("customfield_10904")
+def field3 = getFieldById("customfield_10905")
+def field4 = getFieldByName("Change Impact")
+def field5 = getFieldByName("Communication")
+def field6 = getFieldById("customfield_10908")
+def result = 0 
+def value1=field1.getValue()
+def value2=field2.getValue()
+def value3=field3.getValue()
+def value4=field4.getValue()
+def value5=field5.getValue()
+def value6=field6.getValue()
+
+def count =0
+
+if(value1=="Yes"){
+    count++
+         
+}
+
+if(value2=="Yes"){
+    count++
+}
+if(value3=="Yes"){
+    count++
+}
+
+if(value4=="Yes"){
+    count++
+         
+}
+if(value5=="Yes"){
+    count++
+         
+}
+if(value6=="Yes"){
+    count++
+        
+}
+
+FormField resultField =getFieldById("customfield_10708")
+resultField.setFormValue(count)
+
+
+
+//

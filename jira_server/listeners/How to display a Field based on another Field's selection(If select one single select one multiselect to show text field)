@@ -1,0 +1,29 @@
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+log.warn("--- Start Behaviour ------------------------------------")
+
+def required = getFieldById("customfield_10300")
+log.warn("required = $required")
+def model = getFieldByName("Model")
+log.warn("model = $model")
+def version = getFieldByName("Version")
+log.warn("version = $version")
+
+def requiredValue = required.getValue()
+log.warn("requiredValue = $requiredValue")
+
+def modelValue = model.getValue()
+log.warn("modelValue = $modelValue")
+
+if (requiredValue == "Yes" && modelValue != null && modelValue.contains("TATA")){
+    log.warn("Version set to visible!")
+    version.setHidden(false)
+} else {
+    log.warn("Version set to hidden!")
+    version.setHidden(true)
+}
+
+log.warn("------------------------------------ End Behaviour ------")

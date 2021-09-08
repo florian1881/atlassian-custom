@@ -1,0 +1,8 @@
+<script>
+AJS.$(document).ready(function(){
+setTimeout(function(){
+    AJS.$('[id^="ghx-manage-boards-operation-trigger-"]').remove();
+},900)
+});
+
+</script>

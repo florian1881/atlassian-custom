@@ -1,0 +1,15 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+def groupManager = ComponentAccessor.groupManager
+def loggedInUser = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+
+final username = loggedInUser.username
+
+def groupNames = groupManager.getGroupNamesForUser(username).toArray()
+
+if(groupManager.isUserInGroup(username, "jira-et-developers") || groupManager.isUserInGroup(username, "jira-et-administrators")|| groupManager.isUserInGroup(username, "jira-et-asset-prod")){
+    
+    return true
+}
+    return false
+

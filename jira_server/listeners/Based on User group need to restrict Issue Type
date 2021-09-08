@@ -1,0 +1,28 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.security.roles.ProjectRoleManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import groovy.transform.BaseScript
+
+import static com.atlassian.jira.issue.IssueFieldConstants.ISSUE_TYPE
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+def groupManager = ComponentAccessor.groupManager
+def allIssueTypes = ComponentAccessor.constantsManager.allIssueTypeObjects
+def user = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+
+def issueTypeField = getFieldById(ISSUE_TYPE)
+def remoteUsersGropus = groupManager.getGroupsForUser(user)*.name
+def availableIssueTypes = []
+
+
+//use this def and if code to check groups
+
+if ("JIRA-Admin" in remoteUsersGropus) {
+availableIssueTypes.addAll(allIssueTypes.findAll { it.name in ["Task", "Experiment"] })
+}
+
+else if ("GroupABC" in remoteUsersGropus){
+availableIssueTypes.addAll(allIssueTypes.findAll { it.name in ["Task"] })
+}
+issueTypeField.setFieldOptions(availableIssueTypes)

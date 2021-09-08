@@ -1,0 +1,1158 @@
+// Initiliser
+
+/*import com.atlassian.jira.ComponentAccessor
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.config.FieldConfigImpl
+import groovy.transform.BaseScript*/
+import com.atlassian.jira.component.ComponentAccessor
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+
+def summary = getFieldById("summary")
+def whatistheRequest = getFieldByName("What is the Request?")
+def descriptionOfTheRequest = getFieldByName("Description of the Request/ Question")
+def currentADName = getFieldByName("Current AD Name Lookup")
+def currentFirstName = getFieldByName("Current First Name")
+def newFirstName = getFieldByName("New First Name")
+def currentPreferredName = getFieldByName("Current Preferred Name")
+def newPreferredName = getFieldByName("New Preferred Name")
+def currentLastName = getFieldByName("Current Last Name")
+def newLastName = getFieldByName("New Last Name")
+def newEmail = getFieldByName("New Email")
+def userNameChangeEE = getFieldByName("User Name Change needs to be done for EE")
+def userName = getFieldByName("User Name")
+def employeeID = getFieldByName("Employee ID")
+def emailID = getFieldByName("Email ID")
+def hireDate = getFieldByName("Hire Date")
+def typeOfLeave = getFieldByName("Type of Leave")
+def leaveRequestFor = getFieldByName("Leave Request For")
+def leaveStartDate = getFieldByName("Leave Start Date")
+def justification = getFieldByName("Justification")
+def contactNumber = getFieldByName("Contact Number")
+def leaveEndDate = getFieldByName("Leave End Date")
+def disableDate = getFieldByName("Disable Date")
+def enableDate = getFieldByName("Enable Date")
+def equipmentReturnRequired = getFieldByName("Equipment Return Required?")
+def selectUserInterestedWatching = getFieldByName("Select users interested in watching this request")
+//def location = getFieldByName("HR Location")
+def typeOfSeparation = getFieldByName("Type of Separation")
+def associateName = getFieldByName("Associate Name")
+def terminationDate = getFieldByName("Termination Date")
+def timeZone = getFieldByName("Time Zone")
+def associateWorkingInNight = getFieldByName("Associate Working in Night Shift?")
+def equipmentList = getFieldByName("Equipment List")
+def equipmentReturnType = getFieldByName("Equipment Return Type")
+def dataOfAssociatebeingoffboarded = getFieldByName("Does Manager require access to Data of Associate being offboarded?")
+def mailBoxofAssociatebeingoffboarded = getFieldByName("Does Manager require access to MailBox of Associate being offboarded?")
+def voiceMailofAssociatebeingoffboarded = getFieldByName("Does Manager require access to Voice Mail of Associate being offboarded?")
+def nameoftheManager = getFieldByName("Name of the Manager")
+def nameoftheDelegate = getFieldByName("Name of the Delegate")
+def managerorDelegate = getFieldByName("Manager or Delegate?")
+def whoprovidedHRBPApproval = getFieldByName("Who provided HR BP Approval?")
+def currentUser = ComponentAccessor.jiraAuthenticationContext?.getLoggedInUser().getName()
+def requestorField = getFieldByName("Requester")
+def shippingAddress= getFieldByName("Shipping Address")
+def domaininfo = getFieldByName("Domain")
+def IsTaskforJiraCreated	= getFieldByName("IsTaskforJiraCreated")
+def profiledeletiondate = getFieldByName("Profile Deletion Date")
+def m1manager = getFieldByName("Requestor M1 Manager")
+def m2manager = getFieldByName("Requestor M2 Manager")
+def location = getFieldByName("Location")
+getFieldByName("Eligible for Rehire?").setHidden(true)
+getFieldByName("Does Manager require access to PC Data of Associate being offboarded?").setHidden(true)
+//getFieldByName("Assignment Group").setHidden(true)
+
+
+requestorField.setFormValue(currentUser)
+shippingAddress.setHidden(true)
+nameoftheManager.setHidden(true)
+nameoftheDelegate.setHidden(true)
+managerorDelegate.setHidden(true)
+whoprovidedHRBPApproval.setHidden(true)
+summary.setHidden(true)
+ whatistheRequest.setHidden(true)
+ descriptionOfTheRequest.setHidden(true)
+ currentADName.setHidden(true)
+ currentFirstName.setHidden(true)
+ newFirstName.setHidden(true)
+ currentPreferredName.setHidden(true)
+ newPreferredName.setHidden(true)
+ currentLastName.setHidden(true) 
+ newLastName.setHidden(true)
+newEmail.setHidden(true)
+userNameChangeEE.setHidden(true)
+userName.setHidden(true)
+employeeID.setHidden(true)
+emailID.setHidden(true)
+hireDate.setHidden(true)
+typeOfLeave.setHidden(true)
+leaveRequestFor.setHidden(true)
+leaveStartDate.setHidden(true)
+contactNumber.setHidden(true)
+leaveEndDate.setHidden(true)
+disableDate.setHidden(true)
+enableDate.setHidden(true)
+equipmentReturnRequired.setHidden(true)
+selectUserInterestedWatching.setHidden(true)
+typeOfSeparation.setHidden(true)
+associateName.setHidden(true)
+terminationDate.setHidden(true)
+timeZone.setHidden(true)
+associateWorkingInNight.setHidden(true)
+equipmentList.setHidden(true)
+equipmentReturnType.setHidden(true)
+dataOfAssociatebeingoffboarded.setHidden(true)
+mailBoxofAssociatebeingoffboarded.setHidden(true)
+voiceMailofAssociatebeingoffboarded.setHidden(true)
+domaininfo.setHidden(true)
+justification.setHidden(true)
+m1manager.setHidden(true)
+m2manager.setHidden(true)
+location.setHidden(true)
+
+
+//Fields
+//  HR Request Type
+
+
+/*import com.atlassian.jira.ComponentAccessor
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.config.FieldConfigImpl
+import groovy.transform.BaseScript*/
+import com.atlassian.jira.component.ComponentAccessor
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+
+def hRRequestType = getFieldByName("HR Request Type")
+def whatistheRequest = getFieldByName("What is the Request?")
+def descriptionOfTheRequest = getFieldByName("Description of the Request/ Question")
+def currentADName = getFieldByName("Current AD Name Lookup")
+def currentFirstName = getFieldByName("Current First Name")
+def newFirstName = getFieldByName("New First Name")
+def currentPreferredName = getFieldByName("Current Preferred Name")
+def newPreferredName = getFieldByName("New Preferred Name")
+def currentLastName = getFieldByName("Current Last Name")
+def newLastName = getFieldByName("New Last Name")
+def newEmail = getFieldByName("New Email")
+def userNameChangeEE = getFieldByName("User Name Change needs to be done for EE")
+def userName = getFieldByName("User Name")
+def employeeID = getFieldByName("Employee ID")
+def emailID = getFieldByName("Email ID")
+def hireDate = getFieldByName("Hire Date")
+def typeOfLeave = getFieldByName("Type of Leave")
+def leaveRequestFor = getFieldByName("Leave Request For")
+def leaveStartDate = getFieldByName("Leave Start Date")
+def justification = getFieldByName("Justification")
+def contactNumber = getFieldByName("Contact Number")
+def leaveEndDate = getFieldByName("Leave End Date")
+def disableDate = getFieldByName("Disable Date")
+def enableDate = getFieldByName("Enable Date")
+def equipmentReturnRequired = getFieldByName("Equipment Return Required?")
+def selectUserInterestedWatching = getFieldByName("Select users interested in watching this request")
+def typeOfSeparation = getFieldByName("Type of Separation")
+def associateName = getFieldByName("Associate Name")
+def terminationDate = getFieldByName("Termination Date")
+def timeZone = getFieldByName("Time Zone")
+def associateWorkingInNight = getFieldByName("Associate Working in Night Shift?")
+def equipmentList = getFieldByName("Equipment List")
+def equipmentReturnType = getFieldByName("Equipment Return Type")
+def dataOfAssociatebeingoffboarded = getFieldByName("Does Manager require access to Data of Associate being offboarded?")
+def mailBoxofAssociatebeingoffboarded = getFieldByName("Does Manager require access to MailBox of Associate being offboarded?")
+def voiceMailofAssociatebeingoffboarded = getFieldByName("Does Manager require access to Voice Mail of Associate being offboarded?")
+def nameoftheManager = getFieldByName("Name of the Manager")
+def nameoftheDelegate = getFieldByName("Name of the Delegate")
+def managerorDelegate = getFieldByName("Manager or Delegate?")
+def whoprovidedHRBPApproval = getFieldByName("Who provided HR BP Approval?")
+def currentUser = ComponentAccessor.jiraAuthenticationContext?.getLoggedInUser().getName()
+def requestorField = getFieldByName("Requester")
+def shippingAddress= getFieldByName("Shipping Address")
+def domaininfo = getFieldByName("Domain")
+def HRselectedOption = hRRequestType.getValue() as String
+def m1manager = getFieldByName("Requestor M1 Manager")
+//def IsTaskforJiraCreated	= getFieldByName("IsTaskforJiraCreated")
+def profiledeletiondate = getFieldByName("Profile Deletion Date")
+
+//def IsTaskforJiraCreatedOption = IsTaskforJiraCreated.getValue() as String
+
+def summary = getFieldById("summary")
+summary.setFormValue(HRselectedOption)
+
+
+whatistheRequest.setHidden(true).setRequired(false).setFormValue("")
+ descriptionOfTheRequest.setHidden(true).setRequired(false).setFormValue("")
+ currentADName.setHidden(true).setRequired(false).setFormValue("")
+ currentFirstName.setHidden(true).setRequired(false).setFormValue("")
+ newFirstName.setHidden(true).setRequired(false).setFormValue("")
+ currentPreferredName.setHidden(true).setRequired(false).setFormValue("")
+ newPreferredName.setHidden(true).setRequired(false).setFormValue("")
+ currentLastName.setHidden(true).setRequired(false).setFormValue("")
+ newLastName.setHidden(true).setRequired(false).setFormValue("")
+ newEmail.setHidden(true).setRequired(false).setFormValue("")
+ userNameChangeEE.setHidden(true).setRequired(false).setFormValue("")
+ userName.setHidden(true).setRequired(false).setFormValue("")
+ employeeID.setHidden(true).setRequired(false).setFormValue("")
+  emailID.setHidden(true).setRequired(false).setFormValue("")
+   hireDate.setHidden(true).setRequired(false).setFormValue("")
+ typeOfLeave.setHidden(true).setRequired(false).setFormValue("")
+ leaveRequestFor.setHidden(true).setRequired(false).setFormValue("")
+ leaveStartDate.setHidden(true).setRequired(false).setFormValue("").clearError()
+  contactNumber.setHidden(true).setRequired(false).setFormValue("").clearError()
+  leaveEndDate.setHidden(true).setRequired(false).setFormValue("").clearError()
+   disableDate.setHidden(true).setRequired(false).setFormValue("").clearError()
+enableDate.setHidden(true).setRequired(false).setFormValue("").clearError()
+ equipmentReturnRequired.setHidden(true).setRequired(false).setFormValue("")
+ selectUserInterestedWatching.setHidden(true).setRequired(false).setFormValue("")
+typeOfSeparation.setHidden(true).setRequired(false).setFormValue("")
+associateName.setHidden(true).setRequired(false).setFormValue("")
+terminationDate.setHidden(true).setRequired(false).setFormValue("")
+timeZone.setHidden(true).setRequired(false).setFormValue("")
+associateWorkingInNight.setHidden(true).setRequired(false).setFormValue("")
+equipmentList.setHidden(true).setRequired(false).setFormValue("")
+equipmentReturnType.setHidden(true).setRequired(false).setFormValue("")
+dataOfAssociatebeingoffboarded.setHidden(true).setRequired(false).setFormValue("")
+mailBoxofAssociatebeingoffboarded.setHidden(true).setRequired(false).setFormValue("")
+voiceMailofAssociatebeingoffboarded.setHidden(true).setRequired(false).setFormValue("")
+domaininfo.setHidden(true).setRequired(false).setFormValue("")
+shippingAddress.setHidden(true).setRequired(false).setFormValue("")
+justification.setHidden(false).setRequired(true).setFormValue("").clearError()
+//IsTaskforJiraCreated.setHidden(true)
+m1manager.setHidden(true)
+
+
+if(HRselectedOption.equalsIgnoreCase("HRIS"))
+{
+    whatistheRequest.setHidden(false).setRequired(true)
+  	descriptionOfTheRequest.setHidden(false).setRequired(true)
+    selectUserInterestedWatching.setHidden(false)
+    justification.setHidden(true).setRequired(false).setFormValue("").clearError()
+}
+
+
+if(HRselectedOption.equalsIgnoreCase("Employee Name Change"))  
+{
+    currentADName.setHidden(false).setRequired(true)
+     currentFirstName.setHidden(false).setRequired(true)
+     newFirstName.setHidden(false).setRequired(true)
+     currentPreferredName.setHidden(false)
+     newPreferredName.setHidden(false)
+     currentLastName.setHidden(false).setRequired(true)
+     newLastName.setHidden(false).setRequired(true)
+     newEmail.setHidden(false).setRequired(true)
+     domaininfo.setHidden(false).setRequired(true)    
+    justification.setHidden(true).setRequired(false).setFormValue("").clearError()
+}
+
+if(HRselectedOption.equalsIgnoreCase("Employee Temporary Disabling Request"))
+{
+    disableDate.setHidden(false).setRequired(true)
+    equipmentReturnRequired.setHidden(false).setRequired(true)
+    
+}
+
+if(HRselectedOption.equalsIgnoreCase("Employee Temporary Enabling Request"))
+{
+    enableDate.setHidden(false).setRequired(true)
+    equipmentReturnRequired.setHidden(false).setRequired(true)
+}
+
+if(HRselectedOption.equalsIgnoreCase("Leave of Absence Request Enable"))
+{
+     contactNumber.setHidden(false).setRequired(true)
+     leaveEndDate.setHidden(false).setRequired(true)
+}
+if(HRselectedOption.equalsIgnoreCase("Leave of Absence Request Disable"))
+{
+     typeOfLeave.setHidden(false).setRequired(true)
+     leaveStartDate.setHidden(false).setRequired(true)
+    // contactNumber.setHidden(false).setRequired(true)
+}
+
+if(HRselectedOption.equalsIgnoreCase("New Hire User Name Correction"))
+{
+    userNameChangeEE.setHidden(false).setRequired(true)
+    userName.setHidden(false).setRequired(true)
+    employeeID.setHidden(false).setRequired(true)
+    emailID.setHidden(false).setRequired(true)
+    hireDate.setHidden(false).setRequired(true)
+   // location.setHidden(false).setRequired(true)
+    justification.setHidden(true).setRequired(false).setFormValue("").clearError()
+}
+if(HRselectedOption.equalsIgnoreCase("Offboarding"))
+{
+    typeOfSeparation.setHidden(false).setRequired(true)
+    associateName.setHidden(false).setRequired(true)
+    terminationDate.setHidden(false).setRequired(true)
+    timeZone.setHidden(false).setRequired(true)
+   //associateWorkingInNight.setHidden(false).setRequired(true)
+    equipmentList.setHidden(false).setRequired(true)
+     equipmentReturnType.setHidden(false).setRequired(true)
+    dataOfAssociatebeingoffboarded.setHidden(false).setRequired(true)
+    mailBoxofAssociatebeingoffboarded.setHidden(false).setRequired(true)
+    voiceMailofAssociatebeingoffboarded.setHidden(false).setRequired(true)
+   //  location.setHidden(false).setRequired(true)
+ 	// if(!IsTaskforJiraCreatedOption.equalsIgnoreCase("Yes"))
+    //{
+       // IsTaskforJiraCreated.setFormValue('No')
+       // IsTaskforJiraCreated.setHidden(true)
+	
+    //}
+}
+
+
+//Leave Start Date
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.util.UserUtil
+import  java.util.Date.*
+
+
+def lStartDate = getFieldByName("Leave Start Date")
+def lStartDateVal = lStartDate.getValue() as Date
+ 
+
+// get todays date
+def today = new Date()
+
+
+if(lStartDateVal<(today-1)) {
+    lStartDate.setError("You must not enter a date that is before todays date")
+// if the date entered is over three months throw an error
+}else{
+    lStartDate.clearError()
+}
+
+
+
+
+
+
+
+//Leave End Date
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.util.UserUtil
+import  java.util.Date.*
+
+
+def lEndDate = getFieldByName("Leave End Date")
+def lEndDateVal = lEndDate.getValue() as Date
+ 
+
+// get todays date
+def today = new Date()
+
+if(lEndDateVal<(today-1)) {
+    lEndDate.setError("You must not enter a date that is before todays date")
+// if the date entered is over three months throw an error
+}else{
+    lEndDate.clearError()
+}
+
+
+
+
+
+//Type of leave
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.util.UserUtil
+
+def typeOfLeave = getFieldByName("Type of Leave")
+def typeOfLeaveVal = typeOfLeave.getValue() as String   
+def leaveRequestFor = getFieldByName("Leave Request For")
+
+leaveRequestFor.setHidden(true).setRequired(false).setFormValue("")
+
+if(typeOfLeaveVal.equalsIgnoreCase("Other"))
+{
+     leaveRequestFor.setHidden(false).setRequired(true)
+}
+
+
+//Equipment Return Required
+
+
+/*def equipmentReturnRequired = getFieldByName("Equipment Return Required?")
+def equipmentselectedOption = equipmentReturnRequired.getValue() as String
+def location = getFieldByName("HR Location")
+
+
+if(equipmentselectedOption.equalsIgnoreCase("Yes"))
+{
+ location.setHidden(false).setRequired(true)
+}
+else
+{location.setHidden(true).setRequired(false).setFormValue("")}*/
+
+
+
+
+
+
+//Time Zone 
+
+
+
+def timeZone = getFieldByName("Time Zone")
+def associateWorkingInNight = getFieldByName("Associate Working in Night Shift?")
+def timeZoneselectedOption = timeZone.getValue() as String
+
+
+if(timeZoneselectedOption.equalsIgnoreCase("India"))
+{
+ associateWorkingInNight.setHidden(false).setRequired(true)
+}
+else
+{associateWorkingInNight.setHidden(true).setRequired(false).setFormValue("")}
+
+
+
+
+
+
+
+
+//Does Manager require access to Data of Associate being offboarded?
+
+
+
+
+def dataOfAssociatebeingoffboarded = getFieldByName("Does Manager require access to Data of Associate being offboarded?")
+def dataOfAssociatebeingoffboardedselectedOption = dataOfAssociatebeingoffboarded.getValue() as String
+def nameoftheManager = getFieldByName("Name of the Manager")
+def nameoftheDelegate = getFieldByName("Name of the Delegate")
+def managerorDelegate = getFieldByName("Manager or Delegate?")
+def whoprovidedHRBPApproval = getFieldByName("Who provided HR BP Approval?")
+
+nameoftheDelegate.setHidden(true).setRequired(false).setFormValue("")
+whoprovidedHRBPApproval.setHidden(true).setRequired(false).setFormValue("")
+
+if(dataOfAssociatebeingoffboardedselectedOption.equalsIgnoreCase("Full Access"))
+{
+	 managerorDelegate.setHidden(false).setRequired(true)
+    nameoftheManager.setHidden(true).setRequired(false).setFormValue("")
+    
+}
+else{managerorDelegate.setHidden(true).setRequired(false).setFormValue("")
+    nameoftheManager.setHidden(false).setRequired(true)
+    }
+
+
+
+
+//Manager OR Deligate ?
+
+
+def managerorDelegate = getFieldByName("Manager or Delegate?")
+def managerorDelegateselectedOption = managerorDelegate.getValue() as String
+def nameoftheManager = getFieldByName("Name of the Manager")
+def nameoftheDelegate = getFieldByName("Name of the Delegate")
+def whoprovidedHRBPApproval = getFieldByName("Who provided HR BP Approval?")
+
+if(managerorDelegateselectedOption.equalsIgnoreCase("Manager"))
+{
+	 nameoftheManager.setHidden(false).setRequired(true)
+    nameoftheDelegate.setHidden(true).setRequired(false).setFormValue("")
+    whoprovidedHRBPApproval.setHidden(true).setRequired(false).setFormValue("")
+}
+else{nameoftheManager.setHidden(true).setRequired(false).setFormValue("")
+    nameoftheDelegate.setHidden(false).setRequired(true)
+       whoprovidedHRBPApproval.setHidden(false).setRequired(true)
+    }
+    
+    
+    
+    
+    
+    //Type of Seperation
+    
+    
+    
+    def typeOfSeparation = getFieldByName("Type of Separation")
+def associateName = getFieldByName("Associate Name")
+def terminationDate = getFieldByName("Termination Date")
+def timeZone = getFieldByName("Time Zone")
+def associateWorkingInNight = getFieldByName("Associate Working in Night Shift?")
+def equipmentList = getFieldByName("Equipment List")
+def equipmentReturnType = getFieldByName("Equipment Return Type")
+def dataOfAssociatebeingoffboarded = getFieldByName("Does Manager require access to Data of Associate being offboarded?")
+def mailBoxofAssociatebeingoffboarded = getFieldByName("Does Manager require access to MailBox of Associate being offboarded?")
+def voiceMailofAssociatebeingoffboarded = getFieldByName("Does Manager require access to Voice Mail of Associate being offboarded?")
+def nameoftheManager = getFieldByName("Name of the Manager")
+def nameoftheDelegate = getFieldByName("Name of the Delegate")
+def whoprovidedHRBPApproval = getFieldByName("Who provided HR BP Approval?")
+def managerorDelegate = getFieldByName("Manager or Delegate?")
+
+def typeOfSeparationselectedOption = typeOfSeparation.getValue() as String
+def today = new Date()
+
+if(typeOfSeparationselectedOption.equalsIgnoreCase("Person did not join"))
+{
+     equipmentList.setHidden(true).setRequired(false).setFormValue("")
+     equipmentReturnType.setHidden(true).setRequired(false).setFormValue("")
+    dataOfAssociatebeingoffboarded.setHidden(true).setRequired(false).setFormValue("")
+    mailBoxofAssociatebeingoffboarded.setHidden(true).setRequired(false).setFormValue("")
+    voiceMailofAssociatebeingoffboarded.setHidden(true).setRequired(false).setFormValue("")
+    nameoftheManager.setHidden(true).setRequired(false).setFormValue("")
+     nameoftheDelegate.setHidden(true).setRequired(false).setFormValue("")
+    whoprovidedHRBPApproval.setHidden(true).setRequired(false).setFormValue("")
+    managerorDelegate.setHidden(true).setRequired(false).setFormValue("")
+    terminationDate.setFormValue(today.format("dd/MMM/yy")).setReadOnly(true)
+}
+else if(typeOfSeparationselectedOption.equalsIgnoreCase("Immediate"))
+{
+    terminationDate.setFormValue(today.format("dd/MMM/yy")).setReadOnly(true)
+}
+else
+{
+    equipmentList.setHidden(false).setRequired(true)
+     equipmentReturnType.setHidden(false).setRequired(true)
+    dataOfAssociatebeingoffboarded.setHidden(false).setRequired(true)
+    mailBoxofAssociatebeingoffboarded.setHidden(false).setRequired(true)
+    voiceMailofAssociatebeingoffboarded.setHidden(false).setRequired(true)
+     nameoftheManager.setHidden(false).setRequired(true)
+     nameoftheDelegate.setHidden(false).setRequired(true)
+    whoprovidedHRBPApproval.setHidden(false).setRequired(true)
+    managerorDelegate.setHidden(false).setRequired(true)
+    terminationDate.setFormValue("").setReadOnly(false)
+}
+
+
+   
+
+
+
+//  Equipment Return Type
+
+
+def equipmentReturnType = getFieldByName("Equipment Return Type")
+def equipmentReturnTypeeselectedOption = equipmentReturnType.getValue() as String
+def shippingAddress= getFieldByName("Shipping Address")
+//shippingAddress.setHidden(false).setRequired(true)
+
+if(equipmentReturnTypeeselectedOption.equalsIgnoreCase("Remote Return Materials Requested"))
+{
+ shippingAddress.setHidden(false).setRequired(true)
+  
+}
+else
+{
+    shippingAddress.setHidden(true).setRequired(false).setFormValue("")
+}
+
+
+
+
+
+
+
+
+
+//Assosiate Name
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.atlassian.jira.bc.project.component.ProjectComponent
+import com.atlassian.jira.user.UserPropertyManager
+import com.atlassian.crowd.embedded.api.User
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.UserPropertyManager
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.user.DelegatingApplicationUser
+import com.atlassian.jira.user.util.UserUtil
+import com.opensymphony.module.propertyset.PropertySet;
+import com.atlassian.jira.user.ApplicationUsers;
+import static com.atlassian.jira.issue.IssueFieldConstants.*
+
+ 
+
+def associatename = getFieldByName("Associate Name")
+def result = associatename.getValue() as String
+def location = getFieldByName("Location")
+def legalhold = getFieldByName("New Legal Hold")   //Change 
+def itcontrolledspace = getFieldByName("New IT Controlled Space")   //CHange
+def isustuser = getFieldByName("New Is UST User")   //CHange
+def frequent = getFieldByName("Frequent Card Holder")
+def infrequent = getFieldByName("Infrequent Card Holder")
+        
+
+ 
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+ 
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+ 
+
+
+String attributeUsernamekey = "User Name"
+
+def schemaID = 4
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUsernamekey + "\" = \"" + result + "\"")
+ 
+
+//Location
+def objectlocation = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Location")
+
+if( objectlocation )
+{
+def objectAttributeValues = objectlocation.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+location.setFormValue(objectAttributeValue.getValue())
+}
+
+
+//User CMDB
+def userschemaID = 10
+String userattributeUsernamekey = "Name"
+def userobjects = iqlFacade.findObjectsByIQLAndSchema(userschemaID, "\"" + userattributeUsernamekey + "\" = \"" + result + "\"")
+ 
+
+//Legal Hold
+def objectlegalhold = objectFacade.loadObjectAttributeBean(userobjects[0].getId(), "Legal Hold")
+
+if( objectlegalhold )
+{
+def objectAttributeValuesLegalHold = objectlegalhold.getObjectAttributeValueBeans()
+def objectAttributeValueLegalHold = objectAttributeValuesLegalHold[0]
+legalhold.setFormValue(objectAttributeValueLegalHold.getValue())     
+  
+}
+
+//IT Controlled Space
+def objectITControlledSpace = objectFacade.loadObjectAttributeBean(userobjects[0].getId(), "IT Controlled Space")
+
+if( objectITControlledSpace )
+{
+def objectAttributeValuesITControlledSpace = objectITControlledSpace.getObjectAttributeValueBeans()
+def objectAttributeValueITControlledSpace = objectAttributeValuesITControlledSpace[0]
+ itcontrolledspace.setFormValue(objectAttributeValueITControlledSpace.getValue())
+}
+
+//IS UST Global
+def objectUST = objectFacade.loadObjectAttributeBean(userobjects[0].getId(), "UST Global")
+
+if( objectUST )
+{
+def objectAttributeValuesUST = objectUST.getObjectAttributeValueBeans()
+def objectAttributeValueUST = objectAttributeValuesUST[0]
+isustuser.setFormValue(objectAttributeValueUST.getValue())
+}
+
+//Frequent
+def objectFrequent = objectFacade.loadObjectAttributeBean(userobjects[0].getId(), "Frequent")
+
+if( objectFrequent )
+{
+def objectAttributeValuesFrequent = objectFrequent.getObjectAttributeValueBeans()
+def objectAttributeValueFrequent = objectAttributeValuesFrequent[0]
+frequent.setFormValue(objectAttributeValueFrequent.getValue())
+}
+
+//InFrequent
+def objectInFrequent = objectFacade.loadObjectAttributeBean(userobjects[0].getId(), "Infrequent")
+
+if( objectInFrequent )
+{
+def objectAttributeValuesInFrequent = objectInFrequent.getObjectAttributeValueBeans()
+def objectAttributeValueInFrequent = objectAttributeValuesInFrequent[0]
+infrequent.setFormValue(objectAttributeValueInFrequent.getValue())
+}
+   
+
+def summary = getFieldById("summary")
+def hRRequestType = getFieldByName("HR Request Type")
+def HRselectedOption = hRRequestType.getValue() as String
+def associateName = getFieldByName("Associate Name").getValue() as String
+
+if(HRselectedOption.equalsIgnoreCase("Offboarding"))
+{
+	summary.setFormValue("Offboarding Request for " + associateName)
+}
+
+
+
+
+
+
+
+
+//User Name Change needs to be done for EE
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.atlassian.jira.bc.project.component.ProjectComponent
+import com.atlassian.jira.user.UserPropertyManager
+import com.atlassian.crowd.embedded.api.User
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.UserPropertyManager
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.user.DelegatingApplicationUser
+import com.atlassian.jira.user.util.UserUtil
+import com.opensymphony.module.propertyset.PropertySet;
+import com.atlassian.jira.user.ApplicationUsers;
+import static com.atlassian.jira.issue.IssueFieldConstants.*
+
+ 
+
+def usernamechange = getFieldByName("User Name Change needs to be done for EE")
+def result = usernamechange.getValue() as String
+
+def UserName = getFieldByName("User Name")
+def EmployeeID = getFieldByName("Employee ID")
+def EmailID = getFieldByName("Email ID")
+def HireDate = getFieldByName("Hire Date")
+
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass) 
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+String attributeUsernamekey = "User Name"
+def schemaID = 4
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUsernamekey + "\" = \"" + result + "\"")
+
+ 
+/*User Name*/
+def objectdisplayname = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Display Name")
+
+if( objectdisplayname )
+{
+def objectAttributeValues = objectdisplayname.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+UserName.setFormValue(objectAttributeValue.getValue())
+}
+
+
+/*Employee ID*/
+def objectemployeeid = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Employee ID")
+
+if( objectemployeeid )
+{
+def objectAttributeValues = objectemployeeid.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+EmployeeID.setFormValue(objectAttributeValue.getValue())
+}
+
+/*Email ID*/
+def objectemailaddress = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Email Address")
+
+if( objectemailaddress )
+{
+def objectAttributeValues = objectemailaddress.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+EmailID.setFormValue(objectAttributeValue.getValue())
+}
+
+/*Hire Date*/
+def objecthiredate = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Hire Date")
+
+if( objecthiredate )
+{
+def objectAttributeValues = objecthiredate.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+ HireDate.setFormValue(objectAttributeValue.getValue().format('yyyy-MM-dd'))
+}
+
+
+
+
+
+
+//Name of the Manager
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.atlassian.jira.bc.project.component.ProjectComponent
+import com.atlassian.jira.user.UserPropertyManager
+import com.atlassian.crowd.embedded.api.User
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.UserPropertyManager
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.user.DelegatingApplicationUser
+import com.atlassian.jira.user.util.UserUtil
+import com.opensymphony.module.propertyset.PropertySet;
+import com.atlassian.jira.user.ApplicationUsers;
+import static com.atlassian.jira.issue.IssueFieldConstants.*
+
+def Manager = getFieldByName("Name of the Manager")
+def result = Manager.getValue() as String
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+def m2manager = getFieldByName("Requestor M2 Manager")
+//def m2manager = getFieldByName("Requestor M2 Manager")
+
+//m1manager.setHidden(true)
+
+m2manager.setHidden(false).setRequired(false)
+String attributeUsernamekey = "User Name"
+String attributeUserKey = "Key"
+def schemaID = 4
+
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUsernamekey + "\" = \"" + result + "\"")
+
+def objectmanagername = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Manager1")
+
+if( objectmanagername )
+{
+def objectAttributeValues = objectmanagername.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+String managerKey="CMDB-"+objectAttributeValue.getValue()
+
+def objectsUser = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserKey + "\" = \"" + managerKey + "\"")
+
+def objectsUserFinalDetails = objectFacade.loadObjectAttributeBean(objectsUser[0].getId(), "User Name")
+
+if( objectsUserFinalDetails )
+{
+def objectAttributeValuesFinalDetails = objectsUserFinalDetails.getObjectAttributeValueBeans()
+def objectAttributeValueFinalDetails = objectAttributeValuesFinalDetails[0]
+m2manager.setFormValue(objectAttributeValueFinalDetails.getValue()) 
+
+}
+}
+
+
+
+
+
+
+
+
+//Name of the Deligate
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.atlassian.jira.bc.project.component.ProjectComponent
+import com.atlassian.jira.user.UserPropertyManager
+import com.atlassian.crowd.embedded.api.User
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.UserPropertyManager
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.user.DelegatingApplicationUser
+import com.atlassian.jira.user.util.UserUtil
+import com.opensymphony.module.propertyset.PropertySet;
+import com.atlassian.jira.user.ApplicationUsers;
+import static com.atlassian.jira.issue.IssueFieldConstants.*
+
+def delegate = getFieldByName("Name of the Delegate")
+def result = delegate.getValue() as String
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+def m2manager = getFieldByName("Requestor M2 Manager")
+//def m2manager = getFieldByName("Requestor M2 Manager")
+
+//m1manager.setHidden(true)
+
+m2manager.setHidden(false).setRequired(false)
+String attributeUsernamekey = "User Name"
+String attributeUserKey = "Key"
+def schemaID = 4
+
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUsernamekey + "\" = \"" + result + "\"")
+
+def objectmanagername = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Manager1")
+
+if( objectmanagername )
+{
+def objectAttributeValues = objectmanagername.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+String managerKey="CMDB-"+objectAttributeValue.getValue()
+
+def objectsUser = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserKey + "\" = \"" + managerKey + "\"")
+
+def objectsUserFinalDetails = objectFacade.loadObjectAttributeBean(objectsUser[0].getId(), "User Name")
+
+if( objectsUserFinalDetails )
+{
+def objectAttributeValuesFinalDetails = objectsUserFinalDetails.getObjectAttributeValueBeans()
+def objectAttributeValueFinalDetails = objectAttributeValuesFinalDetails[0]
+m2manager.setFormValue(objectAttributeValueFinalDetails.getValue()) 
+
+}
+}
+
+
+
+
+
+
+
+//  Reporter
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.atlassian.jira.bc.project.component.ProjectComponent
+import com.atlassian.jira.user.UserPropertyManager
+import com.atlassian.crowd.embedded.api.User
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.UserPropertyManager
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.user.DelegatingApplicationUser
+import com.atlassian.jira.user.util.UserUtil
+import com.opensymphony.module.propertyset.PropertySet;
+import com.atlassian.jira.user.ApplicationUsers;
+import static com.atlassian.jira.issue.IssueFieldConstants.*
+
+ 
+
+def associatename = getFieldById("reporter")
+def result = associatename.getValue() as String
+def location = getFieldByName("Location") 
+
+def hRRequestType = getFieldByName("HR Request Type")
+def HRselectedOption = hRRequestType.getValue() as String
+
+if(!HRselectedOption.equalsIgnoreCase("Offboarding"))
+{
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+String attributeUsernamekey = "User Name"
+def schemaID = 4
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUsernamekey + "\" = \"" + result + "\"")
+ 
+
+def objectmanagername = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Location")
+
+if( objectmanagername )
+{
+def objectAttributeValues = objectmanagername.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+location.setFormValue(objectAttributeValue.getValue())
+}
+
+}
+
+
+
+
+
+//New Email
+
+
+
+
+def hRRequestType = getFieldByName("HR Request Type")
+def HRselectedOption = hRRequestType.getValue() as String
+
+if(HRselectedOption.equalsIgnoreCase("Employee Name Change"))
+{
+    def email = getFieldByName("New Email").getValue().toString()
+    if(email.length() > 0)
+    {
+         if(email ==~ /^[a-zA-Z]+[a-zA-Z0-9+_.-]+@cotiviti.com/)
+        {
+             getFieldByName("New Email").clearError()        
+        }
+        else
+        {
+            getFieldByName("New Email").setError("Email is not valid")
+        }
+    }
+       
+}    
+
+
+
+
+
+
+
+
+//EMAIL Id
+
+
+
+
+
+def hRRequestType = getFieldByName("HR Request Type")
+def HRselectedOption = hRRequestType.getValue() as String
+
+if(HRselectedOption.equalsIgnoreCase("New Hire User Name Correction"))
+{
+    def email = getFieldByName("Email ID").getValue().toString()
+    if(email.length() > 0)
+    {
+         if(email ==~ /^[a-zA-Z]+[a-zA-Z0-9+_.-]+@cotiviti.com/)
+        {
+             getFieldByName("Email ID").clearError()        
+        }
+        else
+        {
+            getFieldByName("Email ID").setError("Email ID is not valid")
+        }
+    }
+     
+    
+} 
+
+
+
+
+
+
+
+//Termination Date
+
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.util.UserUtil
+import  java.util.Date.*
+def termDate = getFieldByName("Termination Date")
+def termDateVal = termDate.getValue() as Date
+// get todays date
+def today = new Date()
+if(termDateVal<(today-1)) {
+    termDate.setError("You must not enter a date that is before todays date")
+}else{
+    termDate.clearError()
+}
+
+
+
+
+
+
+//Enable Date
+
+
+
+
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.util.UserUtil
+import  java.util.Date.*
+def enableDate = getFieldByName("Enable Date")
+def enableDateVal = enableDate.getValue() as Date
+// get todays date
+def today = new Date()
+if(enableDateVal<(today-1)) {
+    enableDate.setError("You must not enter a date that is before todays date")
+}else{
+    enableDate.clearError()
+}
+
+
+
+
+
+
+//Disable Date
+
+
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.util.UserUtil
+import  java.util.Date.*
+def disableDate = getFieldByName("Disable Date")
+def disableDateVal = disableDate.getValue() as Date
+// get todays date
+def today = new Date()
+if(disableDateVal<(today-1)) {
+    disableDate.setError("You must not enter a date that is before todays date")
+}else{
+    disableDate.clearError()
+}
+
+
+
+
+
+
+//Contact Number
+
+
+
+
+def hRRequestType = getFieldByName("HR Request Type")
+def HRselectedOption = hRRequestType.getValue() as String
+
+if(HRselectedOption.equalsIgnoreCase("Leave of Absence Request Disable") || HRselectedOption.equalsIgnoreCase("Leave of Absence Request Enable"))
+{
+	def contact = getFieldByName("Contact Number").getFormValue()
+    if(contact.toString().length() > 0)
+    {
+        if(contact ==~ /^[6789]\d{9}$/)
+        {        
+            getFieldByName("Contact Number").clearError()
+        }
+        else
+        {
+            getFieldByName("Contact Number").setError("Contact Number is not valid")
+        }
+      }
+}	
+
+
+
+
+

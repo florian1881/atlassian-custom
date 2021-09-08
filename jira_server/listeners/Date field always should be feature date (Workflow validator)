@@ -1,0 +1,21 @@
+// required import statements
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.util.UserUtil
+import  java.util.Date.*
+    
+// Get pointers to my date field and get its value as a date
+def cf = getFieldByName("Promo Start date")
+def cfval = cf.getValue() as Date
+
+// get todays date
+def today = new Date()
+// get yesterdays date
+def yesterday = today.minus(1)
+
+// if the date entered is before todays throw an error
+if(cfval.before(yesterday)) {
+    cf.setError("You must not enter a date that is before todays date")
+// if the date entered is over three months throw an error
+}else{
+    cf.clearError()
+}

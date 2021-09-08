@@ -1,0 +1,25 @@
+replica.key            = issue.key
+replica.type           = issue.type 
+replica.assignee       = issue.assignee 
+replica.reporter       = issue.reporter
+replica.summary        = issue.summary
+replica.description    = issue.description
+replica.labels         = issue.labels
+replica.comments       = issue.comments
+replica.resolution     = issue.resolution
+replica.status         = issue.status
+replica.parentId       = issue.parentId
+replica.priority       = issue.priority
+replica.attachments    = issue.attachments
+replica.project        = issue.project
+replica.due            = issue.due
+// custom
+replica.customFields."Cheil SKU CSV" = issue.customFields."SKU CSV"
+replica.customFields."Cheil Sites" = issue.customFields."Sites"
+replica.customFields."Cheil Product Category" = issue.customFields."Product Category"
+replica.customFields."Cheil B2B/B2C" = issue.customFields."B2B/B2C"
+replica.customFields."Cheil Project Labels" = issue.customFields."Project Labels"
+replica.customFields."Cheil Missing Contents" = issue.customFields."Missing Contents"
+replica.customFields."Cheil Status of Content" = issue.customFields."Status of Content"
+//replica.customFields."Cheil Disclaimer" = issue.customFields."Disclaimer"
+replica.customFields."Disclamer" = issue.customFields."Disclaimer"

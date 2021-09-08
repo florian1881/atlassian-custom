@@ -1,0 +1,34 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+int instanceId = 11001
+def instance = getFieldById("customfield_" + instanceId)
+def instanceValue = instance.getValue()
+
+
+int numberId = 11002
+def number = getFieldById("customfield_" + numberId)
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+def numberCustomField = ComponentAccessor.getCustomFieldManager().getCustomFieldObject(numberId)
+def numberConfig = numberCustomField.getRelevantConfig(getIssueContext())
+def options = optionsManager.getOptions(numberConfig)
+
+if (instanceValue == "Dev"){
+
+def map = ["1","3","5"]
+def optionsMap = options.findAll {
+it.value in map // list of options you want to show
+}.collectEntries {
+[
+(it.optionId.toString()) : it.value
+]
+}
+number.setFieldOptions(optionsMap)
+}
+else {
+number.setFieldOptions(options)
+}

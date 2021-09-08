@@ -1,0 +1,38 @@
+// This script is used on the script console. 
+// It is very very important you first try it on test instance. Just be careful.
+
+// This script will add user into the groups of some other user. Handy when new user joins a team or when emails change, etc
+
+import com.atlassian.jira.component.ComponentAccessor
+
+ 
+
+def groupManager = ComponentAccessor.getGroupManager()
+
+def userManager = ComponentAccessor.getUserManager()
+
+ 
+
+def user = userManager.getUserByName("mizan.contractor") // groups from user
+
+def new_user = userManager.getUserByName("mizan.isnowstaff") // copied to this user , i.e the user is added to groups
+
+groupManager.getGroupNamesForUser(user).each() { groupName ->
+
+    def group = groupManager.getGroup(groupName)
+
+    try{
+
+    groupManager.addUserToGroup(new_user,group)
+
+    log.error ("Group "+groupName+" added for user "+new_user)
+
+    }
+
+    catch(Exception e){
+
+        println("Catching Exception")
+
+    }
+
+}

@@ -1,0 +1,93 @@
+// Initialiser
+
+import com.atlassian.jira.component.ComponentAccessor
+def currentUserName = ComponentAccessor.jiraAuthenticationContext?.getLoggedInUser().getName()
+getFieldByName("Requester").setFormValue(currentUserName)
+
+
+//Fields
+
+//String facilityrequesttype = getFieldByName("Requestor's Business Unit").value
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+String sbuF = "Requestor's Sub-Business Unit"
+FormField sbuFF = getFieldByName(sbuF)
+sbuFF.setFormValue("") 
+
+
+//GSR Sub Category
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+
+FormField appFF = getFieldById(getFieldChanged())
+
+String AssignFF = "Assignment Group"
+FormField AssignFFF = getFieldByName(AssignFF)
+AssignFFF.setFormValue("")
+String applicationKey = appFF.value
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+String assigncmdbkey="JCMDB"
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Assignment Group")
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String assignkeyVal="${assigncmdbkey}-${nameAttributeValue.value}"
+String application = nameAttributeValue.value
+String attributeUsernamekey = "Group Name"
+String attributeUserKey = "Key"
+def schemaID = 8
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUsernamekey + "\" = \"" + application + "\"")
+
+def objectmanagername = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Key")
+if( objectmanagername )
+{
+def objectAttributeValues = objectmanagername.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+String jcmdbkey=objectAttributeValue.value    
+def summary = getFieldById("summary")
+//summary.setFormValue(jcmdbkey)
+AssignFFF?.setFormValue(jcmdbkey)
+}
+
+
+
+//GSR Issue Type
+
+//String facilityrequesttype = getFieldByName("Requestor's Business Unit").value
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+String gcatalog = "GSR Category"
+String gsubcatalog = "GSR Sub Category"
+String gassigngroup = "Assignment Group"
+FormField gcatalogFF = getFieldByName(gcatalog)
+FormField gsubcatalogFF = getFieldByName(gsubcatalog)
+FormField gassigngroupFF = getFieldByName(gassigngroup)
+gcatalogFF.setFormValue("") 
+gsubcatalogFF.setFormValue("") 
+gassigngroupFF.setFormValue("")
+
+
+//GSR Category
+
+//String facilityrequesttype = getFieldByName("Requestor's Business Unit").value
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+String gsubcatalog = "GSR Sub Category"
+String gassigngroup = "Assignment Group"
+FormField gsubcatalogFF = getFieldByName(gsubcatalog)
+FormField gassigngroupFF = getFieldByName(gassigngroup)
+gsubcatalogFF.setFormValue("") 
+gassigngroupFF.setFormValue("")
+
+
+//

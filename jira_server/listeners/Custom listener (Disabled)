@@ -1,0 +1,16 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.ApplicationUser
+import com.atlassian.jira.event.type.EventDispatchOption
+
+def issueType = event.issue.issueType
+if(issueType.name== "Problem" || issueType.name == "Problem Task") {
+    def changeLog = event.changeLog
+    def related = changeLog.getRelated("ChildChangeItem")
+    boolean chnage = related.any { it.field == "Assignment Group" }
+    if(chnage) {
+        def issueManager = ComponentAccessor.issueManager
+        issue.setAssignee(null);
+        ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+        issueManager.updateIssue(user, issue, EventDispatchOption.DO_NOT_DISPATCH , false);
+    }
+}

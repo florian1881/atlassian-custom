@@ -1,0 +1,76 @@
+// Business Unit 
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Name")
+
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String application = nameAttributeValue.value
+
+Thread.sleep(1000)
+//FormField subBU = getFieldByName("Business Unit")
+//subBU.setDescription(application)
+
+FormField subBU = getFieldByName("Sub-Business Unit")
+String subBUKey = subBU.value
+
+
+String cmdbKey1 = subBUKey.split("-")[0]
+int objectId1 = Integer.valueOf(subBUKey.split("-")[1])
+
+
+String attributeUserID = "Key"
+def schemaID = 4
+
+
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + subBUKey + "\"")
+
+def objectPhone = objectFacade.loadObjectAttributeBean(objects[0].getId(), "BU Name")
+
+
+
+if( objectPhone )
+{
+def objectAttributeValues = objectPhone.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+
+ String managerKey=cmdbKey+"-"+objectAttributeValue.getValue()
+
+def objectsUser = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + managerKey + "\"")
+
+def objectsUserFinalDetails = objectFacade.loadObjectAttributeBean(objectsUser[0].getId(), "Name")
+
+ if( objectsUserFinalDetails )
+{
+def objectAttributeValuesFinalDetails = objectsUserFinalDetails.getObjectAttributeValueBeans()
+def objectAttributeValueFinalDetails = objectAttributeValuesFinalDetails[0]
+ 
+    
+subBU.setDescription(application+" "+objectAttributeValueFinalDetails.getValue())    
+if(application.equals(objectAttributeValueFinalDetails.getValue())!=true)
+{
+    subBU.setFormValue("")
+}        
+}
+}
+
+

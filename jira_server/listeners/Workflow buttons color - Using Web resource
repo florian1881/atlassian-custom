@@ -1,0 +1,21 @@
+JVM_REQUIRED_ARGS='-Dplugin.resource.directories=/app/home/scripts
+
+/*Todo transition*/
+a#action_id_11 {
+    background-color: gray;
+    border-radius: 10px;
+    color: white;
+}
+/*Done transition*/
+a#action_id_11 {
+    background-color: green;
+    border-radius: 10px;
+    color: white;
+}
+
+/*In progress transition*/
+a#action_id_121 {
+    background-color: Blue;
+    border-radius: 10px;
+    color: white;
+}

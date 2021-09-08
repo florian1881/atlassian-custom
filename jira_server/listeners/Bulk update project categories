@@ -1,0 +1,11 @@
+import com.atlassian.jira.component.ComponentAccessor;
+//A map of Project key and category name. This can be prepared in an excel an with some tweaks in notepadd++
+def projects = [:]
+projects.put('DAT','HR & Regulatory Affairs Services')
+projects.put('BPM','HR & Regulatory Affairs Services')
+
+projects.each{project,category->
+	def projectObject = ComponentAccessor.getProjectManager().getProjectByCurrentKey(project.toString())
+	def projectCategory = ComponentAccessor.getProjectManager().getProjectCategoryObjectByName(category.toString())
+	ComponentAccessor.getProjectManager().setProjectCategory(projectObject, projectCategory)
+}

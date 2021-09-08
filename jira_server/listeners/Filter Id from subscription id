@@ -1,0 +1,9 @@
+// To find a problematic filter subscription from subscription id 
+// This has to be run on script console
+
+import com.atlassian.jira.component.ComponentAccessor
+
+Long id=11044
+def filter=ComponentAccessor.getSubscriptionManager().getFilterSubscription(id)
+
+return filter.getFilterId()

@@ -1,0 +1,55 @@
+//Clients Impacted
+
+
+
+
+
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+
+
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+def insightKey = getFieldByName("Business Unit").value
+
+
+def value = objectFacade.loadObjectBean(insightKey)?.label
+
+
+def assignmentGroup=getFieldByName("Application")
+def value2=assignmentGroup.getValue()
+def options=getFieldByName("Clients Impacted")
+def optionsValue=options.getValue()
+def clientname=getFieldByName("Select the Client Name")
+def auditsField=getFieldByName("Which Audits are impacted")
+def addMultipleClientNames=getFieldByName("Add Multiple Client Names")
+
+
+
+if((value.toString().contains("PCA") || value.toString().contains("RCA") || value.toString().contains("CCV") || value.toString().equals("Retail")) && optionsValue=="Multiple Clients/Audits")
+{
+    clientname.setHidden(true)
+    clientname.setRequired(false)
+    addMultipleClientNames.setHidden(false)
+	auditsField.setHidden(false)
+	
+}
+else if((value.toString().contains("PCA") || value.toString().contains("RCA") || value.toString().contains("CCV") || value.toString().equals("Retail")) && optionsValue==null)
+{
+    clientname.setHidden(true)
+    clientname.setRequired(false)
+	addMultipleClientNames.setHidden(true)
+    auditsField.setHidden(true)
+}
+else if((value.toString().contains("PCA") || value.toString().contains("RCA") || value.toString().contains("CCV") || value.toString().equals("Retail")) && optionsValue=="Single Client Impacted")
+{
+    clientname.setHidden(false)
+    auditsField.setHidden(false)
+	addMultipleClientNames.setHidden(true)
+}
+
+
+
+//

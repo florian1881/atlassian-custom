@@ -1,0 +1,11 @@
+import com.atlassian.event.api.EventPublisher
+import com.atlassian.jira.event.issue.IssueEvent
+import com.atlassian.jira.component.ComponentAccessor
+
+//if you need to add a comment as well
+issueInputParameters.setComment('Write your comment here')
+
+def user = ComponentAccessor.getUserManager().getUserByName('automation')
+Long eventId=11300 //your event ID , can be found by hovering on the events edit option. 
+EventPublisher eventPublisher = ComponentAccessor.getComponent(EventPublisher.class);
+eventPublisher.publish(new IssueEvent(issue,Collections.emptyMap(),user,eventId));

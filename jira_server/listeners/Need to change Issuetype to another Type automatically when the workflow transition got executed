@@ -1,0 +1,8 @@
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.MutableIssue;
+
+MutableIssue issue = issue;
+if(issue.issueType.name == "A") {
+def newIssueType = ComponentAccessor.issueTypeSchemeManager.getIssueTypesForProject(issue.projectObject).find{it.name=="B"}; 
+if (newIssueType) issue.setIssueTypeObject(newIssueType);
+}

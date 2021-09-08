@@ -1,0 +1,36 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.workflow.TransitionOptions
+
+def issueLinkManager = ComponentAccessor.getIssueLinkManager()
+def issueService = ComponentAccessor.getIssueService()
+def currentUser = ComponentAccessor.jiraAuthenticationContext.getLoggedInUser()
+def parameters = issueService.newIssueInputParameters()
+def workflowManager = ComponentAccessor.getWorkflowManager()
+
+def transitionOptions = new TransitionOptions.Builder()
+ .skipConditions()
+ .skipPermissions()
+ .skipValidators()
+ .build()
+issueLinkManager.getOutwardLinks(issue.id)?.each {
+ linkedIssue ->
+ def jiraWorkflow = workflowManager.getWorkflow(linkedIssue.destinationObject)
+ def closeAction = jiraWorkflow.getAllActions()?.find { it.name.toString() == "Close"} // The "Close" transition name
+ def actionId
+ if (closeAction) {
+ actionId = closeAction.getId()
+ }
+ 
+ def result = issueService.validateTransition(currentUser, linkedIssue.destinationObject.id, actionId, parameters, transitionOptions)
+ if (result.isValid()) {
+ def issueResult = issueService.transition(currentUser, result)
+ if (!issueResult.isValid()) {
+ log.warn("Failed to transition ${linkedIssue.destinationObject.key}, errors: ${issueResult.errorCollection}")
+ } else {
+ issueResult
+ }
+ } else {
+ log.warn("Couldn't transition ${linkedIssue.destinationObject.key}, errors: ${result.errorCollection}")
+ }
+ 
+}

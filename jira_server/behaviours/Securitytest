@@ -1,0 +1,105 @@
+// Initialiser
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.ComponentAccessor
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.config.FieldConfigImpl
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+def optionsManager = ComponentAccessor.getOptionsManager()
+
+def requestorField = getFieldByName("Requester")
+
+
+def trname=getFieldByName("Provide Name for Contact")
+def trphone=getFieldByName("Phone for Contact")
+def trmoredetails=getFieldByName("Provide more details about your trip, including a full itinerary if possible, or location and dates as a minimum")
+def trassistance=getFieldByName("What type of assistance is requested?")
+def scsproriyt=getFieldByName("Security Consultation Service Priority")
+def scsassistance=getFieldByName("Assistance Reason")
+def reqpointofcontact=getFieldByName("Who is the point of contact(s) for this review?")
+def reqshortdescription=getFieldByName("Please provide a short description of the application (e.g. problem solved, use cases, business justification, etc.)")
+def reqnameofsw=getFieldByName("Name of software")
+def reqversion=getFieldByName("Version")
+def reqlatestreleasedate=getFieldByName("Latest Release date")
+def reqos=getFieldByName("Available operating systems")
+def reqosforreview=getFieldByName("Operating system requested for review")
+def reqdev=getFieldByName("Developer (e.g. Microsoft, Adobe, Java, etc.)")
+def reqcategory=getFieldByName("Risk Review Category")
+def reqlinks=getFieldByName("Please provide links or documentation to additional information (e.g. feature page, wiki), if available:")
+def reqduplicate=getFieldByName("Does this request duplicate or replace of another software?")
+def reqschd=getFieldByName("This review will be scheduled among other requested reviews. What is the urgency or needed completion date of this review?")
+def reqhelpprioritize=getFieldByName("To help prioritize this risk assessment request, does this application support a specific project?")
+def reqswclient=getFieldByName("Will this software interface with client data? (e.g. PHI, PII)")
+def reqportions=getFieldByName("Are there any portions of the software that interact with 3rd party services?")
+def requserdata=getFieldByName("Will this application collect user data?")
+def reqmissingdata=getFieldByName("If you feel something is missing here or you would like to provide other kind of feedback, feel free to do so here:")
+
+
+trname.setHidden(true)
+trname.setRequired(false).setFormValue(null)
+trphone.setHidden(true)
+trphone.setRequired(false).setFormValue(null)
+trmoredetails.setHidden(true)
+trmoredetails.setRequired(false).setFormValue(null)
+trassistance.setHidden(true)
+trassistance.setRequired(false).setFormValue(null)
+scsproriyt.setHidden(true)
+scsproriyt.setRequired(false).setFormValue(null)
+scsassistance.setHidden(true)
+scsassistance.setRequired(false).setFormValue(null)
+reqpointofcontact.setHidden(true)
+reqpointofcontact.setRequired(false).setFormValue(null)
+reqshortdescription.setHidden(true)
+reqshortdescription.setRequired(false).setFormValue(null)
+reqnameofsw.setHidden(true)
+reqnameofsw.setRequired(false).setFormValue(null)
+reqversion.setHidden(true)
+reqversion.setRequired(false).setFormValue(null)
+reqlatestreleasedate.setHidden(true)
+reqlatestreleasedate.setRequired(false).setFormValue(null)
+reqos.setHidden(true)
+reqos.setRequired(false).setFormValue(null)
+reqosforreview.setHidden(true)
+reqosforreview.setRequired(false).setFormValue(null)
+reqdev.setHidden(true)
+reqdev.setRequired(false).setFormValue(null)
+reqcategory.setHidden(true)
+reqcategory.setRequired(false).setFormValue(null)
+reqlinks.setHidden(true)
+reqlinks.setRequired(false).setFormValue(null)
+reqduplicate.setHidden(true)
+reqduplicate.setRequired(false).setFormValue(null)
+reqschd.setHidden(true)
+reqschd.setRequired(false).setFormValue(null)
+reqhelpprioritize.setHidden(true)
+reqhelpprioritize.setRequired(false).setFormValue(null)
+reqswclient.setHidden(true)
+reqswclient.setRequired(false).setFormValue(null)
+reqportions.setHidden(true)
+reqportions.setRequired(false).setFormValue(null)
+requserdata.setHidden(true)
+requserdata.setRequired(false).setFormValue(null)
+reqmissingdata.setHidden(true)
+reqmissingdata.setRequired(false).setFormValue(null)
+
+
+
+
+
+
+//

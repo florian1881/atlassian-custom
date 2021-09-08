@@ -1,0 +1,24 @@
+// initialisers
+
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.security.roles.ProjectRoleManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import groovy.transform.BaseScript
+
+import static com.atlassian.jira.issue.IssueFieldConstants.ISSUE_TYPE
+
+@BaseScript FieldBehaviours fieldBehaviours
+def allIssueTypes = ComponentAccessor.constantsManager.allIssueTypeObjects
+
+def issueTypeField = getFieldById(ISSUE_TYPE)
+def availableIssueTypes = []
+
+availableIssueTypes.addAll(allIssueTypes.findAll { it.name in ["Incident", "Problem","Problem Task","Normal Change Request","Emergency Change Request","Standard Change Request"] })
+
+issueTypeField.setFieldOptions(availableIssueTypes)
+
+
+
+//  

@@ -1,0 +1,249 @@
+//Initialiser
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.option.Option
+import com.atlassian.crowd.embedded.api.Group
+
+FormField editFF = getFieldById("Edit")
+if(editFF != null) {
+	String edit = editFF.value
+    if("Update".equals(edit)) {
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		FormField assigneeFF = getFieldById("assignee")
+		applicationInitFF?.setFormValue("false")
+        assigneeFF?.setHidden(true)
+        applicationInitFF?.setHidden(true)
+    }
+}
+
+if(!"Create".equals(editFF?.formValue)){
+    return
+}
+
+FormField parentFF = getFieldById("parentIssueId")
+FormField summaryFF = getFieldById("summary")
+if(parentFF == null || parentFF.getFormValue() == null) {
+	return
+}
+Long parentIssueId = parentFF.getFormValue() as Long
+
+if (parentIssueId == null) {
+	return
+}
+
+def issueManager = ComponentAccessor.getIssueManager()
+def parentIssue = issueManager.getIssueObject(parentIssueId)
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+String rbuF = "Requestor's Business Unit"
+String rsbuF = "Requestor's Sub-Business Unit"
+String appF = "Application"
+String buF = "Business Unit"
+String sbuF = "Sub-Business Unit"
+String groupF = "Assignment Group"
+String assigneeF = "assignee"
+String appTypeF = "Application Type"
+String specifyF = "Please Specify the Application/Server Name"
+
+getFieldByName(groupF)?.setRequired(true)
+getFieldByName(rbuF)?.setRequired(true)
+getFieldByName(rsbuF)?.setRequired(true)
+getFieldByName(appF)?.setRequired(true)
+getFieldByName(buF)?.setRequired(true)
+getFieldByName(sbuF)?.setRequired(true)
+    
+FormField requestorBUFF = getFieldByName(rbuF)
+FormField requestorSBUFF = getFieldByName(rsbuF)
+FormField applicationFF = getFieldByName(appF)
+FormField appOthersFF = getFieldByName(appTypeF)
+FormField specifyApplicationFF = getFieldByName(specifyF)
+FormField buFF = getFieldByName(buF)
+FormField sbuFF = getFieldByName(sbuF)
+FormField groupFF = getFieldByName(groupF)
+FormField assigneeFF = getFieldById(assigneeF)
+
+def requestorBUCf = customFieldManager.getCustomFieldObjectsByName(rbuF)[0]
+def requestorSBUCf = customFieldManager.getCustomFieldObjectsByName(rsbuF)[0]
+def applicationCf = customFieldManager.getCustomFieldObjectsByName(appF)[0]
+def appOthersCf = customFieldManager.getCustomFieldObjectsByName(appTypeF)[0]
+def specifyApplicationCf = customFieldManager.getCustomFieldObjectsByName(specifyF)[0]
+def buCf = customFieldManager.getCustomFieldObjectsByName(buF)[0]
+def sbuCf = customFieldManager.getCustomFieldObjectsByName(sbuF)[0]
+def groupCf = customFieldManager.getCustomFieldObjectsByName(groupF)[0]
+
+List groups = groupCf.getValue(parentIssue) as List
+if(groups != null && !groups.isEmpty()) {
+    def group = groups[0]
+    groupFF?.setFormValue(group.objectKey)
+}
+
+List requestorBUs = requestorBUCf.getValue(parentIssue) as List
+if(requestorBUs != null && !requestorBUs.isEmpty()) {
+    def requestorBU = requestorBUs[0]
+    requestorBUFF?.setFormValue(requestorBU.objectKey)
+}
+
+List requestorSBUs = requestorSBUCf.getValue(parentIssue) as List
+if(requestorSBUs != null && !requestorSBUs.isEmpty()) {
+    def requestorSBU = requestorSBUs[0]
+    requestorSBUFF?.setFormValue(requestorSBU.objectKey)
+}
+
+List applications = applicationCf.getValue(parentIssue) as List
+if(applications != null && !applications.isEmpty()) {
+    def application = applications[0]
+    applicationFF?.setFormValue(application.objectKey)
+}
+
+
+Option appOthers = appOthersCf.getValue(parentIssue) as Option
+if(appOthers != null) {
+     appOthersFF.setFormValue(appOthers.optionId)
+}
+
+String specifyApplication = specifyApplicationCf.getValue(parentIssue)
+if(specifyApplication != null) {
+	specifyApplicationFF.setFormValue(specifyApplication)
+}
+
+List bus = buCf.getValue(parentIssue) as List
+if(bus != null && !bus.isEmpty()) {
+    def bu = bus[0]
+    buFF?.setFormValue(bu.objectKey)
+}
+
+List sbus = sbuCf.getValue(parentIssue) as List
+if(sbus != null && !sbus.isEmpty()) {
+    def sbu = sbus[0]
+    sbuFF?.setFormValue(sbu.objectKey)
+}
+
+if(assigneeFF == null) {
+	assigneeFF.setFormValue(parentIssue.assignee?.username)
+}
+
+if(summaryFF != null) {
+	summaryFF.setFormValue(parentIssue.summary)
+}
+
+FormField priorityFF = getFieldById("priority")
+if(priorityFF != null && parentIssue.priority != null) {
+	priorityFF.setFormValue(parentIssue.priority.getId())
+}
+
+
+
+
+
+//Application 
+
+
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+String buF = "Business Unit"
+String sbuF = "Sub-Business Unit"
+FormField buFF = getFieldByName(buF)
+FormField sbuFF = getFieldByName(sbuF)
+
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+if(applicationKey == null || "".equals(applicationKey)) {
+    buFF.setFormValue("")
+    sbuFF.setFormValue("")
+    return   
+}
+
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Name")
+def buAttribute = objectFacade.loadObjectAttributeBean(objectId, "BU")
+def sbuAttribute = objectFacade.loadObjectAttributeBean(objectId, "SBU")
+
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String application = nameAttributeValue.value
+
+FormField appOthersFF = getFieldByName("Application Type")
+FormField specifyApplicationFF = getFieldByName("Please Specify the Application/Server Name")
+
+if("Other".equals(application)) {
+    appOthersFF.setRequired(true)
+	appOthersFF.setHidden(false)
+
+    specifyApplicationFF.setRequired(true)
+	specifyApplicationFF.setHidden(false)  
+} else {
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    appOthersFF.setFormValue([""])
+    specifyApplicationFF.setFormValue("")
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    
+	if(application == null || "".equals(application)) {
+		buFF.setFormValue("")
+		sbuFF.setFormValue("")
+		return
+	}
+    
+	//Behavior running while on page load -Start
+	FormField editFF = getFieldById("Edit")
+	if(editFF != null) {
+		String edit = editFF.value
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		String applicationInit = applicationInitFF?.value
+		if("Update".equals(edit) && "false".equals(applicationInit)) {
+			applicationInitFF?.setFormValue("true")
+			applicationInitFF?.setHidden(true)
+			return
+		}
+	}
+    if(buAttribute) {
+        def objectAttributeValues1 = buAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue1 = objectAttributeValues1[0]
+        String keyVal="${cmdbKey}-${objectAttributeValue1.value}"
+        
+        buFF?.setFormValue(keyVal)
+    }
+    
+    if(sbuAttribute) {
+        def objectAttributeValues12 = sbuAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue12 = objectAttributeValues12[0]
+        String keyVal12="${cmdbKey}-${objectAttributeValue12.value}"
+
+        sbuFF?.setFormValue(keyVal12)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+//

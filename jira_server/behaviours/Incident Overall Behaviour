@@ -1,0 +1,608 @@
+// Initialiser
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+
+if(getActionName()=="Create")
+{
+    def escalationPoint=getFieldByName("Escalation Point")
+	 escalationPoint.setReadOnly(true)	
+
+    def dlofapplication=getFieldByName("DL Of Application")
+	 dlofapplication.setReadOnly(true)
+    
+    def selectTheCaller=getFieldByName("Select the Caller")
+    	selectTheCaller.setHidden(true)
+    
+    def incidentPriority=getFieldByName("Incident Priority")
+    	incidentPriority.setHidden(true)
+    
+    def howCustomerWantsToBeNotified=getFieldByName("How customer wants to get notified about this issue?")
+    	howCustomerWantsToBeNotified.setHidden(true)
+    
+    def options=getFieldByName("Clients Impacted")
+options.setHidden(true)
+
+def clientName=getFieldByName("Select the Client Name")
+clientName.setHidden(true)
+
+def addMultipleClientNames=getFieldByName("Add Multiple Client Names")
+addMultipleClientNames.setHidden(true)
+    
+def whichAuditsAreImpacted=getFieldByName("Which Audits are impacted")
+whichAuditsAreImpacted.setHidden(true)
+
+def subState=getFieldByName("SubState")
+subState.setHidden(true)
+    
+def impactedServices=getFieldByName("Impacted Services")
+    impactedServices.setHidden(true)
+
+def currentStatus=getFieldByName("Current status")
+    currentStatus.setHidden(true)
+
+def impactedGroups=getFieldByName("Impact Information")
+    impactedGroups.setHidden(true)
+
+def applicationsImpacted=getFieldByName("Applications impacted")
+	applicationsImpacted.setHidden(true) 
+    
+def workaround=getFieldByName("Work around")
+	workaround.setHidden(true)
+    
+def nextUpdateIn=getFieldByName("Next Update in")
+	nextUpdateIn.setHidden(true)
+
+def disruptedServiceName=getFieldByName("Disrupted Service Name")
+	disruptedServiceName.setHidden(true)     
+
+}
+
+FormField editFF = getFieldById("Edit")
+if("Update".equals(editFF?.formValue)){
+ 	def incidentScreenType=getFieldByName("Incident Screen Type")
+  // 	incidentScreenType.setHidden(true)
+    
+    def addMultipleClientNames=getFieldByName("Add Multiple Client Names")
+	addMultipleClientNames.setHidden(true)
+
+    def applicationInit=getFieldByName("applicationInit")
+	applicationInit.setHidden(true)
+	
+    def escalationPoint=getFieldByName("Escalation Point")
+	 escalationPoint.setReadOnly(true)	
+
+    def dlofapplication=getFieldByName("DL Of Application")
+	 dlofapplication.setReadOnly(true)
+    dlofapplication.setHidden(true)
+    
+
+    def selectTheCaller=getFieldByName("Select the Caller")
+    	selectTheCaller.setHidden(true)
+	
+    def verifiedByCustomer=getFieldByName("Verified by Customer")
+    	verifiedByCustomer.setHidden(true)
+   
+    def addCommandCenterEmailDetails=getFieldByName("Add Command Center Email Details")
+    	addCommandCenterEmailDetails.setHidden(true)
+    
+    def impactedServices=getFieldByName("Impacted Services")
+    impactedServices.setHidden(true)
+
+def currentStatus=getFieldByName("Current status")
+    currentStatus.setHidden(true)
+
+def impactedGroups=getFieldByName("Impact Information")
+    impactedGroups.setHidden(true)
+
+def applicationsImpacted=getFieldByName("Applications impacted")
+	applicationsImpacted.setHidden(true) 
+    
+def workaround=getFieldByName("Work around")
+	workaround.setHidden(true)
+    
+def nextUpdateIn=getFieldByName("Next Update in")
+	nextUpdateIn.setHidden(true)
+
+def disruptedServiceName=getFieldByName("Disrupted Service Name")
+	disruptedServiceName.setHidden(true)    
+    
+//def assetType=getFieldByName("Asset Type")
+//	assetType.setHidden(true) 
+	
+// def machineType=getFieldByName("Machine Type")
+//	machineType.setHidden(true) 
+
+//def environment=getFieldByName("Environment")
+//	environment.setHidden(true) 	
+
+ 
+  return  
+    
+}
+
+
+//Fields
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+
+def incidentScreenType=getFieldByName("Incident Screen Type")
+def value=incidentScreenType.getValue()
+
+//General Incident Fields.
+def reqBU=getFieldByName("Requestor's Business Unit")
+def reqSubBU=getFieldByName("Requestor's Sub-Business Unit")
+def Application=getFieldById("customfield_11610")
+def ApplicationType=getFieldByName("Application Type")
+def pleaseSpecifyApp=getFieldByName("Please Specify the Application/Server Name")
+def OtherApplication=getFieldByName("Incident Screen Type")
+def ImpactedBU=getFieldByName("Business Unit")
+def ImpactedSBU=getFieldByName("Sub-Business Unit")
+def CategoryAndSubCategory=getFieldByName("Category & SubCategory")
+def HowManyUsers=getFieldByName("How many Users or Clients are Impacted")
+def Urgency=getFieldByName("Select the Urgency of the Issue")
+def Priority=getFieldByName("Priority")
+def summary=getFieldByName("Summary")
+def description=getFieldByName("Description")
+def contactType=getFieldByName("Contact Type")
+def majorIncident=getFieldByName("Major Incident")
+def assignmentGroup=getFieldByName("Assignment Group")
+def EscalationPoint=getFieldByName("Escalation Point")
+def Order=getFieldByName("Order")
+def knowledge=getFieldByName("Knowledge")
+def whichAuditsAreImpacted=getFieldByName("Which Audits are impacted")
+def options=getFieldByName("Clients Impacted")
+def assigntoagroupfield=getFieldByName("Assign To a Group")
+def substate=getFieldByName("SubState")
+def location=getFieldByName("Location of User")
+def dlofapplication=getFieldByName("DL Of Application")
+    
+
+
+//RCA Fields
+def selectTheUser=getFieldByName("Select the User")
+def selectTheClientName=getFieldByName("Select the Client Name")
+def HowCustomerWantsToBeNotifiedOfThisIssue=getFieldByName("How customer wants to get notified about this issue")
+
+//Contact Centre Fields
+def uniqueIdentifier=getFieldByName("Unique Identifier")
+def whoelseneedstobnotified=getFieldByName("Who else needs to be notified")
+def selectTheCaller=getFieldByName("Select the Caller")
+
+//PHI/PII Data
+def phipiidata=getFieldByName("PHI/PII Involved")
+	
+// Transitional Fields
+def closeCode=getFieldByName("Close code")
+def closeNotes=getFieldByName("Close Notes")
+
+
+// Classes for Insight Fields.
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+
+
+//Setting Contact Type Field for Privacy Incident.
+
+def optionsManager = ComponentAccessor.getComponent(OptionsManager)
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+
+def customField = customFieldManager.getCustomFieldObjectByName("Contact Type")
+def fieldConfig = customField.getRelevantConfig(getIssueContext())
+def optionsForContactType = optionsManager.getOptions(fieldConfig)
+
+def contactTypeOptionForPrivacyIncidentTeam = optionsForContactType.find {it.value=="Self-Service"}
+
+//Setting the default Value for Select the Urgency of the Issue for Privacy Incident.
+
+def urgencyCustomField = customFieldManager.getCustomFieldObjectByName("Select the Urgency of the Issue")
+def urgencyfieldConfig = urgencyCustomField.getRelevantConfig(getIssueContext())
+def optionsForUrgency = optionsManager.getOptions(urgencyfieldConfig)
+
+def urgencyOptionForPrivacyIncidentTeam = optionsForUrgency.find {it.value=="Something not working as expected"}
+
+
+
+//Setting the default Value for Application for Privacy Incident
+
+def schemaID = 8
+String otherApp="Other"
+String appAttributeID="Name"
+def objectForNo = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + appAttributeID + "\" = \"" + otherApp + "\"")
+String finalObjectForNo="JCMDB-"+objectForNo[1].id.toString()
+
+
+//Setting the default Value for Application Type and Other Application for Privacy Incident
+
+def appType = customFieldManager.getCustomFieldObjectByName("Application Type")
+def appTypefieldConfig = appType.getRelevantConfig(getIssueContext())
+def optionsForAppType = optionsManager.getOptions(appTypefieldConfig)
+
+def AppTypeOptionForPrivacyIncidentTeam = optionsForAppType.find {it.value=="Other"}
+
+
+
+//Setting the default Value for Category and SubCategory for Privacy Incident
+
+def catAndSubCustomField = customFieldManager.getCustomFieldObjectByName("Category & SubCategory")
+def catAndSubfieldConfig = catAndSubCustomField.getRelevantConfig(getIssueContext())
+def optionsForcatAndSub = optionsManager.getOptions(catAndSubfieldConfig)
+
+def catAndSubForPrivacyIncidentTeamParent = optionsForcatAndSub.find {it.value=="Security"}
+// def catAndSubForPrivacyIncidentTeamChild = catAndSubForPrivacyIncidentTeamParent?.childOptions?.find {it.value =="PHI/PII Disclosure/Use"}
+
+//Setting the default Value for Category and SubCategory for General Incident
+def catAndSubForGeneralIncidentTeamParent = optionsForcatAndSub.find {it.value=="Application"}
+
+
+//Setting the default group to ServiceDesk
+
+String defaultGroupName="Service Desk"
+String groupAttributeId="Group Name"
+
+def objectForServiceDesk = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + groupAttributeId + "\" = \"" + defaultGroupName + "\"")
+
+String finalObjectForServiceDesk="JCMDB-"+objectForServiceDesk[0].id.toString()
+
+
+
+
+
+if(getActionName()=="Create")
+{
+	if(value=="General Incident")
+{
+
+
+	// Making fields required.
+	
+	reqBU.setRequired(true)
+	reqBU.setHidden(false)
+	
+	reqSubBU.setRequired(true)
+	reqSubBU.setHidden(false)
+	
+	Application.setRequired(true)
+	Application.setHidden(false)
+	Application.setFormValue("")
+	
+	ImpactedBU.setRequired(true)
+	ImpactedBU.setHidden(false)
+	
+	ImpactedSBU.setRequired(true)
+	ImpactedSBU.setHidden(false)
+	
+	CategoryAndSubCategory.setRequired(true)
+	CategoryAndSubCategory.setHidden(false)
+	CategoryAndSubCategory.setFormValue([catAndSubForGeneralIncidentTeamParent.optionId,null])
+		
+	HowManyUsers.setRequired(true)
+	HowManyUsers.setHidden(false)
+	
+	Urgency.setRequired(true)
+	Urgency.setHidden(false)
+	
+	assignmentGroup.setRequired(true)
+	assignmentGroup.setHidden(false)
+	assignmentGroup.setFormValue(finalObjectForServiceDesk)
+	
+	//Optional Fields.
+	contactType.setHidden(false)
+	contactType.setFormValue(contactTypeOptionForPrivacyIncidentTeam.optionId)
+	
+	majorIncident.setHidden(true)
+    majorIncident.setRequired(false)
+    
+	EscalationPoint.setHidden(false)
+	location.setHidden(false)
+
+	//Hiding Contact Center,RCA,Privacy Incident,Risk Fields. 
+	
+	//Privacy Fields.
+	phipiidata.setRequired(false)
+	phipiidata.setHidden(true)
+	
+	ApplicationType.setRequired(false)
+	ApplicationType.setHidden(true)
+	
+	pleaseSpecifyApp.setRequired(false)
+	pleaseSpecifyApp.setHidden(true)
+	pleaseSpecifyApp.setFormValue("")
+	
+	//Hiding Common field of Risk,RCA and Contact Center.
+	selectTheClientName.setHidden(true)
+	selectTheClientName.setRequired(false)
+	
+	//Hiding Only Contact Center Fields.
+	uniqueIdentifier.setRequired(false)
+	uniqueIdentifier.setHidden(true)
+	
+	selectTheCaller.setRequired(false)
+	selectTheCaller.setHidden(true)
+	
+	//Hiding Transitional Fields.
+	closeCode.setHidden(true)
+	closeCode.setRequired(false)
+	
+	closeNotes.setHidden(true)
+	closeNotes.setRequired(false)
+	
+	//Hiding it's own Field.
+	
+	assigntoagroupfield.setHidden(true)
+	assigntoagroupfield.setRequired(false)
+	
+	dlofapplication.setHidden(true)
+
+}
+
+
+
+
+else if(value=="Privacy Incident")
+{
+
+
+	// Making fields required.
+	
+	reqBU.setRequired(true)
+	reqBU.setHidden(false)
+	
+	reqSubBU.setRequired(true)
+	reqSubBU.setHidden(false)
+	
+	Application.setRequired(true)
+	Application.setHidden(false)
+	Application.setFormValue(finalObjectForNo) //Setting Application as Other.
+	
+	ApplicationType.setRequired(true)
+	ApplicationType.setHidden(false)
+	ApplicationType.setFormValue(AppTypeOptionForPrivacyIncidentTeam.optionId)
+	
+	pleaseSpecifyApp.setFormValue("Security Event")
+	
+	
+	ImpactedBU.setRequired(true)
+	ImpactedBU.setHidden(false)
+	
+	ImpactedSBU.setRequired(true)
+	ImpactedSBU.setHidden(false)
+	
+	CategoryAndSubCategory.setRequired(true)
+	CategoryAndSubCategory.setHidden(false)
+	CategoryAndSubCategory.setFormValue([catAndSubForPrivacyIncidentTeamParent.optionId,null])
+	
+	HowManyUsers.setRequired(true)
+	HowManyUsers.setHidden(false)
+	
+	Urgency.setRequired(true)
+	Urgency.setHidden(false)
+	Urgency.setFormValue(urgencyOptionForPrivacyIncidentTeam.optionId)
+	
+	assignmentGroup.setRequired(true)
+	assignmentGroup.setHidden(false)
+	
+	//Optional Fields.
+	contactType.setHidden(false)
+	contactType.setFormValue(contactTypeOptionForPrivacyIncidentTeam.optionId)
+	
+	majorIncident.setHidden(true)
+    majorIncident.setRequired(false)
+	
+    EscalationPoint.setHidden(false)
+	location.setHidden(false)
+	
+	//Hiding General Incident Fields Additional Fields.
+	whichAuditsAreImpacted.setHidden(true)
+	options.setHidden(true)
+	
+	assigntoagroupfield.setHidden(true)
+	assigntoagroupfield.setRequired(false)
+	
+	//Making Privacy Fields Mandatory
+	
+	//Privacy Fields.
+	phipiidata.setRequired(true)
+	phipiidata.setHidden(false)
+
+
+	// Hiding Risk Fields,Contact Center and RCA Common Fields.
+	selectTheClientName.setHidden(true)
+	selectTheClientName.setRequired(false)
+	
+	//Hiding Contact Center fields Required.
+	uniqueIdentifier.setRequired(false)
+	uniqueIdentifier.setHidden(true)
+	
+	selectTheCaller.setRequired(false)
+	selectTheCaller.setHidden(true)
+
+
+	//Setting Priority
+	FormField priorityField = getFieldById(IssueFieldConstants.PRIORITY)
+	priorityField.setFormValue("Priority 4")
+	
+	//Hiding Transitional Fields.
+	closeCode.setHidden(true)
+	closeCode.setRequired(false)
+	
+	closeNotes.setHidden(true)
+	closeNotes.setRequired(false)
+	
+	dlofapplication.setHidden(true)
+}
+}
+else
+{
+
+if(value=="General Incident")
+{
+
+
+	// Making fields required.
+	
+	reqBU.setRequired(true)
+	reqBU.setHidden(false)
+	
+	reqSubBU.setRequired(true)
+	reqSubBU.setHidden(false)
+	
+	Application.setRequired(true)
+	Application.setHidden(false)
+	
+	ImpactedBU.setRequired(true)
+	ImpactedBU.setHidden(false)
+	
+	ImpactedSBU.setRequired(true)
+	ImpactedSBU.setHidden(false)
+	
+	CategoryAndSubCategory.setRequired(true)
+	CategoryAndSubCategory.setHidden(false)
+	
+	HowManyUsers.setRequired(true)
+	HowManyUsers.setHidden(false)
+	
+	Urgency.setRequired(true)
+	Urgency.setHidden(false)
+	
+	assignmentGroup.setRequired(true)
+	assignmentGroup.setHidden(false)
+	
+	//Optional Fields.
+	contactType.setHidden(false)
+	majorIncident.setHidden(false)
+	EscalationPoint.setHidden(false)
+	location.setHidden(false)
+
+	//Hiding Contact Center,RCA,Privacy Incident,Risk Fields. 
+	
+	//Privacy Fields.
+	phipiidata.setRequired(false)
+	phipiidata.setHidden(true)
+	
+	//Hiding Common field of Risk,RCA and Contact Center.
+//	selectTheClientName.setHidden(true)
+//	selectTheClientName.setRequired(false)
+	
+	//Hiding Only Contact Center Fields.
+	uniqueIdentifier.setRequired(false)
+	uniqueIdentifier.setHidden(true)
+	
+	selectTheCaller.setRequired(false)
+	selectTheCaller.setHidden(true)
+
+	
+	//Hiding Transitional Fields.
+	closeCode.setHidden(true)
+	closeCode.setRequired(false)
+	
+	closeNotes.setHidden(true)
+	closeNotes.setRequired(false)
+	
+	//Hiding it's own Field.
+	
+	assigntoagroupfield.setHidden(true)
+	assigntoagroupfield.setRequired(false)
+
+}
+
+
+
+
+else if(value=="Privacy Incident")
+{
+
+
+	// Making fields required.
+	
+	reqBU.setRequired(true)
+	reqBU.setHidden(false)
+	
+	reqSubBU.setRequired(true)
+	reqSubBU.setHidden(false)
+	
+	Application.setRequired(true)
+	Application.setHidden(false)
+	
+	ApplicationType.setRequired(true)
+	ApplicationType.setHidden(false)
+	
+	ImpactedBU.setRequired(true)
+	ImpactedBU.setHidden(false)
+	
+	ImpactedSBU.setRequired(true)
+	ImpactedSBU.setHidden(false)
+	
+	CategoryAndSubCategory.setRequired(true)
+	CategoryAndSubCategory.setHidden(false)
+	
+	HowManyUsers.setRequired(true)
+	HowManyUsers.setHidden(false)
+	
+	Urgency.setRequired(true)
+	Urgency.setHidden(false)
+	
+	assignmentGroup.setRequired(true)
+	assignmentGroup.setHidden(false)
+	
+	//Optional Fields.
+	contactType.setHidden(false)
+	majorIncident.setHidden(false)
+	EscalationPoint.setHidden(false)
+	location.setHidden(false)
+	
+	//Hiding General Incident Fields Additional Fields.
+	whichAuditsAreImpacted.setHidden(true)
+	options.setHidden(true)
+	
+	assigntoagroupfield.setHidden(true)
+	assigntoagroupfield.setRequired(false)
+	
+	//Making Privacy Fields Mandatory
+	
+	//Privacy Fields.
+	phipiidata.setRequired(true)
+	phipiidata.setHidden(false)
+
+
+	// Hiding Risk Fields,Contact Center and RCA Common Fields.
+	selectTheClientName.setHidden(true)
+	selectTheClientName.setRequired(false)
+	
+	//Hiding Contact Center fields Required.
+	uniqueIdentifier.setRequired(false)
+	uniqueIdentifier.setHidden(true)
+	
+	selectTheCaller.setRequired(false)
+	selectTheCaller.setHidden(true)
+
+
+	//Setting Priority
+//	FormField priorityField = getFieldById(IssueFieldConstants.PRIORITY)
+//	priorityField.setFormValue("Priority 4")
+	
+	//Hiding Transitional Fields.
+	closeCode.setHidden(true)
+	closeCode.setRequired(false)
+	
+	closeNotes.setHidden(true)
+	closeNotes.setRequired(false)
+}
+
+	
+}	
+
+
+//

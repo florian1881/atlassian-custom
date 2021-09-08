@@ -1,0 +1,11 @@
+// Script post function to remove current user from multi user picker customfield
+import com.atlassian.jira.component.ComponentAccessor
+
+def loggedInUser = ComponentAccessor.jiraAuthenticationContext.loggedInUser 
+def customField = ComponentAccessor.customFieldManager.getCustomFieldObjects(issue).findByName("To be approved by")
+def value= issue.getCustomFieldValue(customField)
+ 
+value.removeAll{it.name == loggedInUser.name}
+def updatedValue=value
+
+issue.setCustomFieldValue(customField,updatedValue)

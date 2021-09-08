@@ -1,0 +1,13 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.security.roles.ProjectRoleManager
+
+def currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+def projectRoleManager = ComponentAccessor.getComponentOfType(ProjectRoleManager)
+
+def role = projectRoleManager.getProjectRole("Administrators")
+def project = issue.projectObject
+
+if(project.key in ["PMM", "PMMQ", "IT"])
+	return projectRoleManager.isUserInProjectRole(currentUser, role, project)
+
+return true

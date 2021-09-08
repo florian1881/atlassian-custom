@@ -1,0 +1,2 @@
+def project = issue.projectObject
+return !project.key in ["PMM", "PMMQ", "IT"]

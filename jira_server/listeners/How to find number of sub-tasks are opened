@@ -1,0 +1,7 @@
+def subtasks = 0
+for (i in issue.getSubTaskObjects()){
+if (i.getStatus().getName() != "Closed")
+subtasks += 1
+}
+
+return subtasks

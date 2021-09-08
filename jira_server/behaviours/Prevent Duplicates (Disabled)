@@ -1,0 +1,46 @@
+// Assosiate Names
+
+
+
+import com.atlassian.jira.user.ApplicationUser
+import com.atlassian.jira.bc.issue.search.SearchService
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.user.util.UserUtil
+import com.atlassian.jira.web.bean.PagerFilter
+
+def jqlSearch = 'project = IT and issuetype = "HR Services" and ' +
+'"HR Request Type" = Offboarding and "Associate Name" = ' + getFieldByName("Associate Name").getValue().toString()
+
+//getFieldByName("Equipment List").setFormValue(getFieldByName("Associate Name").getValue().toString());
+SearchService searchService = ComponentAccessor.getComponent(SearchService.class)
+UserUtil userUtil = ComponentAccessor.getUserUtil()
+ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+IssueManager issueManager = ComponentAccessor.getIssueManager()
+
+List<Issue> issues = null
+
+SearchService.ParseResult parseResult =  searchService.parseQuery(user, jqlSearch)
+if (parseResult.isValid()) 
+{
+    def issueCount = searchService.searchCount(user, parseResult.getQuery())
+    if(issueCount > 0 )
+    {
+        getFieldByName("Associate Name").setError("Offboarding Request for this user has already been created.")
+    }
+    else
+    {
+        getFieldByName("Associate Name").clearError()
+    }
+} 
+else 
+{
+    log.error("Invalid JQL: " + jqlSearch); 
+}
+
+
+
+
+
+//

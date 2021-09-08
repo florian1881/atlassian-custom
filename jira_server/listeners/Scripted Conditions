@@ -1,0 +1,65 @@
+If current user is reporter AND current user is current assignee make the changed field hidden, else shown
+If current user in group 'jira-administrators' allow the inline edit of the changed field
+If current user is 'luke' or current user in project role 'Developers' make the changed field read-only and show an error message, else clear the error and make the field editable again
+If current user is Project Lead add a description at the changed field, else clear the description
+If current user in user custom field value add a default value in the description
+If current user in group custom field value then make the changed field required, else optional.
+If workflow Action is 'Start Progress' or workflow Step is 'In Progress' then make the changed field required, else optional.
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.security.roles.ProjectRoleManager
+
+// Get the current user
+def currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+// Get the changed field
+def exampleField = getFieldById(getFieldChanged())
+
+if (currentUser == underlyingIssue.reporterUser && currentUser == underlyingIssue.assignee) {
+    exampleField.setHidden(true)
+} else {
+    exampleField.setHidden(false)
+}
+
+if (ComponentAccessor.getGroupManager().getGroupsForUser(currentUser)?.find { it.name == "jira-administrators" }) {
+    exampleField.setAllowInlineEdit(true)
+} else {
+    exampleField.setAllowInlineEdit(false)
+}
+
+def projectRoleManager = ComponentAccessor.getComponent(ProjectRoleManager)
+def devProjectRole = projectRoleManager.getProjectRole("Developers")
+if (currentUser.key == "luke" || projectRoleManager.isUserInProjectRole(currentUser, devProjectRole, underlyingIssue.getProjectObject())) {
+    exampleField.setError("You are either Luke or you belong to Developers project role and you cannot edit the field")
+    exampleField.setReadOnly(true)
+} else {
+    exampleField.clearError()
+    exampleField.setReadOnly(false)
+}
+
+if (currentUser == underlyingIssue.projectObject.getProjectLead()) {
+    exampleField.setDescription("Current User is project lead")
+} else {
+    exampleField.clearHelpText()
+}
+
+def cf = ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("Multi User Picker CF")
+if (currentUser == underlyingIssue.getCustomFieldValue(cf) || currentUser in underlyingIssue.getCustomFieldValue(cf)) {
+    getFieldById("description").setFormValue("Current user is member of the Multi User Picker custom field")
+} else {
+    getFieldById("description").setFormValue("Current user is not member of the Multi User Picker custom field")
+}
+
+def cf2 = ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("Single Group Picker CF")
+def groupsToCompare = underlyingIssue.getCustomFieldValue(cf2) as ArrayList
+if (ComponentAccessor.getGroupManager().getGroupsForUser(currentUser.key)?.disjoint(groupsToCompare)) {
+    exampleField.setRequired(true)
+} else {
+    exampleField.setRequired(false)
+}
+
+if (getActionName() == "Start Progress" || getDestinationStepName() == "Done") {
+    exampleField.setRequired(true)
+} else {
+    exampleField.setRequired(false)
+}

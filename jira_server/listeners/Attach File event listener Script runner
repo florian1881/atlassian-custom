@@ -1,0 +1,23 @@
+// This will be fired only when a new attachment is added.
+
+import org.ofbiz.core.entity.GenericValue
+import com.atlassian.jira.issue.attachment.Attachment
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.util.AttachmentUtils
+import com.atlassian.jira.component.ComponentAccessor
+
+
+def attachmentIds=[]
+List changeItems = event?.getChangeLog()?.getRelated("ChildChangeItem")
+changeItems.each {GenericValue gv -> 
+    		if (gv["field"] == "Attachment" && gv["newvalue"]) {
+                            attachmentIds.add(gv["newvalue"])
+                    }
+                }
+				
+attachmentIds.each {attachmentId ->
+                Attachment attachment = issue.attachments.find {Attachment attachment ->
+                    attachment.id == new Long(attachmentId)
+                }
+                File attFile = AttachmentUtils.getAttachmentFile(attachment)
+    }

@@ -1,0 +1,62 @@
+//Initialiser
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+FormField editFF = getFieldById("Edit")
+if(editFF != null) {
+    String edit = editFF.value
+    if("Update".equals(edit)) {
+        FormField applicationInitFF = getFieldByName("applicationInit")
+        applicationInitFF?.setFormValue("false")
+    }
+}
+
+
+
+
+
+//Requestor's Business Unit 
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+String sbuF = "Requestor's Sub-Business Unit"
+FormField sbuFF = getFieldByName(sbuF)
+
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+
+//Behavior running while on page load -Start
+	FormField editFF = getFieldById("Edit")
+	if(editFF != null) {
+		String edit = editFF.value
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		String applicationInit = applicationInitFF?.value
+		if("Update".equals(edit) && "false".equals(applicationInit)) {
+			applicationInitFF?.setFormValue("true")
+			applicationInitFF?.setHidden(true)
+			return
+		}
+	}
+
+
+
+if(applicationKey!=null)
+{
+   sbuFF.setFormValue("") 
+}
+
+
+
+
+
+
+
+//

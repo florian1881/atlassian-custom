@@ -1,0 +1,102 @@
+// Initialiser
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def requestorField = getFieldByName("Requester")
+def summary = getFieldById("summary").setReadOnly(true).setFormValue("Facilities Service Request")
+def currentUserName = ComponentAccessor.jiraAuthenticationContext?.getLoggedInUser().getName()
+requestorField.setFormValue(currentUserName)
+getFieldByName("Facility Location").setHidden(true)
+getFieldByName("Start Date").setHidden(true)
+getFieldByName("End Date").setHidden(true)
+getFieldByName("Current Seat Location").setHidden(true)
+getFieldByName("New Seat Location").setHidden(true)
+getFieldByName("Contact name for badge holder").setHidden(true)
+getFieldByName("Contact phone number for badge holder").setHidden(true)
+getFieldByName("What action is requested?").setHidden(true)
+getFieldByName("What action is requested?").setHidden(true)
+
+
+//Fields
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def facilityrequesttype = getFieldByName("Facility Request Type")
+def location = getFieldByName("Facility Location").setHidden(true)
+def startdate = getFieldByName("Start Date").setHidden(true)
+def endadate = getFieldByName("End Date").setHidden(true)
+def currentseatloc = getFieldByName("Current Seat Location").setHidden(true)
+def newseatloc = getFieldByName("New Seat Location").setHidden(true)
+def name = getFieldByName("Contact name for badge holder").setHidden(true)
+def phone = getFieldByName("Contact phone number for badge holder").setHidden(true)
+def action = getFieldByName("What action is requested?").setHidden(true)
+def requestdetails = getFieldByName("What action is requested?").setHidden(true).setFormValue(null)
+currentseatloc.setHidden(true)
+newseatloc.setHidden(true)
+startdate.setHidden(true)
+endadate.setHidden(true)
+def facilityitemOption = facilityrequesttype.getValue() as String
+
+if(facilityitemOption.equalsIgnoreCase("Hoteling Space"))
+{ 
+    location.setHidden(false).setRequired(true)
+startdate.setHidden(false).setRequired(true)
+endadate.setHidden(false).setRequired(true)
+}
+if(facilityitemOption.equalsIgnoreCase("Move Request"))
+{ 
+location.setHidden(false).setRequired(true)
+currentseatloc.setHidden(false).setRequired(true)
+newseatloc.setHidden(false).setRequired(true)
+}
+if(facilityitemOption.equalsIgnoreCase("Badge Request"))
+{ 
+  
+name.setHidden(false).setRequired(true)
+phone.setHidden(false).setRequired(true)
+action.setHidden(false).setRequired(true)
+requestdetails.setHidden(false).setRequired(true)
+}
+if(facilityitemOption.equalsIgnoreCase("Office / Drawer Keys Request") || facilityitemOption.equalsIgnoreCase("HVAC (Climate) Request") ||facilityitemOption.equalsIgnoreCase("Generic Facilities Requests") || facilityitemOption.equalsIgnoreCase("Janitorial Request"))
+{ 
+    location.setHidden(false).setRequired(true)
+}
+
+
+
+
+//Requestor's Business Unit
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+
+String sbuF = "Requestor's Sub-Business Unit"
+FormField sbuFF = getFieldByName(sbuF)
+sbuFF.setFormValue("") 
+
+/*
+def Rbu = getFieldByName("Requestor's BU Text Field")
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+def insightKey = getFieldByName("Requestor's Business Unit").value
+//def summary = getFieldById("summary")
+
+def part = objectFacade.loadObjectBean(insightKey)?.label
+Rbu.setFormValue("${part}")*/
+
+
+//Requestor's Sub-Business Unit
+
+/*def RSubbu = getFieldByName("Requestor's SubBU Text Field")
+
+import com.atlassian.jira.component.ComponentAccessor
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+def insightKey = getFieldByName("Requestor's Sub-Business Unit").value
+//def summary = getFieldById("summary")
+
+def part = objectFacade.loadObjectBean(insightKey)?.label
+RSubbu.setFormValue("${part}")*/
+
+//

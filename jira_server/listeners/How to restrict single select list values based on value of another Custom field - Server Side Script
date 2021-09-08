@@ -1,0 +1,47 @@
+import com.atlassian.jira.ComponentAccessor
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.ComponentManager
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.IssueManager
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.config.FieldConfigImpl
+
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+def allowedOptions = null
+def campaignRetailOptions = null
+def optionsManager = ComponentAccessor.getOptionsManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+def verticalCustomField = getFieldByName("Vertical")
+def verticalValue = verticalCustomField.getValue()
+def typeOfEngagement = getFieldByName("Type of Engagement")
+def typeOfEngagementCustomField = customFieldManager.getCustomFieldObjectByName("Type of Engagement")
+def campaignType = getFieldByName("Campaign Type")
+def campaignTypeCustomField = customFieldManager.getCustomFieldObjectByName("Campaign Type")
+def fieldConfig = typeOfEngagementCustomField.getRelevantConfig(issueContext)
+def fieldConfigCRO = campaignTypeCustomField.getRelevantConfig(issueContext)
+def customField = customFieldManager.getCustomFieldObjectByName("Type of Engagement")
+def customFieldCRO = customFieldManager.getCustomFieldObjectByName("Campaign Type")
+def config = customField.getRelevantConfig(getIssueContext())
+def configCRO = customFieldCRO.getRelevantConfig(getIssueContext())
+def options = optionsManager.getOptions(config) 
+def optionsCRO = optionsManager.getOptions(configCRO) 
+ 
+if (verticalValue.toString() == "Retail"){
+ allowedOptions = typeOfEngagement.setFieldOptions(options.findAll {
+  it.value in ["Audience Planning", "Audience Workshop", "Campaign Tracker", "Email", "Media Plan", "Proactive Audience Outreach", "RFP"]}); 
+ campaignRetailOptions = campaignType.setFieldOptions(options.findAll {
+  it.value in ["Awareness", "New Store Opening", "Sales Event", "In Market", "Prospecting", "Retention"]}) 
+}else {
+ allowedOptions = typeOfEngagement.setFieldOptions(options.findAll {
+  it.value in ["Audience Planning", "Audience Matrix", "Demographic Profiling", "Email", "RFP"]});
+ campaignRetailOptions = campaignType.setFieldOptions(options.findAll {
+  it.value in ["Awareness", "Launch", "Sales Event", "In Market"]
+ })
+}

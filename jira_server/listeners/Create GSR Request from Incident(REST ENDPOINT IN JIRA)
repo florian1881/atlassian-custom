@@ -1,0 +1,216 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.sal.api.ApplicationProperties
+import com.atlassian.sal.api.UrlMode
+import com.onresolve.scriptrunner.runner.ScriptRunnerImpl
+import com.onresolve.scriptrunner.runner.rest.common.CustomEndpointDelegate
+import com.onresolve.scriptrunner.runner.util.UserMessageUtil
+import groovy.transform.BaseScript
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.link.IssueLink
+import com.atlassian.jira.issue.link.IssueLinkManager
+import com.atlassian.jira.issue.IssueInputParameters
+import com.atlassian.jira.bc.issue.IssueService
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.crowd.embedded.impl.ImmutableGroup
+
+import javax.ws.rs.core.MultivaluedMap
+import javax.ws.rs.core.Response
+
+@BaseScript CustomEndpointDelegate delegate
+
+createGSR(httpMethod: "GET") { MultivaluedMap queryParams ->
+
+    Long issueId = queryParams.getFirst("issueId") as Long
+
+    StringBuilder bodyB = new StringBuilder()
+    String issueKeyValue=null;
+    
+	def issueService = ComponentAccessor.getIssueService()
+	def issueService123 = ComponentAccessor.getIssueService()
+	def user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+	def authenticationContext = ComponentAccessor.getJiraAuthenticationContext()
+    def customFieldManager =ComponentAccessor.getCustomFieldManager()
+    def optionsManager = ComponentAccessor.getComponent(OptionsManager)
+    
+	def issueManager = ComponentAccessor.getIssueManager()
+	Issue issue = issueManager.getIssueObject(issueId)
+	
+    log.info(issue.summary)
+    
+    def IssueInputParameters issueInputParameters = issueService.newIssueInputParameters();
+    
+    def projectManager = ComponentAccessor.getProjectManager()
+	def projects = projectManager.getProjectObjects()
+
+    
+    
+    def requestorBUandSubBU=customFieldManager.getCustomFieldObjectByName("Requestor's Business Unit & Sub Business Unit")
+	
+    def mapParam=new HashMap();
+    
+    mapParam=issue.getCustomFieldValue(requestorBUandSubBU) as HashMap
+   
+    def parentOption=mapParam.values().getAt(0)
+    def childOption=mapParam.values().getAt(1)
+    
+    log.info(parentOption)
+    log.info(childOption)
+    
+    
+	issueInputParameters.setProjectId(10800) //JSD project
+	issueInputParameters.setIssueTypeId("10203")
+	issueInputParameters.setSummary(issue.summary)
+    issueInputParameters.setDescription(issue.description)
+    
+  	def customField1 = customFieldManager.getCustomFieldObjectByName("BU")
+    
+    def fieldConfig1 = customField1.getRelevantConfig(issue)
+	def parentOption1  = optionsManager.getOptions(fieldConfig1).find {it.value ==parentOption.toString()}
+    
+	def	childOption1 = (parentOption1?.childOptions?.find {it.value ==childOption.toString()})
+    
+    def parentOption2  = optionsManager.getOptions(fieldConfig1).find {it.value =="Advance Solutions Group"}
+	def	childOption2 = (parentOption2?.childOptions?.find {it.value =="Analytics"})
+    
+    log.info(parentOption1)
+   	log.info(parentOption2)
+    log.info(childOption1)
+    log.info(childOption2)
+    
+    if(parentOption1!=null)
+    {
+    issueInputParameters.addCustomFieldValue(customField1.id,parentOption1.getOptionId().toString())    
+    }
+    else
+    {
+        issueInputParameters.addCustomFieldValue(customField1.id,parentOption2.getOptionId().toString())
+    }
+    
+    if(childOption1!=null)
+    {
+       issueInputParameters.addCustomFieldValue(customField1.id+":1",childOption1.getOptionId().toString()) 
+    }
+    else
+    {
+        issueInputParameters.addCustomFieldValue(customField1.id+":1",childOption2.getOptionId().toString()) 
+    }
+    
+    
+    def IncidentAssignmentGroupField=customFieldManager.getCustomFieldObjectByName("Assignment Group")
+    
+    def groupValue=issue.getCustomFieldValue(IncidentAssignmentGroupField)
+    
+  
+    
+    
+    ArrayList al1 = (ArrayList)groupValue;
+	ArrayList<ImmutableGroup> al2 = new ArrayList<ImmutableGroup>();
+
+	for(Object t:al1)
+	{
+    al2.add((ImmutableGroup)t)
+	}
+    
+    log.info("Assignment Group Value "+ al2.get(0).getName())
+    
+    def groupFieldforGSR=customFieldManager.getCustomFieldObjectByName("Assignment_Group")
+    
+    def fieldConfigGSR = groupFieldforGSR.getRelevantConfig(issue)
+	def parentOptionGSR  = optionsManager.getOptions(fieldConfigGSR).find {it.value ==al2.get(0).getName()}.getOptionId()
+    
+    issueInputParameters.addCustomFieldValue(groupFieldforGSR.id,parentOptionGSR.toString())    
+    
+    log.info("Hello"+ parentOptionGSR.toString())
+    
+    
+    IssueService.CreateValidationResult validationResult = issueService.validateCreate(authenticationContext.getLoggedInUser(), issueInputParameters);
+    
+    if(!validationResult.isValid()) {
+  	    log.debug("Hello")
+        log.debug(validationResult.getErrorCollection())
+         bodyB.append("Following Error Occurred: "+validationResult.getErrorCollection())
+} else {
+   // Create new issue 
+   log.debug ("Creating new issue")
+   IssueService.IssueResult createResult = issueService.create(authenticationContext.getLoggedInUser(), validationResult)
+  
+   if (!createResult.isValid()) {
+       bodyB.append("GSR Issue creation failed")
+     log.info("Issue was not created!")
+   } else {
+       bodyB.append("GSR Issue Created with ID : "+createResult.getIssue().getKey())
+     log.debug("Issue was created. Issue Id: " + createResult.getIssue().getKey())
+       issueKeyValue=createResult.getIssue().getKey()
+       
+   }
+}
+		
+    	def issueInputParameters1 = issueService123.newIssueInputParameters()
+        issueInputParameters1.with {
+            setComment(issue.key + " Cancelled this incident")
+            setSkipScreenCheck(true)
+        }
+    	
+    	log.info("After Setting the comments.")
+    	// validate and transition subtask
+    	
+    	
+    	Integer cancelId=151;
+    	if(issue.status.name.equals("New"))
+    {
+        cancelId=421
+    }
+    else if(issue.status.name.equals("Active"))
+    {
+        cancelId=151
+    }
+    
+        IssueService.TransitionValidationResult validationResult1 = issueService123.validateTransition(authenticationContext.getLoggedInUser(), issue.id, cancelId, issueInputParameters1)
+    	
+    	if(!validationResult1.isValid())
+    {	
+        bodyB.append(" Validation of Transition To Cancel Failed: "+validationResult1.getErrorCollection())
+    }
+    	log.debug("After Validation.")
+        if (validationResult1.isValid()) {
+			IssueService.IssueResult issueResult = issueService123.transition(authenticationContext.getLoggedInUser(), validationResult1)
+            log.debug("After Transition... ")
+            log.debug(" IssueResult "+ issueResult.getErrorCollection())
+             
+            
+            if (!issueResult.isValid()) {
+		log.debug("Failed to Cancel Incident")
+    }
+    else
+    {
+        log.debug("Successfully Cancelled Incident")
+    }
+
+            
+        }
+    
+    
+    def flag = [
+        type : 'info',
+        title: 'GSR Creation',
+        close: 'auto',
+        body : bodyB.toString()
+    ]
+    
+    log.info("Redirection Attempted--1")
+        UserMessageUtil.flag(flag)
+    
+    log.info("Redirection Attempted--2")
+    
+    
+    
+    def applicationProperties = ScriptRunnerImpl.getOsgiService(ApplicationProperties)
+    def baseUrl = applicationProperties.getBaseUrl(UrlMode.ABSOLUTE)
+    Response.temporaryRedirect(URI.create("${baseUrl}/browse/${issue.key}")).build()
+	
+
+    
+}

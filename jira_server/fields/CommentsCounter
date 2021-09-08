@@ -1,0 +1,13 @@
+import com.atlassian.jira.component.ComponentAccessor
+def commentManager=ComponentAccessor.getCommentManager()
+def comments=commentManager.getComments(issue)
+if(comments.size()==0)
+{
+    
+    return null
+}
+else 
+{
+
+    return comments.size() 
+}

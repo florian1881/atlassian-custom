@@ -1,0 +1,885 @@
+// Initialisers
+
+
+
+
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.event.type.EventDispatchOption
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.link.IssueLink
+import com.atlassian.jira.issue.link.IssueLinkManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+String action = getActionName()
+String rfa = "Request for Approval"
+
+FormField editFF = getFieldById("Edit")
+if(editFF != null || rfa.equals(action)) {
+	String edit = editFF.value
+    if("Update".equals(edit) || rfa.equals(action)) {
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		FormField assigneeFF = getFieldById("assignee")
+		applicationInitFF?.setFormValue("false")
+        applicationInitFF?.setHidden(true)
+        assigneeFF?.setHidden(true)
+    }
+}
+
+if("Create".equals(action)) {
+    String appF = "Application"
+    String buF = "Business Unit"
+    String sbuF = "Sub-Business Unit"
+    String groupF = "Assignment Group"
+
+    getFieldByName(groupF)?.setRequired(true)
+    getFieldByName(appF)?.setRequired(true)
+    getFieldByName(buF)?.setRequired(true)
+    getFieldByName(sbuF)?.setRequired(true)
+}
+
+//If Priority is visible on Create/Edit form hide this field
+FormField priorityFF = getFieldById("priority")
+priorityFF?.setHidden(true)
+
+if("Change Completed".equals(action)) {
+    FormField isBackoutFF = getFieldByName("isBackout")
+    String isBackout = isBackoutFF.value
+    if("Yes".equals(isBackout)) {
+	    FormField closeCodeFF = getFieldById("customfield_11200")
+
+	    def closeCodeCf = customFieldManager.getCustomFieldObject(11200l)
+        def config = closeCodeCf.getRelevantConfig(issueContext)
+        def optionsManager = ComponentAccessor.optionsManager
+        def options = optionsManager.getOptions(config)
+        int index = options.findIndexOf { it.value == "Backed Out" }
+        closeCodeFF.setFormValue(options.get(index).optionId)
+        //closeCodeFF.setReadOnly(true)
+    }
+} else if("Create".equals(action) || "Request for approval".equals(action) ) {
+    FormField resultField = getFieldById("customfield_10103")
+    resultField?.setHidden(true)
+}
+
+
+
+
+
+
+
+
+//CMS Change 
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+
+def field2 = getFieldByName("CMS Change")
+def value2 = field2.getValue()
+
+//Show CMS Tab
+def listOfQuestions = ["1. Will change(s) to system effect how the system limits:",
+                       "10. Will change(s) to the system effect how:",
+                      "2. Will change(s) affect required system training to ensure that personnel are adequately trained to carry out their assigned information security-related duties and responsibilities?",
+                      "3. Will change(s) affect system audit requirements to:",
+                      "4. Will change(s) to the system impact the:",
+                      "5. Will change(s) to the system impact how it:",
+                      "6. Will change(s) to the system impact how:",
+                      "7. Will change(s) to the system impact how:",
+                      "8. Will change(s) to the system/system environment change how:",
+                      "9. Will change(s) to the system effect how:"]
+
+if(value2=="Yes"){
+    showTab(4)
+     listOfQuestions.each{
+        def field=getFieldByName("${it}")
+        field.setRequired(true)
+    }
+} else {
+	hideTab(4)
+      listOfQuestions.each{
+        def field=getFieldByName("${it}")
+        field.setRequired(false)
+        field.setFormValue("")
+    }
+}
+
+
+
+
+
+
+
+
+//Business Communication Needed ?
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+
+FormField bcnFF = getFieldById(getFieldChanged())
+String bcn = bcnFF.value.toString()
+
+FormField dtcFF = getFieldByName("DLs to Communicate?")
+FormField tocFF = getFieldByName("Text Of Communication")
+
+if("Yes".equals(bcn)) {
+    dtcFF?.setRequired(true)
+    dtcFF?.setHidden(false)
+    tocFF?.setRequired(true)
+    tocFF?.setHidden(false)    
+} else {
+    dtcFF?.setRequired(false)
+    dtcFF?.setHidden(true)
+    tocFF?.setRequired(false)
+    tocFF?.setHidden(true)        
+}
+
+
+
+
+
+
+
+//Rollback Process Tested 
+
+
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+FormField rptlFF = getFieldByName("Rollback Process Tested")
+FormField riskImpactFF = getFieldByName("Risk Impact")
+FormField maFF = getFieldByName("Mitigation Activity")
+FormField rtFF = getFieldByName("Recover Time")
+FormField changeRiskFF = getFieldByName("Change Risk")
+
+String rptl = rptlFF.getValue()
+String riskImpact = riskImpactFF.getValue()
+String ma = maFF.getValue()
+String rt = rtFF.getValue()
+
+int score = 0
+
+def customFieldManager = ComponentAccessor.customFieldManager
+CustomField customField = customFieldManager.getCustomFieldObjectsByName("Change Risk")[0]
+def fieldConfig = customField.getRelevantConfig(issueContext)
+OptionsManager optionsManager = ComponentAccessor.optionsManager
+def options = optionsManager.getOptions(fieldConfig)
+
+switch(rptl) {
+	case "Yes":
+		score += 1
+	break;
+	case "No":
+		score += 3
+}
+
+switch(riskImpact) {
+	case "Unknown":
+		score += 5
+	break;
+	case "Service Unavailable":
+		score += 3
+	break;
+	case "Service Degraded":
+		score += 2
+	break;
+	case "Service Noimpact":
+		score += 1
+	break;
+	
+}
+
+switch(ma) {
+	case "Recover to Previous State":
+		score += 1
+	break;
+	case "Redundant Systems":
+		score += 1
+	break;
+	case "Fail Forward":
+		score += 3
+	break;
+	case "Unknown":
+		score += 5
+	break;
+	
+}
+
+switch(rt) {
+	case "Less Than 5":
+		score += 1
+	break;
+	case "Less Than 30":
+		score += 2
+	break;
+	case "Less Than 60":
+		score += 3
+	break;
+	case "More Than 60":
+		score += 4
+	break;
+	
+}
+String changeRisk = ""
+
+if(score == 0) {
+    
+} else if(score < 5) {
+	changeRisk = "Low"
+} else if(score < 8) {
+	changeRisk = "Medium"
+} else if(score < 13) {
+	changeRisk = "High"
+} else {
+	changeRisk = "Critical"
+}
+
+if(score > 0) {
+	changeRiskFF.setFormValue(options.getOptionForValue(changeRisk, null)?.optionId)
+}
+
+FormField priorityFF = getFieldById("priority")
+
+if(priorityFF == null)
+	return
+
+switch(changeRisk) {
+	case "Critical":
+	priorityFF.setFormValue("Priority 1")
+	break
+
+	case "High":
+	priorityFF.setFormValue("Priority 2")
+	break
+	
+	case "Medium":
+	priorityFF.setFormValue("Priority 3")
+	break
+	
+	case "Low":
+	priorityFF.setFormValue("Priority 4")
+	break
+	
+	default:
+	priorityFF.setFormValue("Priority 4")
+	break
+}
+
+
+
+
+
+
+
+
+
+
+
+//Mitigation Activity 
+
+
+
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+FormField rptlFF = getFieldByName("Rollback Process Tested")
+FormField riskImpactFF = getFieldByName("Risk Impact")
+FormField maFF = getFieldByName("Mitigation Activity")
+FormField rtFF = getFieldByName("Recover Time")
+FormField changeRiskFF = getFieldByName("Change Risk")
+
+String rptl = rptlFF.getValue()
+String riskImpact = riskImpactFF.getValue()
+String ma = maFF.getValue()
+String rt = rtFF.getValue()
+
+int score = 0
+
+def customFieldManager = ComponentAccessor.customFieldManager
+CustomField customField = customFieldManager.getCustomFieldObjectByName("Change Risk")
+def fieldConfig = customField.getRelevantConfig(issueContext)
+OptionsManager optionsManager = ComponentAccessor.optionsManager
+def options = optionsManager.getOptions(fieldConfig)
+
+switch(rptl) {
+	case "Yes":
+		score += 1
+	break;
+	case "No":
+		score += 3
+}
+
+switch(riskImpact) {
+	case "Unknown":
+		score += 5
+	break;
+	case "Service Unavailable":
+		score += 3
+	break;
+	case "Service Degraded":
+		score += 2
+	break;
+	case "Service Noimpact":
+		score += 1
+	break;
+	
+}
+
+switch(ma) {
+	case "Recover to Previous State":
+		score += 1
+	break;
+	case "Redundant Systems":
+		score += 1
+	break;
+	case "Fail Forward":
+		score += 3
+	break;
+	case "Unknown":
+		score += 5
+	break;
+	
+}
+
+switch(rt) {
+	case "Less Than 5":
+		score += 1
+	break;
+	case "Less Than 30":
+		score += 2
+	break;
+	case "Less Than 60":
+		score += 3
+	break;
+	case "More Than 60":
+		score += 4
+	break;
+	
+}
+String changeRisk = ""
+
+if(score == 0) {
+    
+} else if(score < 5) {
+	changeRisk = "Low"
+} else if(score < 8) {
+	changeRisk = "Medium"
+} else if(score < 13) {
+	changeRisk = "High"
+} else {
+	changeRisk = "Critical"
+}
+
+if(score > 0) {
+	changeRiskFF.setFormValue(options.getOptionForValue(changeRisk, null)?.optionId)
+}
+
+FormField priorityFF = getFieldById("priority")
+
+if(priorityFF == null)
+	return
+
+switch(changeRisk) {
+	case "Critical":
+	priorityFF.setFormValue("Priority 1")
+	break
+
+	case "High":
+	priorityFF.setFormValue("Priority 2")
+	break
+	
+	case "Medium":
+	priorityFF.setFormValue("Priority 3")
+	break
+	
+	case "Low":
+	priorityFF.setFormValue("Priority 4")
+	break
+	
+	default:
+	priorityFF.setFormValue("Priority 4")
+	break
+}
+
+
+
+
+
+
+//Risk Impact
+
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+FormField rptlFF = getFieldByName("Rollback Process Tested")
+FormField riskImpactFF = getFieldByName("Risk Impact")
+FormField maFF = getFieldByName("Mitigation Activity")
+FormField rtFF = getFieldByName("Recover Time")
+FormField changeRiskFF = getFieldByName("Change Risk")
+
+String rptl = rptlFF.getValue()
+String riskImpact = riskImpactFF.getValue()
+String ma = maFF.getValue()
+String rt = rtFF.getValue()
+
+int score = 0
+
+def customFieldManager = ComponentAccessor.customFieldManager
+CustomField customField = customFieldManager.getCustomFieldObjectByName("Change Risk")
+def fieldConfig = customField.getRelevantConfig(issueContext)
+OptionsManager optionsManager = ComponentAccessor.optionsManager
+def options = optionsManager.getOptions(fieldConfig)
+
+switch(rptl) {
+	case "Yes":
+		score += 1
+	break;
+	case "No":
+		score += 3
+}
+
+switch(riskImpact) {
+	case "Unknown":
+		score += 5
+	break;
+	case "Service Unavailable":
+		score += 3
+	break;
+	case "Service Degraded":
+		score += 2
+	break;
+	case "Service Noimpact":
+		score += 1
+	break;
+	
+}
+
+switch(ma) {
+	case "Recover to Previous State":
+		score += 1
+	break;
+	case "Redundant Systems":
+		score += 1
+	break;
+	case "Fail Forward":
+		score += 3
+	break;
+	case "Unknown":
+		score += 5
+	break;
+	
+}
+
+switch(rt) {
+	case "Less Than 5":
+		score += 1
+	break;
+	case "Less Than 30":
+		score += 2
+	break;
+	case "Less Than 60":
+		score += 3
+	break;
+	case "More Than 60":
+		score += 4
+	break;
+	
+}
+String changeRisk = ""
+
+if(score == 0) {
+    
+} else if(score < 5) {
+	changeRisk = "Low"
+} else if(score < 8) {
+	changeRisk = "Medium"
+} else if(score < 13) {
+	changeRisk = "High"
+} else {
+	changeRisk = "Critical"
+}
+
+if(score > 0) {
+	changeRiskFF.setFormValue(options.getOptionForValue(changeRisk, null)?.optionId)
+}
+
+FormField priorityFF = getFieldById("priority")
+
+if(priorityFF == null)
+	return
+
+switch(changeRisk) {
+	case "Critical":
+	priorityFF.setFormValue("Priority 1")
+	break
+
+	case "High":
+	priorityFF.setFormValue("Priority 2")
+	break
+	
+	case "Medium":
+	priorityFF.setFormValue("Priority 3")
+	break
+	
+	case "Low":
+	priorityFF.setFormValue("Priority 4")
+	break
+	
+	default:
+	priorityFF.setFormValue("Priority 4")
+	break
+}
+
+
+
+
+
+// Recover Time 
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+FormField rptlFF = getFieldByName("Rollback Process Tested")
+FormField riskImpactFF = getFieldByName("Risk Impact")
+FormField maFF = getFieldByName("Mitigation Activity")
+FormField rtFF = getFieldByName("Recover Time")
+FormField changeRiskFF = getFieldByName("Change Risk")
+
+String rptl = rptlFF.getValue()
+String riskImpact = riskImpactFF.getValue()
+String ma = maFF.getValue()
+String rt = rtFF.getValue()
+
+int score = 0
+
+def customFieldManager = ComponentAccessor.customFieldManager
+CustomField customField = customFieldManager.getCustomFieldObjectByName("Change Risk")
+def fieldConfig = customField.getRelevantConfig(issueContext)
+OptionsManager optionsManager = ComponentAccessor.optionsManager
+def options = optionsManager.getOptions(fieldConfig)
+
+switch(rptl) {
+	case "Yes":
+		score += 1
+	break;
+	case "No":
+		score += 3
+}
+
+switch(riskImpact) {
+	case "Unknown":
+		score += 5
+	break;
+	case "Service Unavailable":
+		score += 3
+	break;
+	case "Service Degraded":
+		score += 2
+	break;
+	case "Service Noimpact":
+		score += 1
+	break;
+	
+}
+
+switch(ma) {
+	case "Recover to Previous State":
+		score += 1
+	break;
+	case "Redundant Systems":
+		score += 1
+	break;
+	case "Fail Forward":
+		score += 3
+	break;
+	case "Unknown":
+		score += 5
+	break;
+	
+}
+
+switch(rt) {
+	case "Less Than 5":
+		score += 1
+	break;
+	case "Less Than 30":
+		score += 2
+	break;
+	case "Less Than 60":
+		score += 3
+	break;
+	case "More Than 60":
+		score += 4
+	break;
+	
+}
+String changeRisk = ""
+
+if(score == 0) {
+    
+} else if(score < 5) {
+	changeRisk = "Low"
+} else if(score < 8) {
+	changeRisk = "Medium"
+} else if(score < 13) {
+	changeRisk = "High"
+} else {
+	changeRisk = "Critical"
+}
+
+if(score > 0) {
+	changeRiskFF.setFormValue(options.getOptionForValue(changeRisk, null)?.optionId)
+}
+
+FormField priorityFF = getFieldById("priority")
+
+if(priorityFF == null)
+	return
+
+switch(changeRisk) {
+	case "Critical":
+	priorityFF.setFormValue("Priority 1")
+	break
+
+	case "High":
+	priorityFF.setFormValue("Priority 2")
+	break
+	
+	case "Medium":
+	priorityFF.setFormValue("Priority 3")
+	break
+	
+	case "Low":
+	priorityFF.setFormValue("Priority 4")
+	break
+	
+	default:
+	priorityFF.setFormValue("Priority 4")
+	break
+}
+
+
+
+
+
+
+//Application 
+
+
+
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+String buF = "Business Unit"
+String sbuF = "Sub-Business Unit"
+String technicalManagerF = "Technical Manager"
+String businessOF = "Business Owner"
+String supportManagerF = "Support Manager"
+String rfa = "Request for Approval"
+String action = getActionName()
+String userNameC = "User Name"
+
+FormField buFF = getFieldByName(buF)
+FormField sbuFF = getFieldByName(sbuF)
+FormField appOthersFF = getFieldByName("Application Type")
+FormField specifyApplicationFF = getFieldByName("Please Specify the Application/Server Name")
+
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+if(applicationKey == null || "".equals(applicationKey)) {
+    buFF.setFormValue("")
+    sbuFF.setFormValue("")
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    return   
+}
+
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Name")
+def buAttribute = objectFacade.loadObjectAttributeBean(objectId, "BU")
+def sbuAttribute = objectFacade.loadObjectAttributeBean(objectId, "SBU")
+
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String application = nameAttributeValue.value
+
+
+if("Other".equals(application)) {
+    appOthersFF.setRequired(true)
+	appOthersFF.setHidden(false)
+
+    specifyApplicationFF.setRequired(true)
+	specifyApplicationFF.setHidden(false)  
+} else {
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    appOthersFF.setFormValue([""])
+    specifyApplicationFF.setFormValue("")
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    
+	if(application == null || "".equals(application)) {
+		buFF.setFormValue("")
+		sbuFF.setFormValue("")
+		return
+	}
+    
+	//Behavior running while on page load -Start
+	FormField editFF = getFieldById("Edit")
+	if(editFF != null || rfa.equals(action)) {
+		String edit = editFF.value
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		String applicationInit = applicationInitFF?.value
+		if(("Update".equals(edit) || rfa.equals(action)) && "false".equals(applicationInit)) {
+			applicationInitFF?.setFormValue("true")
+			applicationInitFF?.setHidden(true)
+			return
+		}
+	}
+    if(buAttribute) {
+        def objectAttributeValues1 = buAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue1 = objectAttributeValues1[0]
+        String keyVal="${cmdbKey}-${objectAttributeValue1.value}"
+        
+        buFF?.setFormValue(keyVal)
+    }
+    
+    if(sbuAttribute) {
+        def objectAttributeValues12 = sbuAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue12 = objectAttributeValues12[0]
+        String keyVal12="${cmdbKey}-${objectAttributeValue12.value}"
+        sbuFF?.setFormValue(keyVal12)
+    }
+    
+	def applicationsAttribute = objectFacade.loadObjectAttributeBean(objectId, "Applications")
+	def applicationsAttributeValues = applicationsAttribute.getObjectAttributeValueBeans()
+	def applicationsAttributeValue = applicationsAttributeValues[0]
+	int applicationsId = applicationsAttributeValue.value as Integer
+
+	def technicalManagerAttribute = objectFacade.loadObjectAttributeBean(applicationsId, "Tech Manager")
+	def businessOwnerAttribute = objectFacade.loadObjectAttributeBean(applicationsId, "Business Owner")
+	def supportManagerAttribute = objectFacade.loadObjectAttributeBean(applicationsId, "Tech Support Lead")
+
+	// Fill Technical Manager, Business Owner, Support Manager
+    FormField technicalManagerFF = getFieldByName(technicalManagerF)
+	if(technicalManagerAttribute) {
+        def technicalManagerAttributeValues = technicalManagerAttribute.getObjectAttributeValueBeans()
+        def technicalManagerAttributeValue = technicalManagerAttributeValues[0]
+		def technicalManager = technicalManagerAttributeValue.value
+		
+        def technicalManagerEmailAddressAttribute = objectFacade.loadObjectAttributeBean(technicalManager, userNameC)
+        def technicalManagerEmailAddressAttributeValues = technicalManagerEmailAddressAttribute.getObjectAttributeValueBeans()
+        String technicalManagerEmailAddress = technicalManagerEmailAddressAttributeValues[0].value
+		
+		if(technicalManagerEmailAddress!=null) {
+			technicalManagerFF.setFormValue(technicalManagerEmailAddress)
+        } else {
+            technicalManagerFF.setFormValue("");
+        }
+	} else {
+        technicalManagerFF.setFormValue("")
+    }
+    
+    FormField businessOFF = getFieldByName(businessOF)
+	if(businessOwnerAttribute) {
+        def businessOwnerAttributeValues = businessOwnerAttribute.getObjectAttributeValueBeans()
+        def businessOwnerAttributeValue = businessOwnerAttributeValues[0]
+		def businessOwner = businessOwnerAttributeValue.value
+		
+        def businessOwnerEmailAddressAttribute = objectFacade.loadObjectAttributeBean(businessOwner, userNameC)
+        def businessOwnerEmailAddressAttributeValues = businessOwnerEmailAddressAttribute.getObjectAttributeValueBeans()
+        String businessOwnerEmailAddress = businessOwnerEmailAddressAttributeValues[0].value
+		if(businessOwnerEmailAddress!=null) {
+			businessOFF.setFormValue(businessOwnerEmailAddress)
+        } else {
+            businessOFF.setFormValue("")
+        }
+	} else {
+        businessOFF.setFormValue("")
+    }
+    
+    FormField supportManagerFF = getFieldByName(supportManagerF)
+	if(supportManagerAttribute) {
+        def supportManagerAttributeValues = supportManagerAttribute.getObjectAttributeValueBeans()
+        def supportManagerAttributeValue = supportManagerAttributeValues[0]
+		def supportManager = supportManagerAttributeValue.value
+
+        def supportManagerEmailAddressAttribute = objectFacade.loadObjectAttributeBean(supportManager, userNameC)
+        def supportManagerEmailAddressAttributeValues = supportManagerEmailAddressAttribute.getObjectAttributeValueBeans()
+        String supportManagerEmailAddress = supportManagerEmailAddressAttributeValues[0].value
+        if(supportManagerEmailAddress!=null) {
+            supportManagerFF.setFormValue(supportManagerEmailAddress)
+        } else {
+            supportManagerFF.setFormValue("")
+        }
+    } else {
+        supportManagerFF.setFormValue("")
+    }
+}
+
+
+
+
+
+
+
+
+//

@@ -1,0 +1,21 @@
+
+<textarea id="des" rows="4" cols=50></textarea>
+<script type="text/javascript"> 
+$(document).change(function() {
+$("#customfield_10012").each(function() {
+ var selectedvalue = $("#customfield_10012").val(); // your Custom field ID
+ var description = "";
+if(selectedvalue == "10100"){ // Field Option ID's
+ description = "abcdefg"; // Add your description of each Option
+ 
+}else if(selectedvalue == "10101"){ // Field Option ID
+ description = "ABCDFEF"; // Add your description of Option
+ 
+}else if(selectedvalue == "10102"){ // Field Option ID
+ description = "AbSbJCksd"; // Add your Description of Option
+}
+
+ $("#des").val(description);
+ }); 
+});
+</script> 

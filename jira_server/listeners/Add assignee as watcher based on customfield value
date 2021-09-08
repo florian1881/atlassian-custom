@@ -1,0 +1,11 @@
+// add this as a custom listener on issue assigned event
+import com.atlassian.jira.component.ComponentAccessor
+
+def customField =  ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("Some Customfield");
+ 
+def value = (String)issue.getCustomFieldValue(customField);	
+
+if(value=="some Value"){
+	def watcherManager = ComponentAccessor.getWatcherManager()
+	watcherManager.startWatching(issue.assignee, event.issue)
+    }

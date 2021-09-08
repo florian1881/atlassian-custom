@@ -1,0 +1,103 @@
+// Fields
+
+import com.onresolve.scriptrunner.db.DatabaseUtil
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.crowd.embedded.api.User
+import com.atlassian.jira.user.ApplicationUser
+
+def userManager = ComponentAccessor.getUserManager()
+
+def username=getFieldByName("Application")
+def val=username.getValue()
+
+def technicalManager=DatabaseUtil.withSql('pgsql-db') { sql ->
+
+sql.firstRow("Select \"technical_manager\" from \"chg_map_application_owners\" WHERE \"application\" = ?", val )
+
+}
+
+def businessOwner=DatabaseUtil.withSql('pgsql-db') { sql ->
+
+sql.firstRow("Select \"business_owner\" from \"chg_map_application_owners\" WHERE \"application\" = ?", val )
+
+}
+
+
+def techSupportLead=DatabaseUtil.withSql('pgsql-db') { sql ->
+
+sql.firstRow("Select \"tech_support_lead\" from \"chg_map_application_owners\" WHERE \"application\" = ?", val )
+
+}
+
+String technicalManagerData=technicalManager['technical_manager']
+
+String businessOwnerData=businessOwner['business_owner']
+
+String techSupportLeadData=techSupportLead['tech_support_lead']
+
+
+ApplicationUser user1=userManager.getUserByName(technicalManagerData.toString())
+
+ApplicationUser user2=userManager.getUserByName(businessOwnerData.toString())
+
+ ApplicationUser user3=userManager.getUserByName(techSupportLeadData.toString())
+
+List <String> myList = new ArrayList <String>();
+
+
+
+FormField field = getFieldByName("Technical Manager")
+
+if(user1.getUsername()!=null)
+{
+field.setFormValue(user1.getUsername())
+    field.setHelpText("")
+    myList.add(user1.getUsername())
+}
+else
+{
+   field.setHelpText("User doesn't exist")
+}
+
+
+FormField field1 = getFieldByName("Business Owner")
+if(user2!=null)
+{
+
+field1.setFormValue(user2.getUsername())
+  field1.setHelpText("") 
+    myList.add(user2.getUsername())
+}
+
+else
+{
+    field1.setHelpText("User doesn't exist") 
+}
+
+FormField field2 = getFieldByName("Support Manager")
+
+if(user3.getUsername()!=null)
+{
+
+	field2.setFormValue(user3.getUsername())
+    field2.setHelpText("")
+    myList.add(user3.getUsername())
+
+}
+
+else
+{
+  field2.setHelpText("User doesn't exist")
+}
+
+FormField ManagerField=getFieldByName("Manager approvals")
+ManagerField.setFormValue(myList.toString())
+
+
+
+
+
+
+//

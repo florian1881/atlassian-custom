@@ -1,0 +1,24 @@
+// Many times there arises a need where we want to attach a file programmatically. 
+
+
+import com.atlassian.jira.issue.attachment.*
+import com.atlassian.jira.issue.IssueManager;
+import com.atlassian.jira.component.ComponentAccessor;
+
+//Create a example file . This can be any File object. Probable use case is getting a file as a response from a web service
+File file = new File("/app/var/atlassian/application-data/jira/filetest.txt")
+file.write "This is the first line"
+
+// Get the current user. If you wish to avoid the attachment permission check use a predeined user
+def currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+
+// Get the issue object. If this is used as a post function you should have the issue object
+def issue= ComponentAccessor.getIssueManager().getIssueObject('TAW-1686')
+
+// Create the attachment bean. The content type needs to be changed if any other type of file is attached
+CreateAttachmentParamsBean bean = new CreateAttachmentParamsBean(file,"Test","text/plain",currentUser,issue,false,false,null,null,false)
+
+// Execue the attach file operation
+def output= ComponentAccessor.getAttachmentManager().createAttachment(bean)
+
+return output;

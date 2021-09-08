@@ -1,0 +1,61 @@
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+log.warn("--- Start Behaviour ------------------------------------")
+
+def QCS = getFieldById("customfield_14288")
+log.warn("QCS = $QCS")
+
+def dish = getFieldById("customfield_14527")
+log.warn("dish = $dish")
+
+def Closeup = getFieldById("customfield_14528")
+log.warn("Closeup = $Closeup")
+
+def Image = getFieldById("customfield_14529")
+log.warn("Image = $Image")
+
+def Editedimages = getFieldById("customfield_14530")
+log.warn("Editedimages = $Editedimages")
+
+def Background = getFieldById("customfield_14531")
+log.warn("Background = $Background")
+
+def Crockery = getFieldById("customfield_14532")
+log.warn("Crockery = $Crockery")
+
+def Branding = getFieldById("customfield_14535")
+log.warn("Branding = $Branding")
+
+def others = getFieldById("customfield_14127")
+log.warn("others = $others")
+
+def QCSValue = QCS.getValue()
+log.warn("QCSValue = $QCSValue")
+
+if (QCSValue == "Partially Approved" || QCSValue == "Rejected" ){
+    log.warn("Version set to visible!")
+    dish.setHidden(false)
+    Closeup.setHidden(false)
+    Image.setHidden(false)
+    Editedimages.setHidden(false)
+    Background.setHidden(false)
+    Crockery.setHidden(false)
+    Branding.setHidden(false)
+    others.setHidden(false)
+    
+} else {
+    log.warn("Version set to hidden!")
+    dish.setHidden(true)
+    Closeup.setHidden(true)
+    Image.setHidden(true)
+    Editedimages.setHidden(true)
+    Background.setHidden(true)
+    Crockery.setHidden(true)
+    Branding.setHidden(true)
+    others.setHidden(true)
+}
+
+log.warn("------------------------------------ End Behaviour ------")

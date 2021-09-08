@@ -1,0 +1,45 @@
+// Labels 
+
+
+
+
+
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+
+
+
+def assignmentGroup=getFieldByName("Labels")
+
+def valueOfLabels=assignmentGroup.getValue()
+
+def assetType=getFieldByName("Asset Type")
+
+def machineType=getFieldByName("Machine Type")
+
+def environment=getFieldByName("Environment")
+
+
+
+if(valueOfLabels=="fromOG")
+{
+   assetType.setHidden(false)
+   machineType.setHidden(false)
+   environment.setHidden(false)   
+    
+}
+
+else
+{
+   assetType.setHidden(true)
+   machineType.setHidden(true)
+   environment.setHidden(true)   
+    
+
+}
+
+
+
+
+//

@@ -1,0 +1,90 @@
+// Initialiser 
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+FormField editFF = getFieldById("Edit")
+if(editFF != null) {
+    String edit = editFF.value
+    if("Update".equals(edit)) {
+        FormField applicationInitFF = getFieldByName("applicationInit")
+        applicationInitFF?.setFormValue("false")
+    }
+}
+
+
+
+
+
+
+//Business Unit 
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+
+
+// change this to ID of schema, where IQL should search for objects
+def schemaID = 8
+
+// change this to name of attribute in Insight, where user key is stored
+String attributeUserID = "Key"
+
+
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+
+
+def applicationKey = getFieldById(getFieldChanged()).getValue().toString()
+
+
+
+def dlOfApplication = getFieldByName("DL Of Application")
+
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + applicationKey + "\"")
+
+def objectPhone = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Distribution List")
+
+
+if( objectPhone )
+{
+def objectAttributeValues = objectPhone.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+
+if(objectAttributeValue!=null)
+{
+dlOfApplication.setFormValue(objectAttributeValue.getValue())
+}
+else
+{
+dlOfApplication.setFormValue("")
+}    
+
+    
+}
+
+
+else 
+{
+    dlOfApplication.setFormValue("")
+}
+
+
+
+
+
+
+//

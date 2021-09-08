@@ -1,0 +1,145 @@
+// Initiliser
+
+import com.onresolve.jira.groovy.user.FormField
+
+FormField editFF = getFieldById("Edit")
+if(editFF != null) {
+	String edit = editFF.value
+    if("Update".equals(edit)) {
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		applicationInitFF?.setFormValue("false")
+    }
+}
+
+
+//Fields
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+String buF = "Business Unit"
+String sbuF = "Sub-Business Unit"
+FormField buFF = getFieldByName(buF)
+FormField sbuFF = getFieldByName(sbuF)
+FormField appOthersFF = getFieldByName("Application Type")
+FormField specifyApplicationFF = getFieldByName("Please Specify the Application/Server Name")
+
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+if(applicationKey == null || "".equals(applicationKey)) {
+    buFF.setFormValue("")
+    sbuFF.setFormValue("")
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    return   
+}
+
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Name")
+def buAttribute = objectFacade.loadObjectAttributeBean(objectId, "BU")
+def sbuAttribute = objectFacade.loadObjectAttributeBean(objectId, "SBU")
+
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String application = nameAttributeValue.value
+
+
+if("Other".equals(application)) {
+    appOthersFF.setRequired(true)
+	appOthersFF.setHidden(false)
+
+    specifyApplicationFF.setRequired(true)
+	specifyApplicationFF.setHidden(false)  
+} else {
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    appOthersFF.setFormValue([""])
+    specifyApplicationFF.setFormValue("")
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    
+	if(application == null || "".equals(application)) {
+		buFF.setFormValue("")
+		sbuFF.setFormValue("")
+		return
+	}
+    
+	//Behavior running while on page load -Start
+	FormField editFF = getFieldById("Edit")
+	if(editFF != null) {
+		String edit = editFF.value
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		String applicationInit = applicationInitFF?.value
+		if("Update".equals(edit) && "false".equals(applicationInit)) {
+			applicationInitFF?.setFormValue("true")
+			applicationInitFF?.setHidden(true)
+			return
+		}
+	}
+    if(buAttribute) {
+        def objectAttributeValues1 = buAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue1 = objectAttributeValues1[0]
+        String keyVal="${cmdbKey}-${objectAttributeValue1.value}"
+        
+        def InsightBUField=getFieldByName("Business Unit")
+        log.warn "InsightBUField: "+InsightBUField
+        
+        InsightBUField.setFormValue(keyVal)
+    }
+    
+    if(sbuAttribute) {
+        def objectAttributeValues12 = sbuAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue12 = objectAttributeValues12[0]
+        String keyVal12="${cmdbKey}-${objectAttributeValue12.value}"
+        def InsightSBUField=getFieldByName("Sub-Business Unit")
+        log.warn "InsightSBUField: "+InsightSBUField
+        
+        InsightSBUField.setFormValue(keyVal12)
+    }
+	
+def insightKey = getFieldByName("Business Unit").value
+def value = objectFacade.loadObjectBean(insightKey)?.label    
+
+def options=getFieldByName("Clients Impacted")
+def clientname=getFieldByName("Select the Client Name")
+def auditsField=getFieldByName("Which Audits are impacted")
+   
+
+    
+ 
+if(value.toString().contains("PCA") || value.toString().contains("RCA") || value.toString().contains("CCV") || value.toString().equals("Retail"))
+{
+  options.setHidden(false)
+   // clientname.setHidden(false)
+   // clientname.setRequired(true)
+   // auditsField.setHidden(false)  
+    
+    
+}
+
+else
+{
+    
+    options.setHidden(true)
+    clientname.setHidden(true)
+    clientname.setHelpText("")
+    auditsField.setHidden(true)
+
+}
+	
+	
+}
+
+//

@@ -1,0 +1,38 @@
+//Condition
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.security.roles.ProjectRoleManager
+
+return issue.isSubTask() && jiraHelper.project.key in ["IT"] && issue.issueType.name in ["Change Task"]
+
+
+//Provider class/script
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.attachment.Attachment
+import com.atlassian.jira.config.properties.APKeys
+import com.atlassian.core.util.FileSize
+import com.atlassian.core.util.DateUtils
+
+Issue issue = context.get("issue") as Issue
+if(issue.parentObject.attachments.isEmpty())
+	return
+
+String baseUrl = ComponentAccessor.applicationProperties.getString(APKeys.JIRA_BASEURL)
+writer.append("<ol id=\"file_attachments\" class=\"item-attachments\" data-sort-key=\"fileName\" data-sort-order=\"asc\">")
+Collection<Attachment> parentAttachments = issue.parentObject.attachments
+
+for(Attachment fileAttachment: parentAttachments) {
+    def fileAttachmentProperties = fileAttachment.getProperties()
+	String li = "<li class=\"attachment-content js-file-attachment ${fileAttachmentProperties.getBoolean("latest")? "earlier-version" : ""}\" \
+    data-attachment-id=\"${fileAttachment.id}\" data-issue-id=\"${issue.id}\" \
+    ${fileAttachmentProperties.getBoolean("expandable")? "data-attachment-type=\"expandable\"": fileAttachmentProperties.getBoolean("imageFileType")? "data-attachment-type=\"image\" data-attachment-thumbnail=\"${fileAttachmentProperties.getString("thumbnailUrl")}\"": "data-attachment-type=\"file\""}>"
+    writer.append(li)
+    
+    String ddSize= "<dd class=\"attachment-size\">${FileSize.format(fileAttachment.getFilesize())}</dd>"
+    writer.append("<dl><dt class=\"attachment-title\"><a href=\"${baseUrl}/secure/attachment/${fileAttachment.id}/${fileAttachment.filename}\">${fileAttachment.filename}</a></dt>${ddSize}</dl>")
+    writer.append("</li>")
+    
+}
+writer.append("</ol>")

@@ -1,0 +1,33 @@
+import com.atlassian.jira.component.ComponentAccessor;
+import com.atlassian.jira.issue.history.ChangeItemBean;
+import com.atlassian.jira.issue.Issue;
+
+def changeHistoryManager = ComponentAccessor.getChangeHistoryManager()
+
+def statusName = "Open"
+def createdDateDiff = System.currentTimeMillis() - issue.getCreated().getTime()
+
+List<Long> rt = [0L]
+
+rt << createdDateDiff
+
+def changeItems = changeHistoryManager.getChangeItemsForField(issue, "status")
+changeItems.reverse().each {ChangeItemBean item -> item.fromString
+
+ // Get the time passed since status change
+ def timeDiff = System.currentTimeMillis() - item.created.getTime()
+ 
+ // If the status change left our status, we want to subtract the time passed since then
+ if (item.fromString == statusName) {
+ rt << -timeDiff
+ }
+ 
+ // If the status change goes to our status, we want to add the time passed since then
+ if (item.toString == statusName){
+ rt << timeDiff
+ }
+}
+
+def total = (rt.sum() as Long) / 1000
+
+return Math.round(total) ?: 0

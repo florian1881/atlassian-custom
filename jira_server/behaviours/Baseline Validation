@@ -1,0 +1,32 @@
+// Initialiser 
+
+
+getFieldByName("Baseline data incorrect justification").setHidden(true).setRequired(false)
+
+
+
+//Baseline Data 
+
+
+
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def baselinedata = getFieldByName("Baseline Data")
+def BaselineDataoption = baselinedata.getValue() as String
+
+getFieldByName("Baseline data incorrect justification").setHidden(true).setRequired(false)
+if(BaselineDataoption.equalsIgnoreCase("No"))
+{
+ getFieldByName("Baseline data incorrect justification").setHidden(false).setRequired(true) 
+    
+}
+
+
+
+
+
+
+
+
+//

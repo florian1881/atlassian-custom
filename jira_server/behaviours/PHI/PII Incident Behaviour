@@ -1,0 +1,129 @@
+// PH1/Pll Involved 
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+def phiVar=getFieldByName("PHI/PII Involved")
+def Val=phiVar.getValue()
+
+def incidentScreenType=getFieldByName("Incident Screen Type")
+def value=incidentScreenType.getValue()
+
+// change this to ID of schema, where IQL should search for objects
+def schemaID = 8
+
+// change this to name of attribute in Insight, where user key is stored
+String attributeUserID = "Name"
+
+
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+
+def assignmentField = getFieldByName("Assignment Group")
+
+def optionsManager = ComponentAccessor.getComponent(OptionsManager)
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+
+String insightBU="Legal/Compliance & Strategic Sourcing/Marketing"
+
+
+def dlOfApplication = getFieldByName("Business Unit")
+def subBU=getFieldByName("Sub-Business Unit")
+
+def phiYesObject1 = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + insightBU + "\"")
+
+String BUStringforYes="JCMDB-"+phiYesObject1[0].id.toString()
+String SBUStringforYes="JCMDB-"+phiYesObject1[1].id.toString()
+
+String SearchBUStringforNo="IT Infrastructure"
+String SearchSBUStringforNo="Information Security - Governance"
+
+ def phiNoObject1BU = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + SearchBUStringforNo + "\"")
+
+ String BUStringforNo="JCMDB-"+phiNoObject1BU[0].id.toString()
+
+
+ def phiNoObject1SBU = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + SearchSBUStringforNo + "\"")
+
+ String SBUStringforNo="JCMDB-"+phiNoObject1SBU[0].id.toString()
+ 
+ 
+//For Assignment Group
+
+String groupAttributeId="Group Name"
+
+String groupForNo="TestAssignmentGroupJIRA"
+
+def objectForNo = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + groupAttributeId + "\" = \"" + groupForNo + "\"")
+
+String finalObjectForNo="JCMDB-"+objectForNo[0].id.toString()
+
+String groupForYes="TestAssignmentGroupJIRA"
+
+def objectForYes = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + groupAttributeId + "\" = \"" + groupForYes + "\"")
+
+String finalObjectForYes="JCMDB-"+objectForYes[0].id.toString()
+
+
+
+// Category and SubCategory Field.
+def subfieldName = "Category & SubCategory"
+FormField subfield = getFieldByName(subfieldName)
+
+def subcustomField = customFieldManager.getCustomFieldObjectByName(subfieldName)
+def subfieldConfig = subcustomField.getRelevantConfig(getIssueContext())
+def suboptions = optionsManager.getOptions(subfieldConfig)
+
+def subparentOption = suboptions.find {it.value == "Security"}
+def	subchildOption = subparentOption?.childOptions?.find {it.value == "PHI/PII Disclosure/Use"}
+
+def subparentOption1=suboptions.find {it.value == "Security"}
+def subchildOption1=null
+
+if(getActionName()=="Create"){
+if(value=="Privacy Incident"){
+if(Val=="No")
+{
+    
+   assignmentField.setFormValue(finalObjectForNo)
+ //   assignmentField.setReadOnly(true)
+ 
+	dlOfApplication.setFormValue(BUStringforNo)
+	subBU.setFormValue(SBUStringforNo)
+ 
+ subfield.setFormValue([subparentOption1.optionId,subchildOption1]) 
+//	subfield.setReadOnly(false)
+    
+}
+else
+{
+	assignmentField.setFormValue(finalObjectForYes)
+//    assignmentField.setReadOnly(true)
+	dlOfApplication.setFormValue(BUStringforYes)
+	subBU.setFormValue(SBUStringforYes)
+
+	subfield.setFormValue([subparentOption.optionId, subchildOption.optionId])
+ //   subfield.setReadOnly(true)
+}
+}
+}
+
+
+
+
+
+
+
+
+
+//

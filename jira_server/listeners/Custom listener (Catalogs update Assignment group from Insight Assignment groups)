@@ -1,0 +1,51 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.ApplicationUser
+import com.atlassian.jira.event.type.EventDispatchOption
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.crowd.embedded.api.Group
+import org.ofbiz.core.entity.GenericValue
+
+
+def issueType = event.issue.issueType
+if(issueType.name=="HR Services Catalog Task" ||issueType.name== "Generic Service Request Catalog Task" || issueType.name== "Facilities Service Catalog Task" || issueType.name== "Security Service Catalog Task" || issueType.name== "Software Service Catalog Task" || issueType.name== "Hardware Service Catalog Task") {
+    def changeLog = event.changeLog
+    def related = changeLog.getRelated("ChildChangeItem")
+    
+    def insightAssignmentGroupGV = related.find { it.field == "Assignment Group" }
+    if(insightAssignmentGroupGV != null) {
+
+        // Set Assignment Group from Insight Assignment Group
+        def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+        //Insight Assignment Group Field
+        //def iAssignmentGroupCF = customFieldManager.getCustomFieldObject(12613)
+        def iAssignmentGroupCF = customFieldManager.getCustomFieldObjectByName("Assignment Group")
+
+        //issue value
+		def iAssignmentGroupValues = issue.getCustomFieldValue(iAssignmentGroupCF)
+
+        def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade"));
+
+        def groupObject = iAssignmentGroupValues[0]
+
+        def groupNameAttribute = objectFacade.loadObjectAttributeBean(groupObject.id, "Group Name")
+        def groupNameAttributeValues = groupNameAttribute.getObjectAttributeValueBeans()	
+
+		String groupName = groupNameAttributeValues[0].value as String
+        def assignmentGroupCF = customFieldManager.getCustomFieldObjectByName("Internal Assignment Group")
+
+        def groupManager = ComponentAccessor.getGroupManager()
+        Group group = groupManager.getGroup(groupName)
+        issue.setCustomFieldValue(assignmentGroupCF, [group]);
+		
+		// Set Assignee null
+        issue.setAssignee(null);
+        
+        ApplicationUser user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+        def issueManager = ComponentAccessor.issueManager
+        issueManager.updateIssue(user, issue, EventDispatchOption.ISSUE_UPDATED , true);
+	}
+}
+
+
+	

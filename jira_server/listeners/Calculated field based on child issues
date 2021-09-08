@@ -1,0 +1,16 @@
+// This is applied on a particular context. The field will fetch all the child issues estimates and sum it up and multiply by 1.3 
+
+import com.atlassian.jira.component.ComponentAccessor
+def issueLinkManager = ComponentAccessor.getIssueLinkManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+def value=0;
+
+
+    issueLinkManager.getOutwardLinks(issue.id).each() { issueLink ->
+        
+        def linkedIssue = issueLink.getDestinationObject()
+        def customField = customFieldManager.getCustomFieldObject('customfield_10643')
+        def currentValue= (Long) linkedIssue.getCustomFieldValue(customField)
+        value = value + currentValue
+    }
+return value * 1.3 ;

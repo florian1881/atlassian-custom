@@ -1,0 +1,6 @@
+def issueManager = ComponentAccessor.getIssueManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+def cField = customFieldManager.getCustomFieldObject("customfield_id")
+def cFieldValue = issue.getCustomFieldValue(cField)
+ 
+ issue.setSummary(cFieldValue + " " + issue.summary);

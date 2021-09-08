@@ -1,0 +1,3 @@
+import com.atlassian.jira.component.ComponentAccessor
+def currentUser = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+return ComponentAccessor.getGroupManager().isUserInGroup(currentUser,"jira-admin")

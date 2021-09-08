@@ -1,0 +1,201 @@
+@Grab(group='org.apache.httpcomponents', module='httpclient', version='4.5.2')
+@Grab(group='org.mongodb', module='mongo-java-driver', version='3.9.1')
+@Grab(group='org.mongodb', module='bson', version='4.1.0')
+import groovy.json.*
+
+import org.apache.http.client.methods.*
+import org.apache.http.entity.*
+import org.apache.http.impl.client.*
+import java.util.ArrayList;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+import java.io.*;
+import java.sql.*;
+import java.util.*;
+import groovy.sql.Sql;
+import java.sql.Driver;
+
+import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoClients;
+import com.mongodb.client.MongoCollection;
+import com.mongodb.client.MongoCursor;
+import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.result.DeleteResult;
+import com.mongodb.client.result.UpdateResult;
+import com.mongodb.BasicDBObject;
+import org.bson.Document;
+import com.mongodb.client.gridfs.*;
+import com.mongodb.client.gridfs.model.*;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.charset.StandardCharsets;
+import static com.mongodb.client.model.Filters.eq;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Consumer;
+import java.io.File; 
+
+startImport();
+
+public startImport(){
+    //MongoClient mongoClient = MongoClients.create("mongodb://10.176.40.5:27017");
+    def basicDataResponse = callServiceNowForBasicData();
+    importDataTest(basicDataResponse);
+}
+
+public importDataTest(basicDataResponse){
+        String jdbcURL = "jdbc:postgresql://10.176.46.4:5432/postgres";
+        String username = "jira@cotiviti-jira-et-qa-pgsql";
+        String password = "PpDSnD6yHT8C";
+ 
+        def driver = Class.forName('org.postgresql.Driver').newInstance() as Driver 
+
+        def props = new Properties()
+        props.setProperty("user",username) 
+        props.setProperty("password", password)
+
+        def conn = driver.connect(jdbcURL, props) 
+        def sql = new Sql(conn)
+
+        for(data in basicDataResponse){
+            //Document document= new Document(data);
+            //documents.add(document);
+            //importAttachmentsData(database,data.sys_id);
+
+            def query = "insert into snow_incident(data,attachments) values (?, ?)";
+			//log.warn sqlstr;
+            def test = data;
+            def paramsMap = [:]
+            try {
+                log.warn query
+                sql.executeInsert query, [paramsMap, null];
+                sql.commit()
+                log.warn "Successfully committed"
+            } catch(Exception ex) {
+                //sql.rollback()
+                log.warn ex
+                log.warn "Transaction rollback"
+            }
+        }
+        sql.close()
+}
+
+/*public importData(snowData){
+    MongoDatabase database = mongoClient.getDatabase("snow_data");
+    MongoCollection<Document> incidentsCollection = database.getCollection("incidents");
+
+    List<Document> documents = new ArrayList<Document>();
+    for(data in snowData){
+        Document document= new Document(data);
+        documents.add(document);
+        importAttachmentsData(database,data.sys_id);
+    }
+    incidentsCollection.insertMany(documents);
+    //log.warn incidentsCollection.countDocuments();
+    mongoClient.close();
+}
+
+
+public importAttachmentsData(database,incidentsAttachmentsMetadataCollection,incidentsAttachmentsCollection,incidentSysId){
+    log.warn "Incident's SysId: "+incidentSysId;
+    if(incidentSysId !=null){
+        def attachmentsData = callServiceNowForAttachmentsMetaData(incidentSysId);
+        List<Document> documents = new ArrayList<Document>();
+        for(data in attachmentsData){
+            Document document= new Document(data);
+            documents.add(document);
+            importAttachmentsData(database,data.sys_id);
+        }
+        if(attachmentsData.size > 0){
+            incidentsAttachmentsMetadataCollection.insertMany(documents);
+        }
+    }
+}
+
+public importAttachmentsData(database,attachmentSysId){
+    log.warn "Attachment's SysId: "+attachmentSysId;
+    if(attachmentSysId !=null){
+        GridFSBucket gridFSFilesBucket = GridFSBuckets.create(database, "incidents_attachments");
+        try {
+            InputStream is = (InputStream) callServiceNowForAttachmentsData(attachmentSysId);
+            log.warn "is-->"+is;
+            InputStream streamToUploadFrom = new FileInputStream(new File(is));
+            GridFSUploadOptions options = new GridFSUploadOptions()
+                                                .chunkSizeBytes(358400)
+                                                .metadata(new Document("type", "presentation"));
+            log.warn "gridFSBucket:"+gridFSBucket;
+            ObjectId fileId = gridFSBucket.uploadFromStream("incidents_attachments", streamToUploadFrom, options);
+            log.warn "GridFS file id:"+fileId;
+        } catch (FileNotFoundException e){
+        // handle exception
+        }
+    }
+}*/
+
+
+public callServiceNowForBasicData(){
+    def pageSize = 1;
+    def url = 'https://cotiviti.service-now.com/api/now/table/incident?sysparm_limit='+pageSize;
+    def get = new HttpGet(url)
+    
+    get.addHeader("Authorization","Basic amlyYS5hZG1pbjpKaXJhQDE5OTA4Mw==")
+    get.addHeader("Accept", "application/json")
+    get.addHeader("Content-Type", "application/json")
+
+    def client = HttpClientBuilder.create().build();
+    def response = client.execute(get);
+
+    //println (response.getEntity().getContent().toString())
+    def bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+    def jsonResponse = bufferedReader.getText();
+
+    def slurper = new JsonSlurper();
+    def slurped  = slurper.parseText(jsonResponse);
+    //log.warn "Basic data size: " + slurped.result.size()
+    return slurped.result;
+}
+
+/*public callServiceNowForAttachmentsMetaData(incidentSysId){
+    def url = 'https://cotiviti.service-now.com/api/now/table/sys_attachment?sysparm_query=table_sys_idSTARTSWITH'+incidentSysId;
+    def get = new HttpGet(url)
+    
+    get.addHeader("Authorization","Basic amlyYS5hZG1pbjpKaXJhQDE5OTA4Mw==")
+    get.addHeader("Accept", "application/json")
+    get.addHeader("Content-Type", "application/json")
+
+    def client = HttpClientBuilder.create().build();
+    def response = client.execute(get);
+
+    //println (response.getEntity().getContent().toString())
+    def bufferedReader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
+    def jsonResponse = bufferedReader.getText();
+
+    def slurper = new JsonSlurper();
+    def slurped  = slurper.parseText(jsonResponse);
+    log.warn "Attachments metadata size: " + slurped.result.size() + " for sys_id: "+incidentSysId;
+    return slurped.result;
+}
+
+public callServiceNowForAttachmentsData(attachmentSysId){
+    def url = 'https://cotiviti.service-now.com/api/now/attachment/'+attachmentSysId+'/file';
+    def get = new HttpGet(url)
+    
+    get.addHeader("Authorization","Basic amlyYS5hZG1pbjpKaXJhQDE5OTA4Mw==")
+    get.addHeader("Accept", "application/json")
+    get.addHeader("Content-Type", "application/json")
+
+    def client = HttpClientBuilder.create().build();
+    def response = client.execute(get);
+    return response.getEntity().getContent();
+}*/
+   
+
+
+

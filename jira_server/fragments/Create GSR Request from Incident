@@ -1,0 +1,3 @@
+issue.issueType.name.equals("Incident")&& (issue.status.name.equals("Active") || issue.status.name.equals("New"))
+
+///rest/scriptrunner/latest/custom/createGSR?issueId=${issue.id} ( Navigate to this link)

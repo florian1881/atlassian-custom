@@ -1,0 +1,67 @@
+//Fields
+
+
+import com.onresolve.jira.groovy.user.FieldBehaviours
+
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+def rfc = getFieldByName("After Action RFC")
+
+def startDateField = getFieldByName("Planned start date")
+
+def startDateValue = startDateField.getValue() as Date
+
+def endDateField = getFieldByName("Planned end date")
+
+def endDateValue = endDateField.getValue() as Date
+
+Date latestdate = new Date();
+
+startDateField.clearError()
+
+endDateField.clearError()
+
+ 
+
+def strErrorText = "Due Date must be greater than Start Date"
+
+ 
+
+if (endDateValue != null && startDateValue != null && rfc.getValue()=="Yes" ){
+
+  if(startDateValue < endDateValue){
+
+    startDateField.setError("If RFC -yes should accept past values & Start date should be less than End date")
+
+  }
+
+    else{
+
+startDateField.setError("error")
+
+    }
+
+}
+
+else if (endDateValue != null && startDateValue != null && rfc.getValue()=="No" ){
+
+  if(startDateValue < endDateValue && startDateValue>latestdate &&  endDateValue>latestdate ){
+
+    startDateField.setError("If RFC -No should accept Future values & Start date should be less than End date")
+
+  }
+
+    else{
+
+startDateField.setError("error")
+
+    }
+
+}
+
+
+
+
+//

@@ -1,0 +1,14 @@
+// Condition 
+
+
+
+if(issue.getIssueType().getName()=="Incident" && issue.status.getName()=="Awaiting Third Party"){
+def change = event?.getChangeLog()?.getRelated("ChildChangeItem")?.find {it.field == "Assignment Group"}
+
+if (change) {
+def issue=event.issue
+    issue.setAssignee(null)
+return true
+
+}
+}

@@ -1,0 +1,192 @@
+//Initialiser
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+
+if(getActionName()=="Create")
+{
+    def escalationPoint=getFieldByName("Escalation Point")
+	 escalationPoint.setReadOnly(true)	
+
+    def dlofapplication=getFieldByName("DL Of Application")
+	 dlofapplication.setReadOnly(true)	
+}
+
+FormField editFF = getFieldById("Edit")
+if("Update".equals(editFF?.formValue)){
+ 	def incidentScreenType=getFieldByName("Incident Screen Type")
+	 incidentScreenType.setHidden(true)	
+    
+    def majorIncident=getFieldByName("Major Incident")
+    	majorIncident.setHidden(true)
+	
+    def escalationPoint=getFieldByName("Escalation Point")
+	 escalationPoint.setReadOnly(true)	
+
+    def dlofapplication=getFieldByName("DL Of Application")
+	 dlofapplication.setReadOnly(true)	
+
+    def selectTheCaller=getFieldByName("Select the Caller")
+    	selectTheCaller.setHidden(true)
+	
+    def verifiedByCustomer=getFieldByName("Verified by Customer")
+    	verifiedByCustomer.setHidden(true)
+   
+        
+    def impactedServices=getFieldByName("Impacted Services")
+    impactedServices.setHidden(true)
+
+def currentStatus=getFieldByName("Current status")
+    currentStatus.setHidden(true)
+
+def impactedGroups=getFieldByName("Impacted Groups")
+    impactedGroups.setHidden(true)
+
+def applicationsImpacted=getFieldByName("Applications Impacted")
+	applicationsImpacted.setHidden(true) 
+    
+
+ 
+  return  
+    
+}
+
+
+
+1
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+
+if(getActionName()=="Create")
+{
+    def escalationPoint=getFieldByName("Escalation Point")
+	 escalationPoint.setReadOnly(true)	
+
+    def dlofapplication=getFieldByName("DL Of Application")
+	 dlofapplication.setReadOnly(true)	
+}
+
+FormField editFF = getFieldById("Edit")
+if("Update".equals(editFF?.formValue)){
+ 	def incidentScreenType=getFieldByName("Incident Screen Type")
+	 incidentScreenType.setHidden(true)	
+    
+    def majorIncident=getFieldByName("Major Incident")
+    	majorIncident.setHidden(true)
+	
+    def escalationPoint=getFieldByName("Escalation Point")
+	 escalationPoint.setReadOnly(true)	
+
+    def dlofapplication=getFieldByName("DL Of Application")
+	 dlofapplication.setReadOnly(true)	
+
+    def selectTheCaller=getFieldByName("Select the Caller")
+    	selectTheCaller.setHidden(true)
+	
+    def verifiedByCustomer=getFieldByName("Verified by Customer")
+    	verifiedByCustomer.setHidden(true)
+   
+        
+    def impactedServices=getFieldByName("Impacted Services")
+    impactedServices.setHidden(true)
+
+def currentStatus=getFieldByName("Current status")
+    currentStatus.setHidden(true)
+
+def impactedGroups=getFieldByName("Impacted Groups")
+    impactedGroups.setHidden(true)
+
+def applicationsImpacted=getFieldByName("Applications Impacted")
+	applicationsImpacted.setHidden(true) 
+    
+
+ 
+  return  
+    
+}
+
+
+//Fields
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Group Name")
+
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String application = nameAttributeValue.value
+
+def substate=getFieldByName("SubState")
+def addCommandCenterEmailDetails=getFieldByName("Major Incident")
+
+if("Command Center".equals(application) || "TestAssignmentGroupJIRA".equals(application))
+{
+    substate.setHidden(false)
+    substate.setRequired(true)
+    addCommandCenterEmailDetails.setHidden(false)
+    addCommandCenterEmailDetails.setRequired(false)
+}
+else
+{
+    substate.setHidden(true)
+    substate.setRequired(false)
+	addCommandCenterEmailDetails.setHidden(true)
+    addCommandCenterEmailDetails.setRequired(false)
+}
+
+
+def escalationPoint = getFieldByName("Escalation Point")
+
+String attributeUserID = "Key"
+def schemaID = 8
+
+
+
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + applicationKey + "\"")
+
+def objectPhone = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Manager")
+
+if( objectPhone )
+{
+def objectAttributeValues = objectPhone.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+
+String managerKey=cmdbKey+"-"+objectAttributeValue.getValue()
+
+def objectsUser = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + managerKey + "\"")
+
+def objectsUserFinalDetails = objectFacade.loadObjectAttributeBean(objectsUser[0].getId(), "Display Name")
+
+if( objectsUserFinalDetails )
+{
+def objectAttributeValuesFinalDetails = objectsUserFinalDetails.getObjectAttributeValueBeans()
+def objectAttributeValueFinalDetails = objectAttributeValuesFinalDetails[0]
+
+escalationPoint.setFormValue(objectAttributeValueFinalDetails.getValue())
+    
+}
+}
+
+

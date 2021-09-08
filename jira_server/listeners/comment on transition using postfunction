@@ -1,0 +1,14 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.event.user.UserEventType
+import com.atlassian.crowd.embedded.api.User
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.component.pico.ComponentManager
+  
+def userUtil = ComponentAccessor.getUserUtil()
+def commentManager = ComponentAccessor.getCommentManager()
+def CurrentUser = ComponentAccessor.jiraAuthenticationContext.getLoggedInUser()
+def assignee = issue.getAssignee().getName()
+  
+def id=issue.getId()
+  
+commentManager.create(issue, CurrentUser, "The assignee is " + assignee , false)

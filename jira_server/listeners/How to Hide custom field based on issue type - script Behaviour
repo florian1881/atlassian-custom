@@ -1,0 +1,38 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.*
+
+// Get the current issue type from the issue context incase the issue
+// has not been created yet    
+def issuetype = getIssueContext().getIssueType().name
+
+// Get a pointer to my select field
+def selectcf = getFieldByName("Reason")
+
+// Get pointers to the required custom field and otion managers
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+def optionsManager = ComponentAccessor.getOptionsManager()
+def customField = customFieldManager.getCustomFieldObject(selectcf.getFieldId())
+def config = customField.getRelevantConfig(getIssueContext())
+def options = optionsManager.getOptions(config)
+
+// If issue type matches change the cf values to be displayed
+if (issuetype.contains("Story")) {
+    def optionsMap = options.findAll {
+        it.value in ["A", "B"] // list of options you want to show
+    }.collectEntries {
+        [
+                (it.optionId.toString()): it.value
+        ]
+    }
+    selectcf.setFieldOptions(optionsMap)
+}
+else if (issuetype.contains("Task")) {
+    def optionsMap = options.findAll {
+        it.value in ["C", "D"] // list of options you want to show
+    }.collectEntries {
+        [
+                (it.optionId.toString()): it.value
+        ]
+    }
+    selectcf.setFieldOptions(optionsMap)
+    }

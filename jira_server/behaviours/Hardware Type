@@ -1,0 +1,317 @@
+// Initialiser
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+
+def currentUser = ComponentAccessor.jiraAuthenticationContext?.getLoggedInUser().getName()
+
+def requestorField = getFieldByName("Requester")
+requestorField.setFormValue(currentUser)
+
+def deskUse = getFieldByName("Desk Use")
+def dateNeededBy = getFieldByName("Date Need By")
+def installationSite = getFieldByName("At What Site is the unit to be installed in?")
+def FQDNSite = getFieldByName("What is the name (FQDN) of unit?")
+def equipmentType = getFieldByName("Equipment Type")
+def additionalHardWare = getFieldByName("Any additional HW to add to this unit?")
+def managementVLAN = getFieldByName("Management VLAN")
+def airFlow = getFieldByName("Air Flow")
+def shippedTO = getFieldByName("Shipped To")
+def otherSpecify = getFieldByName("Please Specify")
+def type = getFieldByName("Type")
+def connectTO = getFieldByName("Connected To: (FQDN - Port)")
+def localPort = getFieldByName("Local Port")
+def projectName = getFieldByName("What Project is this unit for?")
+def mouseType = getFieldByName("Mouse Type")
+def driverSize = getFieldByName("Driver Size")
+def cableLength = getFieldByName("Cable length")
+def size = getFieldByName("Size")
+def modelNumber = getFieldByName("Model number")
+def configurationItem = getFieldByName("Configuration Item")
+def availableAsset = getFieldByName("Available Asset")
+def ram = getFieldByName("Required RAM (in GB)")
+def shippingAddress = getFieldByName("Shipping Address")
+def details = getFieldByName("Details").setHidden(true)
+def summary = getFieldById("summary").setHidden(true)
+def keyboardType = getFieldByName("Keyboard Type").setHidden(true)
+def description = getFieldById("description").setHidden(true)
+
+deskUse.setHidden(true)
+dateNeededBy.setHidden(true)
+installationSite.setHidden(true)
+FQDNSite.setHidden(true)
+equipmentType.setHidden(true)
+additionalHardWare.setHidden(true)
+managementVLAN.setHidden(true)
+airFlow.setHidden(true)
+shippedTO.setHidden(true)
+otherSpecify.setHidden(true)
+type.setHidden(true)
+connectTO.setHidden(true)
+localPort.setHidden(true)
+projectName.setHidden(true)
+mouseType.setHidden(true)
+driverSize.setHidden(true)
+cableLength.setHidden(true)
+size.setHidden(true)
+modelNumber.setHidden(true)
+configurationItem.setHidden(true)
+availableAsset.setHidden(true)
+ram.setHidden(true)
+shippingAddress.setHidden(true)
+
+
+
+//Fields
+
+
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+
+def keyboardType = getFieldByName("Keyboard Type")
+def hardwareItem = getFieldByName("Hardware Item")
+def deskUse = getFieldByName("Desk Use")
+def dateNeededBy = getFieldByName("Date Need By")
+def installationSite = getFieldByName("At What Site is the unit to be installed in?")
+def FQDNSite = getFieldByName("What is the name (FQDN) of unit?")
+def equipmentType = getFieldByName("Equipment Type")
+def additionalHardWare = getFieldByName("Any additional HW to add to this unit?")
+def managementVLAN = getFieldByName("Management VLAN")
+def airFlow = getFieldByName("Air Flow")
+def shippedTO = getFieldByName("Shipped To")
+def otherSpecify = getFieldByName("Please Specify")
+def type = getFieldByName("Type")
+def connectTO = getFieldByName("Connected To: (FQDN - Port)")
+def localPort = getFieldByName("Local Port")
+def projectName = getFieldByName("What Project is this unit for?")
+def mouseType = getFieldByName("Mouse Type")
+def driverSize = getFieldByName("Driver Size")
+def cableLength = getFieldByName("Cable length")
+def size = getFieldByName("Size")
+def modelNumber = getFieldByName("Model number")
+def configurationItem = getFieldByName("Configuration Item")
+def availableAsset = getFieldByName("Available Asset")
+def ram = getFieldByName("Required RAM (in GB)")
+def shippingAddress = getFieldByName("Shipping Address")
+def selectedOption = hardwareItem.getValue() as String
+def description = getFieldById("description")
+def details = getFieldByName("Details")
+def justification = getFieldByName("Justification")
+
+//def issueId = formContents["id"]
+
+//def issue = ComponentAccessor.getIssueManager().getIssueObject(issueId as Long)
+
+def summary = getFieldById("summary")
+summary.setFormValue(selectedOption)// + " - " + issue.key)
+
+log.warn("Value from field "+selectedOption)
+
+def allowedAdditinalOptions= null
+def sizeCustomField = customFieldManager.getCustomFieldObject(size.getFieldId()) 
+def sizeConfig = sizeCustomField.getRelevantConfig(getIssueContext())
+def sizeOptions = optionsManager.getOptions(sizeConfig)
+
+def alloweddriverSizeOptions= null
+def driverSizeCustomField = customFieldManager.getCustomFieldObject(driverSize.getFieldId()) 
+def driverSizeConfig = driverSizeCustomField.getRelevantConfig(getIssueContext())
+def driverSizeOptions = optionsManager.getOptions(driverSizeConfig)
+
+def allowedTypeOptions= null
+def typeCustomField = customFieldManager.getCustomFieldObject(type.getFieldId()) 
+def typeConfig = typeCustomField.getRelevantConfig(getIssueContext())
+def typeOptions = optionsManager.getOptions(typeConfig)
+
+
+
+if(selectedOption.equalsIgnoreCase("Keyboard"))
+{
+	keyboardType.setHidden(false).setRequired(true)
+	//keyboardType.setRequired(true)
+}
+else
+{
+	keyboardType.setHidden(true).setRequired(false)
+}
+
+if(selectedOption.equalsIgnoreCase("Mouse"))
+{
+	mouseType.setHidden(false).setRequired(true)
+}
+else
+{
+	mouseType.setHidden(true).setRequired(false)
+}
+
+if(selectedOption.equalsIgnoreCase("End User Workspace Setup"))
+{
+	deskUse.setHidden(false).setRequired(true)
+	dateNeededBy.setHidden(false).setRequired(true)
+    details.setHidden(false).setRequired(true)
+}
+else
+{
+	deskUse.setHidden(true).setRequired(false)
+    dateNeededBy.setHidden(true).setRequired(false)
+    details.setHidden(true).setRequired(false)
+}
+
+if(selectedOption.equalsIgnoreCase("Network Device Installation Form"))
+{
+    description.setHidden(false).setRequired(false)
+	installationSite.setHidden(false).setRequired(true)
+	FQDNSite.setHidden(false).setRequired(true)
+    equipmentType.setHidden(false).setRequired(true)
+	additionalHardWare.setHidden(false)
+    managementVLAN.setHidden(false).setRequired(true)
+	airFlow.setHidden(false).setRequired(true)
+    shippedTO.setHidden(false).setRequired(true)
+    type.setHidden(false).setRequired(true)
+	connectTO.setHidden(false).setRequired(true)
+    localPort.setHidden(false).setRequired(true)
+	projectName.setHidden(false).setRequired(true)
+    allowedTypeOptions = type.setFieldOptions(typeOptions.findAll {
+                  it.value in ["Copper","Fiber"]
+                    })
+}
+else
+{
+    description.setHidden(true).setRequired(false)
+	installationSite.setHidden(true).setRequired(false)
+	FQDNSite.setHidden(true).setRequired(false)
+    equipmentType.setHidden(true).setRequired(false)
+	additionalHardWare.setHidden(true)
+    managementVLAN.setHidden(true).setRequired(false)
+	airFlow.setHidden(true).setRequired(false)
+    shippedTO.setHidden(true).setRequired(false)
+    type.setHidden(true).setRequired(false)
+	connectTO.setHidden(true).setRequired(false)
+    localPort.setHidden(true).setRequired(false)
+	projectName.setHidden(true).setRequired(false)
+}
+
+if(selectedOption.equalsIgnoreCase("Laptop Charger"))
+{
+	type.setHidden(false).setRequired(true)
+    allowedTypeOptions = type.setFieldOptions(typeOptions.findAll {
+                  it.value in ["Apple","Dell","Lenovo","USB","World Travel"]
+                    })
+}
+else if(selectedOption.equalsIgnoreCase("Headset"))
+{
+	type.setHidden(false).setRequired(true)
+    allowedTypeOptions = type.setFieldOptions(typeOptions.findAll {
+                  it.value in ["Analog","USB"]
+                    })
+}
+else if(selectedOption.equalsIgnoreCase("Laptop"))
+{
+	type.setHidden(false).setRequired(true)
+    allowedTypeOptions = type.setFieldOptions(typeOptions.findAll {
+                  it.value in ["Developer","Standard"]
+                    })
+}
+else
+{
+    if(! selectedOption.equalsIgnoreCase("Network Device Installation Form")){
+	type.setHidden(true).setRequired(false)
+    }
+}
+
+if(selectedOption.equalsIgnoreCase("Padlock Drives") || selectedOption.equalsIgnoreCase("USB Flash Drives"))
+{
+    if(selectedOption.equalsIgnoreCase("Padlock Drives"))
+        {
+            driverSize.setHidden(false).setRequired(true)
+            alloweddriverSizeOptions = driverSize.setFieldOptions(driverSizeOptions.findAll {
+                  it.value in ["128 GB","256 GB","500 GB","1 TB","2 TB","3 TB","4 TB"]
+                    })
+        }
+    else{
+        driverSize.setHidden(false).setRequired(true)
+        alloweddriverSizeOptions = driverSize.setFieldOptions(driverSizeOptions.findAll {
+                  it.value in ["30 GB"]
+                    })
+    }
+	
+}
+else
+{
+	driverSize.setHidden(true).setRequired(false)
+}
+
+if(selectedOption.equalsIgnoreCase("Ethernet or Network Cable"))
+{
+	cableLength.setHidden(false).setRequired(true)
+}
+else
+{
+	cableLength.setHidden(true).setRequired(false)
+}
+
+if(selectedOption.equalsIgnoreCase("HDMI Cable Male to Male") || selectedOption.equalsIgnoreCase("Macbook"))
+{
+    if(selectedOption.equalsIgnoreCase("Macbook"))
+        {
+            size.setHidden(false).setRequired(true)
+            allowedAdditinalOptions = size.setFieldOptions(sizeOptions.findAll {
+                  it.value in ["13 Inch","15 Inch"]
+                    })
+        }
+    else{
+        size.setHidden(false).setRequired(true)
+        allowedAdditinalOptions = size.setFieldOptions(sizeOptions.findAll {
+                  it.value in ["6 Ft","10 Ft","30 Ft"]
+                    })
+    }
+	
+}
+else
+{
+	size.setHidden(true).setRequired(false)
+}
+
+
+if(selectedOption.equalsIgnoreCase("Laptop display adapter"))
+{
+	modelNumber.setHidden(false)
+}
+else
+{
+	modelNumber.setHidden(true)
+}
+
+
+if(selectedOption.equalsIgnoreCase("RAM Upgrade request"))
+{
+	configurationItem.setHidden(false).setRequired(true)
+    availableAsset.setHidden(false).setRequired(true)
+    ram.setHidden(false).setRequired(true)
+}
+else
+{
+	configurationItem.setHidden(true).setRequired(false)
+    availableAsset.setHidden(true).setRequired(false)
+    ram.setHidden(true).setRequired(false)
+}
+
+if(selectedOption.equalsIgnoreCase("Printer (Perm Work From Home Employee)"))
+{
+	shippingAddress.setHidden(false).setRequired(true)
+}
+else
+{
+	shippingAddress.setHidden(true).setRequired(false) 
+}
+
+
+// Requestor's Business Unit
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+String sbuF = "Requestor's Sub-Business Unit"
+FormField sbuFF = getFieldByName(sbuF)
+sbuFF.setFormValue("") 

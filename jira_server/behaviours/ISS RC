@@ -1,0 +1,531 @@
+// Fields
+
+import com.onresolve.jira.groovy.user.FormField
+
+ 
+
+ 
+
+def impact = getFieldById("customfield_10945")
+
+def mitigation = getFieldByName("Mitigation Activity")
+
+def recoverTime = getFieldByName("Recover Time")
+
+def rollback = getFieldByName("Rollback process tested")
+
+def riskValue=0
+
+def risk = "Moderate"
+
+def impactValue=impact.getValue()
+
+def mitigationValue=mitigation.getValue()
+
+def recoverTimeValue=recoverTime.getValue()
+
+def rollbackValue=rollback.getValue()
+
+ 
+
+ 
+
+if(impactValue!=null){
+
+  if(impactValue=="Unknown"){
+
+   riskValue=riskValue+5
+
+          
+
+}else if(impactValue=="Service Unavailable"){
+
+       riskValue=riskValue+3
+
+}  else if(impactValue=="Service Degraded"){
+
+       riskValue=riskValue+2
+
+}  else if(impactValue=="No Impact"){
+
+       riskValue=riskValue+1
+
+} 
+
+}
+
+if(mitigationValue!=null){
+
+  if(mitigationValue=="recover to Previous State"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(mitigationValue=="Redundant Systems"){
+
+       riskValue=riskValue+1
+
+}  else if(mitigationValue=="Fail Forward"){
+
+       riskValue=riskValue+3
+
+}  else if(mitigationValue=="Unknown"){
+
+       riskValue=riskValue+5
+
+} 
+
+}
+
+ 
+
+if(recoverTimeValue!=null){
+
+  if(recoverTimeValue=="Less Than 5 minutes"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(recoverTimeValue=="Less Than 30 minutes"){
+
+       riskValue=riskValue+2
+
+}  else if(recoverTimeValue=="Less Than 60 minutes"){
+
+       riskValue=riskValue+3
+
+}  else if(recoverTimeValue=="More Than 60 minutes"){
+
+       riskValue=riskValue+4
+
+} 
+
+}
+
+ 
+
+ 
+
+ 
+
+if(rollbackValue!=null){
+
+  if(rollbackValue=="Yes"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(rollbackValue=="No"){
+
+       riskValue=riskValue+3
+
+  }
+
+}
+
+ 
+
+if(riskValue>=1 && riskValue<=4)
+
+{
+
+    risk="Low"
+
+}
+
+else if(riskValue>=5 && riskValue<=7){
+
+    risk="Moderate"
+
+}
+
+else if(riskValue>=8 && riskValue<=12){
+
+    risk="High"
+
+}else if(riskValue>=13 && riskValue<=17){
+
+    risk="Very High"
+
+}
+
+FormField resultField =getFieldById("customfield_10106")
+
+resultField.setFormValue(risk)
+
+ 
+ 
+ // Change impact 
+ 
+ import com.onresolve.jira.groovy.user.FormField
+
+
+def field1 = getFieldByName("Change Description")
+def field2 = getFieldByName("Change Plan")
+def field3 = getFieldByName("Backout Plan")
+def field4 = getFieldByName("Change Impact")
+def field5 = getFieldByName("Communicaton")
+def field6 = getFieldByName("Test Plan")
+def result = 0 
+def value1=field1.getValue()
+def value2=field2.getValue()
+def value3=field3.getValue()
+def value4=field4.getValue()
+def value5=field5.getValue()
+def value6=field6.getValue()
+
+def count =0
+
+if(value1=="Yes"){
+    count++
+         
+}
+
+if(value2=="Yes"){
+    count++
+}
+if(value3=="Yes"){
+    count++
+}
+
+if(value4=="Yes"){
+    count++
+         
+}
+if(value5=="Yes"){
+    count++
+         
+}
+if(value6=="Yes"){
+    count++
+        
+}
+
+FormField resultField =getFieldById("customfield_10106")
+resultField.setFormValue(count)
+
+
+//Mitigation Activity
+
+import com.onresolve.jira.groovy.user.FormField
+
+ 
+
+ 
+
+def impact = getFieldById("customfield_10945")
+
+def mitigation = getFieldByName("Mitigation Activity")
+
+def recoverTime = getFieldByName("Recover Time")
+
+def rollback = getFieldByName("Rollback process tested")
+
+def riskValue=0
+
+def risk = "Moderate"
+
+def impactValue=impact.getValue()
+
+def mitigationValue=mitigation.getValue()
+
+def recoverTimeValue=recoverTime.getValue()
+
+def rollbackValue=rollback.getValue()
+
+ 
+
+ 
+
+if(impactValue!=null){
+
+  if(impactValue=="Unknown"){
+
+   riskValue=riskValue+5
+
+          
+
+}else if(impactValue=="Service Unavailable"){
+
+       riskValue=riskValue+3
+
+}  else if(impactValue=="Service Degraded"){
+
+       riskValue=riskValue+2
+
+}  else if(impactValue=="No Impact"){
+
+       riskValue=riskValue+1
+
+} 
+
+}
+
+if(mitigationValue!=null){
+
+  if(mitigationValue=="recover to Previous State"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(mitigationValue=="Redundant Systems"){
+
+       riskValue=riskValue+1
+
+}  else if(mitigationValue=="Fail Forward"){
+
+       riskValue=riskValue+3
+
+}  else if(mitigationValue=="Unknown"){
+
+       riskValue=riskValue+5
+
+} 
+
+}
+
+ 
+
+if(recoverTimeValue!=null){
+
+  if(recoverTimeValue=="Less Than 5 minutes"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(recoverTimeValue=="Less Than 30 minutes"){
+
+       riskValue=riskValue+2
+
+}  else if(recoverTimeValue=="Less Than 60 minutes"){
+
+       riskValue=riskValue+3
+
+}  else if(recoverTimeValue=="More Than 60 minutes"){
+
+       riskValue=riskValue+4
+
+} 
+
+}
+
+ 
+
+ 
+
+ 
+
+if(rollbackValue!=null){
+
+  if(rollbackValue=="Yes"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(rollbackValue=="No"){
+
+       riskValue=riskValue+3
+
+  }
+
+}
+
+ 
+
+if(riskValue>=1 && riskValue<=4)
+
+{
+
+    risk="Low"
+
+}
+
+else if(riskValue>=5 && riskValue<=7){
+
+    risk="Moderate"
+
+}
+
+else if(riskValue>=8 && riskValue<=12){
+
+    risk="High"
+
+}else if(riskValue>=13 && riskValue<=17){
+
+    risk="Very High"
+
+}
+
+FormField resultField =getFieldById("customfield_11534")
+
+resultField.setFormValue(risk)
+
+ 
+ 
+ //Recover Time
+ 
+ import com.onresolve.jira.groovy.user.FormField
+
+ 
+
+ 
+
+def impact = getFieldById("customfield_10945")
+
+def mitigation = getFieldByName("Mitigation Activity")
+
+def recoverTime = getFieldByName("Recover Time")
+
+def rollback = getFieldByName("Rollback process tested")
+
+def riskValue=0
+
+def risk = "Moderate"
+
+def impactValue=impact.getValue()
+
+def mitigationValue=mitigation.getValue()
+
+def recoverTimeValue=recoverTime.getValue()
+
+def rollbackValue=rollback.getValue()
+
+ 
+
+ 
+
+if(impactValue!=null){
+
+  if(impactValue=="Unknown"){
+
+   riskValue=riskValue+5
+
+          
+
+}else if(impactValue=="Service Unavailable"){
+
+       riskValue=riskValue+3
+
+}  else if(impactValue=="Service Degraded"){
+
+       riskValue=riskValue+2
+
+}  else if(impactValue=="No Impact"){
+
+       riskValue=riskValue+1
+
+} 
+
+}
+
+if(mitigationValue!=null){
+
+  if(mitigationValue=="recover to Previous State"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(mitigationValue=="Redundant Systems"){
+
+       riskValue=riskValue+1
+
+}  else if(mitigationValue=="Fail Forward"){
+
+       riskValue=riskValue+3
+
+}  else if(mitigationValue=="Unknown"){
+
+       riskValue=riskValue+5
+
+} 
+
+}
+
+ 
+
+if(recoverTimeValue!=null){
+
+  if(recoverTimeValue=="Less than 5 minutes"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(recoverTimeValue=="Less than 30 Minutes"){
+
+       riskValue=riskValue+2
+
+}  else if(recoverTimeValue=="Less than 60 Minutes"){
+
+       riskValue=riskValue+3
+
+}  else if(recoverTimeValue=="More than 60 Minutes"){
+
+       riskValue=riskValue+4
+
+} 
+
+}
+
+ 
+
+ 
+
+ 
+
+if(rollbackValue!=null){
+
+  if(rollbackValue=="Yes"){
+
+   riskValue=riskValue+1
+
+          
+
+}else if(rollbackValue=="No"){
+
+       riskValue=riskValue+3
+
+  }
+
+}
+
+ 
+
+if(riskValue>=1 && riskValue<=4)
+
+{
+
+    risk="Low"
+
+}
+
+else if(riskValue>=5 && riskValue<=7){
+
+    risk="Moderate"
+
+}
+
+else if(riskValue>=8 && riskValue<=12){
+
+    risk="High"
+
+}else if(riskValue>=13 && riskValue<=17){
+
+    risk="Very High"
+
+}
+
+FormField resultField =getFieldById("customfield_11534")
+
+resultField.setFormValue(risk)
+
+ 
+ 
+ 

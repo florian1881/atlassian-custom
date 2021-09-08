@@ -1,0 +1,65 @@
+// Fields
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import static com.atlassian.jira.issue.IssueFieldConstants.*
+
+    
+    
+def Assignee=getFieldById("Assignee")
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Group Name")
+
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String application = nameAttributeValue.value
+
+
+def escalationPoint = getFieldByName("Escalation Point")
+//escalationPoint.setFormValue("test")
+String attributeUserID = "Key"
+def schemaID = 8
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + applicationKey + "\"")
+
+def objectPhone = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Manager")
+
+if( objectPhone )
+{
+def objectAttributeValues = objectPhone.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+
+String managerKey=cmdbKey+"-"+objectAttributeValue.getValue()
+
+def objectsUser = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserID + "\" = \"" + managerKey + "\"")
+
+def objectsUserFinalDetails = objectFacade.loadObjectAttributeBean(objectsUser[0].getId(), "Display Name")
+
+if( objectsUserFinalDetails )
+{
+def objectAttributeValuesFinalDetails = objectsUserFinalDetails.getObjectAttributeValueBeans()
+def objectAttributeValueFinalDetails = objectAttributeValuesFinalDetails[0]
+
+escalationPoint.setFormValue(objectAttributeValueFinalDetails.getValue())
+//getFieldById(ASSIGNEE).setFormValue("")
+    
+}
+}
+
+
+
+
+//

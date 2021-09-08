@@ -1,0 +1,56 @@
+//Application Deprecated
+
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+FormField applicationFF = getFieldById(getFieldChanged())
+String application = applicationFF.value
+FormField appOthersFF = getFieldByName("Application Type And Other Application")
+
+if("Other".equals(application)) {
+    appOthersFF.setRequired(true)
+	appOthersFF.setHidden(false)
+} else {
+	appOthersFF.setFormValue(["", ""])
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+    FormField specifyApplicationFF = getFieldByName("Please Specify the Application/Server Name")
+	specifyApplicationFF.setFormValue("")
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)    
+} 
+
+
+//Application Type and Other Application
+
+
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+FormField appOthersFF = getFieldById(getFieldChanged())
+List<String> appOthers = appOthersFF.value as List<String>
+
+FormField specifyApplicationFF = getFieldByName("Please Specify the Application/Server Name")
+
+if(appOthers.isEmpty()) {
+	specifyApplicationFF.setFormValue("")
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    return
+}
+
+String parent = appOthers.get(0)
+String child = appOthers.get(1)
+
+if("Other".equals(parent) && "Other".equals(child)) {
+    specifyApplicationFF.setRequired(true)
+	specifyApplicationFF.setHidden(false)
+} else {
+	specifyApplicationFF.setFormValue("")
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+} 
+
+
+
+//

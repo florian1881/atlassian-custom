@@ -1,0 +1,168 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.sal.api.ApplicationProperties
+import com.atlassian.sal.api.UrlMode
+import com.onresolve.scriptrunner.runner.ScriptRunnerImpl
+import com.onresolve.scriptrunner.runner.rest.common.CustomEndpointDelegate
+import com.onresolve.scriptrunner.runner.util.UserMessageUtil
+import groovy.transform.BaseScript
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.link.IssueLink
+import com.atlassian.jira.issue.link.IssueLinkManager
+
+import javax.ws.rs.core.MultivaluedMap
+import javax.ws.rs.core.Response
+
+@BaseScript CustomEndpointDelegate delegate
+
+resolveIncidents(httpMethod: "GET") { MultivaluedMap queryParams ->
+
+    Long issueId = queryParams.getFirst("issueId") as Long
+
+    StringBuilder bodyB = new StringBuilder()
+    
+	def issueService = ComponentAccessor.getIssueService()
+	def user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+
+	def issueManager = ComponentAccessor.getIssueManager()
+	Issue issue = issueManager.getIssueObject(issueId)
+    List<Issue> resolveIssues = new ArrayList<>()
+	List<Issue> unresolveIssues = new ArrayList<>()
+
+	IssueLinkManager issueLinkManager = ComponentAccessor.getIssueLinkManager()
+    List<IssueLink> issueLinks = issueLinkManager.getInwardLinks(issueId)
+    
+    for(IssueLink issueLink: issueLinks) {
+        Issue linkedIssue = issueLink.sourceObject
+        log.info("inward - ${linkedIssue.key}")
+        if(!"Incident".equals(linkedIssue.issueType.name)){
+            continue
+        }
+        if(resolveIssues.contains(linkedIssue))
+        	continue
+        if(unresolveIssues.contains(linkedIssue))
+        	continue
+		Integer resolveId = null
+        switch(linkedIssue.status.name) {
+			case "New":
+				unresolveIssues.add(linkedIssue)
+				bodyB.append("Cannot resolve incident : ").append(linkedIssue.key).append("<br/>")
+				break;
+			case "Awaiting Change":
+				resolveId = 261
+            break;
+            case "Active":
+				resolveId = 181
+            break;
+            case "Awaiting User Info":
+				resolveId = 231
+            break;
+            case "Awaiting Third Party":
+				resolveId = 211
+            break;
+            case "Awaiting Problem":
+				resolveId = 191
+            break;
+        }
+		if(resolveId == null)
+			continue
+			
+        def issueInputParameters = issueService.newIssueInputParameters()
+        issueInputParameters.with {
+            setComment(issue.key + " Resolved this incident")
+            setSkipScreenCheck(true)
+        }
+		
+		// validate and transition subtask
+        def validationResult = issueService.validateTransition(user, linkedIssue.id, resolveId, issueInputParameters)
+        if (validationResult.isValid()) {
+			def issueResult = issueService.transition(user, validationResult)
+			if (!issueResult.isValid()) {
+				bodyB.append("Failed to resolve incident : ").append(linkedIssue.key).append("<br/>Error :<br/>").append(issueResult.errorCollection).append("<br/>")
+				unresolveIssues.contains(linkedIssue)
+				continue
+			} else
+				bodyB.append(linkedIssue.key).append(" is resolved").append("<br/>")
+        } else {
+			bodyB.append("Cannot Resolve Incident : ").append(linkedIssue.key).append("<br/>Error :<br/>").append(validationResult.errorCollection).append("<br/>")
+			unresolveIssues.contains(linkedIssue)
+			continue
+        }
+		resolveIssues.add(linkedIssue)
+    }
+    issueLinks = issueLinkManager.getOutwardLinks(issueId)
+    
+    for(IssueLink issueLink: issueLinks) {
+        Issue linkedIssue = issueLink.destinationObject
+        log.info("outward - ${linkedIssue.key}")
+        if(!"Incident".equals(linkedIssue.issueType.name)){
+            continue
+        }
+        if(resolveIssues.contains(linkedIssue))
+        	continue
+        if(unresolveIssues.contains(linkedIssue))
+        	continue
+		Integer resolveId = null
+        switch(linkedIssue.status.name) {
+			case "New":
+				unresolveIssues.add(linkedIssue)
+				break;
+			case "Awaiting Change":
+				resolveId = 261
+            break;
+            case "Active":
+				resolveId = 181
+            break;
+            case "Awaiting User Info":
+				resolveId = 231
+            break;
+            case "Awaiting Third Party":
+				resolveId = 211
+            break;
+            case "Awaiting Problem":
+				resolveId = 191
+            break;
+        }
+		if(resolveId == null)
+			continue
+			
+        def issueInputParameters = issueService.newIssueInputParameters()
+        issueInputParameters.with {
+            setComment(issue.key + " Resolved this incident")
+            setSkipScreenCheck(true)
+        }
+		
+		// validate and transition subtask
+        def validationResult = issueService.validateTransition(user, linkedIssue.id, resolveId, issueInputParameters)
+        if (validationResult.isValid()) {
+			def issueResult = issueService.transition(user, validationResult)
+			if (!issueResult.isValid()) {
+				bodyB.append("Failed to resolve incident :").append(linkedIssue.key).append("<br/>Error :<br/>").append(issueResult.errorCollection).append("<br/>")
+				unresolveIssues.contains(linkedIssue)
+				continue
+			} else
+				bodyB.append(linkedIssue.key).append(" is resolved").append("<br/>")
+        } else {
+			bodyB.append("Cannot Resolve Incident :").append(linkedIssue.key).append("<br/>Error :<br/>").append(validationResult.errorCollection).append("<br/>")
+			unresolveIssues.contains(linkedIssue)
+			continue
+        }
+		resolveIssues.add(linkedIssue)
+    }
+
+    
+    bodyB.append("Total Resolved Incidents : ").append(resolveIssues.size()).append("<br/>")
+	bodyB.append("Total Unresolved Incidents : ").append(unresolveIssues.size()).append("<br/>")
+    
+    def flag = [
+        type : 'info',
+        title: 'Resolve Incidents',
+        close: 'auto',
+        body : bodyB.toString()
+    ]
+	
+    UserMessageUtil.flag(flag)
+        
+	def applicationProperties = ScriptRunnerImpl.getOsgiService(ApplicationProperties)
+    def baseUrl = applicationProperties.getBaseUrl(UrlMode.ABSOLUTE)
+    Response.temporaryRedirect(URI.create("${baseUrl}/browse/${issue.key}")).build()
+}

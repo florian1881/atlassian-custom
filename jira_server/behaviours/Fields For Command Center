@@ -1,0 +1,85 @@
+// Fields
+
+def addCommandCenterDetailsField=getFieldByName("Major Incident")
+def val=addCommandCenterDetailsField.getValue()
+
+
+def impactedServices=getFieldByName("Impacted Services")
+
+def currentStatus=getFieldByName("Current status")
+
+def impactInformation=getFieldByName("Impact Information")
+
+def applicationsImpacted=getFieldByName("Applications impacted")
+
+def workaround=getFieldByName("Work around")
+
+def nextUpdateIn=getFieldByName("Next Update in")
+
+def disruptedServiceName=getFieldByName("Disrupted Service Name")
+
+
+
+
+
+if(val=="Yes")
+{
+
+impactedServices.setRequired(true)
+impactedServices.setHidden(false)
+    
+currentStatus.setRequired(true)
+currentStatus.setHidden(false)    
+    
+ impactInformation.setRequired(true)
+  impactInformation.setHidden(false)  
+    
+applicationsImpacted.setRequired(true)
+   applicationsImpacted.setHidden(false)
+    
+workaround.setRequired(true)
+   workaround.setHidden(false)
+    
+nextUpdateIn.setRequired(true)
+   nextUpdateIn.setHidden(false)
+    
+disruptedServiceName.setRequired(true)
+   disruptedServiceName.setHidden(false)
+    
+    
+    
+}
+
+else
+{
+
+impactedServices.setRequired(false)
+impactedServices.setHidden(true)
+impactedServices.setFormValue("")    
+    
+currentStatus.setRequired(false)
+currentStatus.setHidden(true)    
+currentStatus.setFormValue("")
+    
+ impactInformation.setRequired(false)
+  impactInformation.setHidden(true)
+impactInformation.setFormValue("")  
+    
+applicationsImpacted.setRequired(false)
+   applicationsImpacted.setHidden(true)
+applicationsImpacted.setFormValue("")   
+    
+workaround.setRequired(false)
+   workaround.setHidden(true)
+   workaround.setFormValue("")
+    
+nextUpdateIn.setRequired(false)
+   nextUpdateIn.setHidden(true)
+   nextUpdateIn.setFormValue("")
+    
+disruptedServiceName.setRequired(false)
+  disruptedServiceName.setHidden(true)
+  disruptedServiceName.setFormValue("")
+    
+    
+}

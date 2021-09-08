@@ -1,0 +1,4 @@
+// Condition 
+
+
+issue.getIssueType().getName()=="Incident" && issue.status.getName()=="New"

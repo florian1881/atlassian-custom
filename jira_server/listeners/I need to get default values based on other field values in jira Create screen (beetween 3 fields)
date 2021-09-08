@@ -1,0 +1,34 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+def fieldA = getFieldByName("Name of A here")
+def fieldB = getFieldByName("Name of B here")
+def fieldC = getFieldByName("Name of C here")
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+
+def customFieldB = ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("Name of B here")
+def fieldConfigB = customFieldB.getRelevantConfig(getIssueContext())
+def optionsB = optionsManager.getOptions(fieldConfigB)
+def optionBI = optionsB.find {it.value == "I"}
+def optionBII = optionsB.find {it.value == "II"}
+def optionBIII = optionsB.find {it.value == "III"}
+
+def customFieldC = ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("Name of C here")
+def fieldConfigC = customFieldC.getRelevantConfig(getIssueContext())
+def optionsC = optionsManager.getOptions(fieldConfigC)
+def optionC1 = optionsC.find {it.value == "1"}
+def optionC2 = optionsC.find {it.value == "2"}
+def optionC3 = optionsC.find {it.value == "3"}
+
+if (fieldA.getValue() == "a") {
+ fieldB.setFormValue(optionBI.optionId)
+ fieldC.setFormValue(optionC1.optionId)
+}
+else if (fieldA.getValue() == "b") {
+ fieldB.setFormValue(optionBII.optionId)
+ fieldC.setFormValue(optionC2.optionId)
+}
+else if (fieldA.getValue() == "c") {
+ fieldB.setFormValue(optionBIII.optionId)
+ fieldC.setFormValue(optionC3.optionId)
+}

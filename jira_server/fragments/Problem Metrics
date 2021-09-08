@@ -1,0 +1,285 @@
+// In Condition
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.security.roles.ProjectRoleManager
+
+boolean problem = jiraHelper.project.key in ["JMS", "PMM", "PMMQ", "IT"] && "Problem".equals(issue.issueType.name)
+if(!problem)
+	return false
+def user = ComponentAccessor.getJiraAuthenticationContext().getLoggedInUser()
+def userUtil = ComponentAccessor.getUserUtil()
+def roleManager = ComponentAccessor.getComponentOfType(ProjectRoleManager) as ProjectRoleManager
+def adminRole = roleManager.getProjectRole("Administrators")
+def itilRole = roleManager.getProjectRole("ITIL")
+
+def project = issue.projectObject
+boolean isAdmin = roleManager.isUserInProjectRole(user, adminRole, project)
+if(isAdmin)
+	return true
+boolean isITIL = roleManager.isUserInProjectRole(user, adminRole, project)
+if(isITIL)
+	return true
+return false
+
+
+// Provider class/script
+
+
+//07/20/2020 01:19 PM
+
+import groovy.time.TimeCategory
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.customfields.option.Option
+import com.atlassian.crowd.embedded.api.Group
+import com.atlassian.jira.issue.changehistory.ChangeHistoryManager
+import com.atlassian.jira.issue.history.ChangeItemBean
+import java.text.SimpleDateFormat
+
+String status = IssueFieldConstants.STATUS
+String state = "State"
+String assignmentGroup = "Assignment Group"
+
+String rci = "Root Cause Identified"
+String ca = "Corrective Action"
+String closed = "Closed"
+
+String stateDefination = "Problem State Definition"
+String statusDefination = "Problem Status Definition"
+String assignmentGroupDefination = "Assignment Group Definition"
+
+String timeToResolveDefination = "Total Time for Problem Resolution"
+String timeToidentifiedRCDefination = "Time to find Root Cause"
+String timeToCorrectiveActionDefination = "Time to find corrective action"
+
+Date rootCauseDate = null
+Date correctiveActionDate = null
+Date resolveDate = null
+
+Issue issue = context.get("issue") as Issue
+
+ChangeHistoryManager chm = ComponentAccessor.getChangeHistoryManager()
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+def issueStartDate = issue.getCreated()
+
+def currentStatus =  issue.status.name
+def currentStatusStartDate = issueStartDate
+def currentStatusEndDate = null
+Integer statusIndex = -1
+
+def stateCf = customFieldManager.getCustomFieldObjectByName(state)
+Option currentStateOption = stateCf.getValue(issue) as Option
+String currentState = currentStateOption.getValue()
+def currentStateStartDate = issueStartDate
+def currentStateEndDate = null
+Integer stateIndex = -1
+
+def assignmentGroupCf = customFieldManager.getCustomFieldObjectByName(assignmentGroup)
+List<Group> currentAssignmentGroupList = assignmentGroupCf.getValue(issue) as List<Group>
+String currentAssignmentGroup = currentAssignmentGroupList==null || currentAssignmentGroupList.isEmpty()?"":currentAssignmentGroupList.get(0).name
+def currentAssignmentGroupStartDate = issueStartDate
+def currentAssignmentGroupEndDate = null
+Integer assignmentGroupIndex = -1
+
+List<Issue> issues = [issue] as ArrayList<Issue>
+List<String> fields = [IssueFieldConstants.STATUS, state, assignmentGroup] as ArrayList<String>
+
+def changeHistories = chm.getChangeItemsWithFieldsForIssues(issues, fields)
+
+ArrayList<String> definitions = new ArrayList<>()
+fields = new ArrayList<>()
+ArrayList<String> values = new ArrayList<>()
+ArrayList<String> newValues = new ArrayList<>()
+ArrayList<Date> startDates = new ArrayList<>()
+ArrayList<Date> endDates = new ArrayList<>()
+Integer index = -1
+
+for(def changeHistory: changeHistories) {
+	def changes = changeHistory.changeItemBeans
+	
+	for(def cib: changes) {
+    index++
+    String field = cib.field
+    String value = cib.fromString
+    Date startDate = null
+    Date endDate = cib.created
+	String definition = ""
+    
+	switch(field) {
+		case IssueFieldConstants.STATUS:
+			startDate = currentStatusStartDate
+			currentStatusStartDate = endDate
+			currentStatus = cib.toString
+			statusIndex = index
+			definition = statusDefination
+			switch(currentStatus) {
+				case rci:
+					rootCauseDate = endDate
+				break;
+				case ca:
+					correctiveActionDate = endDate
+				break;
+				case closed:
+					resolveDate = endDate
+			}
+		break;
+		case state:
+			startDate = currentStateStartDate
+			currentStateStartDate = endDate
+			currentState = cib.toString
+			stateIndex = index
+			definition = stateDefination
+		break;
+		case assignmentGroup:
+			startDate = currentAssignmentGroupStartDate
+			currentAssignmentGroupStartDate = endDate
+			currentAssignmentGroup = cib.toString
+			assignmentGroupIndex = index
+			definition = assignmentGroupDefination
+            break;
+	}
+	
+	definitions.add(definition)
+	fields.add(field)
+	values.add(value)
+   	newValues.add(cib.toString)
+	startDates.add(startDate)
+	endDates.add(endDate)
+	
+	}
+	
+}
+
+Integer rows = definitions.size();
+Integer i=statusIndex+1
+for(;i<rows;i++) {
+	def sd = startDates.get(i)
+	if(sd.after(currentStatusStartDate)) {
+		i++;
+		break
+	}
+}
+
+if(i<rows) {
+	definitions.add(i, statusDefination)
+	fields.add(i, "status")
+	values.add(i, currentStatus)
+   	newValues.add(i, "")
+	startDates.add(i, currentStatusStartDate)
+	endDates.add(i,null)
+} else {
+	definitions.add(statusDefination)
+	fields.add("status")
+	values.add(currentStatus)
+   	newValues.add("")
+	startDates.add(currentStatusStartDate)
+	endDates.add(null)
+}
+
+rows = definitions.size();
+i=stateIndex+1
+for(;i<rows;i++) {
+	def sd = startDates.get(i)
+	if(sd.after(currentStateStartDate)) {
+		break
+	}
+}
+
+if(i<rows) {
+	definitions.add(i, stateDefination)
+	fields.add(i, state)
+	values.add(i, currentState)
+   	newValues.add(i, "")
+	startDates.add(i, currentStateStartDate)
+	endDates.add(i,null)
+} else {
+	definitions.add(statusDefination)
+	fields.add(state)
+	values.add(currentState)
+   	newValues.add("")
+	startDates.add(currentStateStartDate)
+	endDates.add(null)
+}
+
+rows = definitions.size();
+i=assignmentGroupIndex+1
+if(assignmentGroupIndex > -1) 
+	for(;i<rows;i++) {
+		def sd = startDates.get(i)
+		if(sd.after(currentAssignmentGroupStartDate)) {
+			break
+		}
+	}
+
+if(i<rows) {
+	definitions.add(i, assignmentGroupDefination)
+	fields.add(i, assignmentGroup)
+	values.add(i, currentAssignmentGroup)
+   	newValues.add(i, "")
+	startDates.add(i, currentAssignmentGroupStartDate)
+	endDates.add(i, null)
+} else {
+	definitions.add(assignmentGroupDefination)
+	fields.add(assignmentGroup)
+	values.add(currentAssignmentGroup)
+   	newValues.add("")
+	startDates.add(currentAssignmentGroupStartDate)
+	endDates.add(null)
+}
+
+if(rootCauseDate != null) {
+	definitions.add(timeToidentifiedRCDefination)
+	fields.add(status)
+	values.add(rci)
+   	newValues.add("")
+	startDates.add(issueStartDate)
+	endDates.add(rootCauseDate)	
+}
+
+if(correctiveActionDate != null) {
+	definitions.add(timeToCorrectiveActionDefination)
+	fields.add(status)
+	values.add(ca)
+   	newValues.add("")
+	startDates.add(issueStartDate)
+	endDates.add(correctiveActionDate)	
+}
+
+if(resolveDate != null) {
+	definitions.add(timeToResolveDefination)
+	fields.add(status)
+	values.add(closed)
+   	newValues.add("")
+	startDates.add(issueStartDate)
+	endDates.add(resolveDate)	
+}
+
+rows = definitions.size();
+writer.write("<table style=\"width: 100%; text-align: left\">")
+writer.write("<tr><th>Definition</th><th>Field</th><th>Original Value</th><th>New Value</th><th>Start Date</th><th>End Date</th><th>Duration</th></tr>")
+
+SimpleDateFormat formatter = new SimpleDateFormat("dd/MMM/yyyy hh:mm a")
+
+for(i=0;i<rows;i++) {
+    writer.write("<tr><th>")
+	writer.write(definitions.get(i))
+	writer.write("</th><td>")
+	writer.write(fields.get(i))
+	writer.write("</td><td>")
+	writer.write(values.get(i))
+	writer.write("</td><td>")
+	writer.write(newValues.get(i))
+	writer.write("</td><td>")
+	Date start = startDates.get(i)
+	writer.write(formatter.format(start))
+	writer.write("</td><td>")
+	Date end = endDates.get(i)
+	writer.write(end!=null?formatter.format(end):"")
+	writer.write("</td><td>")
+	writer.write(end!=null?TimeCategory.minus(end, start).toString():"")
+	writer.write("</td></tr>")
+}
+writer.write("</table>")
+

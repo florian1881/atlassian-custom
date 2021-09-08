@@ -1,0 +1,14 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.ModifiedValue
+import com.atlassian.jira.issue.util.DefaultIssueChangeHolder
+
+def customFieldManager = ComponentAccessor.customFieldManager
+def escalate = customFieldManager.getCustomFieldObjectsByName("Portfolio Alignment").first()
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+def config = escalate.getRelevantConfig(issue)
+def options = optionsManager.getOptions(config)
+def optionToSelect = options.find {
+    it.value == "Cable"
+}
+escalate.updateValue(null, issue, new ModifiedValue(issue.getCustomFieldValue(escalate), optionToSelect), new DefaultIssueChangeHolder())

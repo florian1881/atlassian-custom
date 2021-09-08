@@ -1,0 +1,33 @@
+//Fields
+
+
+import com.onresolve.jira.groovy.user.FormField
+
+def customField = getFieldByName("Business communicaton needed?")
+def field1=getFieldByName("DLs to communicate?")
+def field2=getFieldByName("Text of Communication")
+
+def value=customField.getValue()
+
+
+
+if(value=="Yes"){
+    field1.setRequired(true)
+    field2.setRequired(true)
+
+    field1.setHidden(false)
+    field2.setHidden(false)
+    
+}
+
+else{ 
+    field1.setRequired(false)
+    field2.setRequired(false)
+    field1.setHidden(true)
+    field2.setHidden(true)
+}
+
+
+
+
+//

@@ -1,0 +1,13 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+
+def ticket = ComponentAccessor.getIssueManager().getIssueObject(issue.getKey())
+
+def changeHistoryManager = ComponentAccessor.getChangeHistoryManager()
+
+def createDate = ticket.getCreated().getTime();
+def resolutionDate = ticket.getResolutionDate()?.getTime();
+if (resolutionDate == null) {
+ return null;
+}
+return (resolutionDate - createDate)/1000 as long;

@@ -1,0 +1,10 @@
+// Fields
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+
+FormField resultField = getFieldByName("DL Of Application")
+
+resultField.setFormValue("gfdgj");
+
+//

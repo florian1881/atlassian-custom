@@ -1,0 +1,8 @@
+// Add field description in field config
+
+<script type="text/javascript">
+if(AJS.$('#summary').length > 0) {
+   AJS.$('#summary').parent().addClass('hidden');
+    AJS.$('#summary').val('my value');
+}
+</script>

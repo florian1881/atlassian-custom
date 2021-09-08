@@ -1,0 +1,93 @@
+// Requesters
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.atlassian.jira.bc.project.component.ProjectComponent
+import com.atlassian.jira.user.UserPropertyManager
+import com.atlassian.crowd.embedded.api.User
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.UserPropertyManager
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.user.DelegatingApplicationUser
+import com.atlassian.jira.user.util.UserUtil
+import com.opensymphony.module.propertyset.PropertySet;
+import com.atlassian.jira.user.ApplicationUsers;
+import static com.atlassian.jira.issue.IssueFieldConstants.*
+
+
+def descriptionFF = getFieldById("description") 
+def Requester = getFieldByName("Requester")
+def result = Requester.getValue() as String
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+Class iqlFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.IQLFacade") 
+def iqlFacade = ComponentAccessor.getOSGiComponentInstanceOfType(iqlFacadeClass)
+def m1manager = getFieldByName("Requestor M1 Manager")
+def m2manager = getFieldByName("Requestor M2 Manager")
+
+m1manager.setHidden(true)
+
+m2manager.setHidden(true)
+String attributeUsernamekey = "User Name"
+String attributeUserKey = "Key"
+def schemaID = 8
+
+def objects = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUsernamekey + "\" = \"" + result + "\"")
+
+def objectmanagername = objectFacade.loadObjectAttributeBean(objects[0].getId(), "Manager1")
+
+if( objectmanagername )
+{
+def objectAttributeValues = objectmanagername.getObjectAttributeValueBeans()
+def objectAttributeValue = objectAttributeValues[0]
+//descriptionFF.setFormValue(objectAttributeValue.getValue())
+
+
+String managerKey="JCMDB-"+objectAttributeValue.getValue()
+
+def objectsUser = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserKey + "\" = \"" + managerKey + "\"")
+
+def objectsUserFinalDetails = objectFacade.loadObjectAttributeBean(objectsUser[0].getId(), "User Name")
+
+if( objectsUserFinalDetails )
+{
+def objectAttributeValuesFinalDetails = objectsUserFinalDetails.getObjectAttributeValueBeans()
+def objectAttributeValueFinalDetails = objectAttributeValuesFinalDetails[0]
+
+
+def objectsUsermanager2 = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUsernamekey + "\" = \"" + objectAttributeValueFinalDetails.getValue() + "\"")
+
+def objectsUserFinalDetailsmanager2 = objectFacade.loadObjectAttributeBean(objectsUsermanager2[0].getId(), "Manager1")
+
+if( objectsUserFinalDetailsmanager2 )
+{
+def objectAttributeValuesM2FinalDetails = objectsUserFinalDetailsmanager2.getObjectAttributeValueBeans()
+def objectAttributeValueM2FinalDetails = objectAttributeValuesM2FinalDetails[0]
+String managerm2Key="JCMDB-"+objectAttributeValueM2FinalDetails.getValue()
+def objectsUserm2email = iqlFacade.findObjectsByIQLAndSchema(schemaID, "\"" + attributeUserKey + "\" = \"" + managerm2Key + "\"")
+def mobjectsUserFinalDetailsm2email = objectFacade.loadObjectAttributeBean(objectsUserm2email[0].getId(), "User Name")
+if( mobjectsUserFinalDetailsm2email )
+{
+def objectAttributeValuesFinalDetailsm2email = mobjectsUserFinalDetailsm2email.getObjectAttributeValueBeans()
+def objectAttributeValueFinalDetailsm2email = objectAttributeValuesFinalDetailsm2email[0]
+//descriptionFF.setFormValue(objectAttributeValueFinalDetailsm2email.getValue())
+m1manager.setFormValue(objectAttributeValueFinalDetails.getValue()) 
+m2manager.setFormValue(objectAttributeValueFinalDetailsm2email.getValue())   
+    
+}
+} 
+}
+}
+
+
+
+
+
+
+
+//

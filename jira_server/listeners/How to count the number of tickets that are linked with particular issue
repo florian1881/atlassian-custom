@@ -1,0 +1,39 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+def issueLinkManager = ComponentAccessor.issueLinkManager
+
+def outwardLinks = issueLinkManager.getOutwardLinks(issue.id)
+def inwardLinks = issueLinkManager.getInwardLinks(issue.id)
+
+def sum = 0
+
+log.warn("---- Start script field ------------------")
+log.warn("Starting analysis of inwards links")
+inwardLinks.each {
+    log.warn("Inwards link: " + it + " with type: " + it.issueLinkType.name)
+    if(it.issueLinkType.name == "Blocks"){
+        log.warn("Counting this link!")
+    }
+}
+
+sum += inwardLinks.findAll {
+    def issueLinkName = it.issueLinkType.name
+    issueLinkName == "Blocks"
+}.size()
+
+log.warn("Starting analysis of outwards links")
+outwardLinks.each {
+    log.warn("Outwards link: " + it + " with type: " + it.issueLinkType.name)
+    if(it.issueLinkType.name == "Relates"){
+        log.warn("Counting this link!")
+    }
+}
+
+sum += outwardLinks.findAll{
+    def issueLinkName = it.issueLinkType.name
+    issueLinkName == "Relates"
+}.size()
+
+log.warn("Counting: " + sum + " issues")
+log.warn("---------------- End script field ---------")
+return sum

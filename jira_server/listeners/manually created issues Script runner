@@ -1,0 +1,10 @@
+import webwork.action.ActionContext 
+
+def request = ActionContext.getRequest()
+if (request) {    
+  log.error "The issue created manually"+issue.key
+  return true
+} 
+
+log.error "The issue created automatically"+issue.key
+false

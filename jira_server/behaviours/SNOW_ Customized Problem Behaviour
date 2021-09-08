@@ -1,0 +1,351 @@
+// Initialiser
+
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.event.type.EventDispatchOption
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.link.IssueLink
+import com.atlassian.jira.issue.link.IssueLinkManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+String action = getActionName()
+def actionObject = getAction()
+FormField closeCode = getFieldByName("Close code")
+FormField repeatedProblem = getFieldByName("Repeated Problem")
+
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+if(closeCode != null) {
+    def closeCodeCf = customFieldManager.getCustomFieldObjectsByName("Close code")[0]
+    def config = closeCodeCf.getRelevantConfig(issueContext)
+    def optionsManager = ComponentAccessor.optionsManager
+    def options = optionsManager.getOptions(config)
+	closeCode.setFieldOptions(options.findAll {it.value in ['Solved Permanently', 'Not Solved', 'Duplicate']})   
+}
+
+FormField editFF = getFieldById("Edit")
+if(editFF != null) {
+	String edit = editFF.value
+    if("Update".equals(edit)) {
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		FormField assigneeFF = getFieldById("assignee")
+		applicationInitFF?.setFormValue("false")
+        assigneeFF?.setHidden(true)
+        applicationInitFF?.setHidden(true)
+    }
+}
+
+if(actionObject?.id == 91) {
+    //This Logic is set as comments are getting mandatory because of comment was mandatory on any of last popup.
+    //This is scriptrunner plugin bug
+	FormField commentFieldFF = getFieldById('comment')
+    commentFieldFF.setRequired(false)
+}else if("Create".equals(action)) {
+    String rbuF = "Requestor's Business Unit"
+    String rsbuF = "Requestor's Sub-Business Unit"
+    String appF = "Application"
+    String buF = "Business Unit"
+    String sbuF = "Sub-Business Unit"
+    String groupF = "Assignment Group"
+    //String issueLinkF = "issuelinks"
+    String linkedIssue = "Linked Incidents"
+
+    getFieldByName(groupF)?.setRequired(true)
+    getFieldByName(rbuF)?.setRequired(true)
+    getFieldByName(rsbuF)?.setRequired(true)
+    getFieldByName(appF)?.setRequired(true)
+    getFieldByName(buF)?.setRequired(true)
+    getFieldByName(sbuF)?.setRequired(true)
+    
+    //FormField issuelinkFF = getFieldById(issueLinkF)
+    //issuelinkFF?.setDescription("<strong>Link one or more related incident(s) to create problem.</strong>")
+    //issuelinkFF?.setRequired(true)
+    
+    FormField linkedIssueFF = getFieldById(linkedIssue)
+    linkedIssueFF?.setRequired(true)
+
+} else if("Corrective Action".equals(action)) {
+    //This Logic is set as comments are getting mandatory because of comment was mandatory on any of last popup.
+    //This is scriptrunner plugin bug
+	FormField commentFieldFF = getFieldById('comment')
+    commentFieldFF.setRequired(false)
+} else if("Close Problem".equals(action)) {
+	closeCode.setHidden(false)
+	closeCode.setRequired(true)
+    repeatedProblem.setHidden(false)
+	FormField issueLinkFF = getFieldById('issuelinks')
+    issueLinkFF.setHidden(true)
+    issueLinkFF.setRequired(false)
+    return
+}
+
+def idff = getFieldById("id")
+
+if(idff == null){
+    closeCode.setHidden(true)
+    repeatedProblem.setHidden(true)
+    return
+}
+
+Long id = idff.formValue as Long
+if(id == null) {
+    closeCode.setHidden(true)
+    repeatedProblem.setHidden(true)
+    return
+}
+
+def issueManager = ComponentAccessor.getIssueManager()
+Issue issue = issueManager.getIssueObject(id)
+
+if("Closed".equals(issue.status.name)) {
+    closeCode.setHidden(false)
+    repeatedProblem.setHidden(false)
+    return
+}
+    closeCode?.setHidden(true)
+    repeatedProblem?.setHidden(true)
+
+
+
+//Fields
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+
+String impact = getFieldById(getFieldChanged()).value
+String urgency = getFieldByName("Urgency").value
+String priority = ""
+
+switch(impact) {
+    case "High":
+    switch(urgency) {
+		case "High":
+        priority = "Priority 1"
+        break;
+        case "Medium":
+        priority = "Priority 2"
+        break;
+        case "Low":
+        priority = "Priority 3"
+        break;
+    }
+    break;
+    case "Medium":
+    switch(urgency) {
+		case "High":
+        priority = "Priority 2"
+        break;
+        case "Medium":
+        priority = "Priority 3"
+        break;
+        case "Low":
+        priority = "Priority 4"
+        break;
+    }
+    break;
+    case "Low":
+        switch(urgency) {
+		case "High":
+        priority = "Priority 3"
+        break;
+        case "Medium":
+        priority = "Priority 4"
+        break;
+        case "Low":
+        priority = "Priority 4"
+        break;
+    }
+    break;
+}
+
+FormField priorityField = getFieldById(IssueFieldConstants.PRIORITY)
+priorityField.setFormValue(priority)
+
+
+
+//Urgency
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+
+String impact = getFieldByName("Impact").value
+String urgency = getFieldById(getFieldChanged()).value
+String priority = ""
+
+switch(impact) {
+    case "High":
+    switch(urgency) {
+		case "High":
+        priority = "Priority 1"
+        break;
+        case "Medium":
+        priority = "Priority 2"
+        break;
+        case "Low":
+        priority = "Priority 3"
+        break;
+    }
+    break;
+    case "Medium":
+    switch(urgency) {
+		case "High":
+        priority = "Priority 2"
+        break;
+        case "Medium":
+        priority = "Priority 3"
+        break;
+        case "Low":
+        priority = "Priority 4"
+        break;
+    }
+    break;
+    case "Low":
+        switch(urgency) {
+		case "High":
+        priority = "Priority 3"
+        break;
+        case "Medium":
+        priority = "Priority 4"
+        break;
+        case "Low":
+        priority = "Priority 4"
+        break;
+    }
+    break;
+}
+
+FormField priorityField = getFieldById(IssueFieldConstants.PRIORITY)
+priorityField.setFormValue(priority)
+
+
+//Close code
+
+import com.atlassian.jira.issue.link.IssueLink
+import com.atlassian.jira.issue.link.IssueLinkManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+
+def action = getActionName()
+
+if(!"Close Problem".equals(action))
+	return
+
+FormField closeCodeFF =  getFieldById(getFieldChanged())
+FormField issueLinkFF = getFieldById('issuelinks')
+if(issueLinkFF!=null) {
+    boolean required = "Duplicate".equals(closeCodeFF.value)
+    if(required) {
+        getFieldById("issuelinks-linktype").setFormValue("duplicates")
+    }
+    issueLinkFF.setHidden(!required)
+    issueLinkFF.setRequired(required)
+}
+
+
+//Application
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+String buF = "Business Unit"
+String sbuF = "Sub-Business Unit"
+FormField buFF = getFieldByName(buF)
+FormField sbuFF = getFieldByName(sbuF)
+FormField appOthersFF = getFieldByName("Application Type")
+FormField specifyApplicationFF = getFieldByName("Please Specify the Application/Server Name")
+
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+if(applicationKey == null || "".equals(applicationKey)) {
+    buFF.setFormValue("")
+    sbuFF.setFormValue("")
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    return   
+}
+
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Name")
+def buAttribute = objectFacade.loadObjectAttributeBean(objectId, "BU")
+def sbuAttribute = objectFacade.loadObjectAttributeBean(objectId, "SBU")
+
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String application = nameAttributeValue.value
+
+
+if("Other".equals(application)) {
+    appOthersFF.setRequired(true)
+	appOthersFF.setHidden(false)
+
+    specifyApplicationFF.setRequired(true)
+	specifyApplicationFF.setHidden(false)  
+} else {
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    appOthersFF.setFormValue([""])
+    specifyApplicationFF.setFormValue("")
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    
+	if(application == null || "".equals(application)) {
+		buFF.setFormValue("")
+		sbuFF.setFormValue("")
+		return
+	}
+    
+	//Behavior running while on page load -Start
+	FormField editFF = getFieldById("Edit")
+	if(editFF != null) {
+		String edit = editFF.value
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		String applicationInit = applicationInitFF?.value
+		if("Update".equals(edit) && "false".equals(applicationInit)) {
+			applicationInitFF?.setFormValue("true")
+			applicationInitFF?.setHidden(true)
+			return
+		}
+	}
+    if(buAttribute) {
+        def objectAttributeValues1 = buAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue1 = objectAttributeValues1[0]
+        String keyVal="${cmdbKey}-${objectAttributeValue1.value}"
+        
+        buFF?.setFormValue(keyVal)
+    }
+    
+    if(sbuAttribute) {
+        def objectAttributeValues12 = sbuAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue12 = objectAttributeValues12[0]
+        String keyVal12="${cmdbKey}-${objectAttributeValue12.value}"
+        sbuFF?.setFormValue(keyVal12)
+    }
+}
+
+
+
+//Comment
+
+def commentFieldFF = getFieldById(getFieldChanged())
+String action = getActionName();
+
+//This Logic is set as comments are getting mandatory because of comment was mandatory on any of last popup.
+//This is scriptrunner plugin bug
+if("Corrective Action".equals(action)) {
+    commentFieldFF.setRequired(false)
+}
+
+
+//

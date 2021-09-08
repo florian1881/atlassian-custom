@@ -1,0 +1,29 @@
+Dear ${issue.reporter?.displayName},
+<br>
+<br>
+The ${issue.issueType.name} ${issue.key} as been Approved by Demand Partner.
+</br>
+</br>
+Summary: $issue.summary
+</br>
+R2D2 ID: <% out <<
+	issue.getCustomFieldValue(
+    	com.atlassian.jira.component.ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("R2D2#")
+    ) %>
+</br>    
+Demand Partner Approved: <% out <<
+	issue.getCustomFieldValue(
+    	com.atlassian.jira.component.ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("Demand Partner Approved")
+    ) %>
+ </br>   
+ <% if (mostRecentComment)
+    out << "Most recent Comment: " << mostRecentComment
+%>
+</br>
+${getWorkflowButtons.call()}
+Regards,
+</br>
+${issue.assignee?.displayName}
+
+
+Use Workflow post function

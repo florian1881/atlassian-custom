@@ -1,0 +1,2 @@
+def cf = customFieldManager.getCustomFieldObjects(sourceIssue).find {it.name == 'Name of CF'}
+issue.setCustomFieldValue(cf, sourceIssue.getCustomFieldValue(cf))

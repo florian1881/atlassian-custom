@@ -1,0 +1,203 @@
+// How many Users or Clients are Impacted
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+
+
+def urgency=getFieldByName("Select the Urgency of the Issue")
+def noOfUsers=getFieldByName("How many Users or Clients are Impacted")
+String priority=null
+def urgencyVal=urgency.getValue()
+def noOfUsersValue=noOfUsers.getValue()
+
+def incidentScreenType=getFieldByName("Incident Screen Type")
+def value=incidentScreenType.getValue()
+
+
+if(value=="General Incident")
+{
+if(noOfUsersValue=="Customer facing application or Entire Company affected(More than 50 Users)")
+{
+    if(urgencyVal=="Outage/Work Stoppage with time/revenue sensitive(same day)")
+    {
+        priority="Priority 1"
+    }
+   else if(urgencyVal=="Performance Issue/Work Stoppage with moderate time/revenue sensitive(same week)")
+    {
+        priority="Priority 2"
+    }
+  else if(urgencyVal=="Something Broken/Investigation that is not time/revenue sensitive")
+    {
+        priority="Priority 3"
+    }
+}
+
+else if(noOfUsersValue=="Entire Business Unit affected(5 to 50 Users)")
+{
+    if(urgencyVal=="Outage/Work Stoppage with time/revenue sensitive(same day)")
+    {
+        priority="Priority 2"
+    }
+   else if(urgencyVal=="Performance Issue/Work Stoppage with moderate time/revenue sensitive(same week)")
+    {
+        priority="Priority 3"
+    }
+  else if(urgencyVal=="Something Broken/Investigation that is not time/revenue sensitive")
+    {
+        priority="Priority 4"
+    }
+}
+
+else if(noOfUsersValue=="Teams/individuals affected(1 to 5 Users)")
+{
+    if(urgencyVal=="Outage/Work Stoppage with time/revenue sensitive(same day)")
+    {
+        priority="Priority 3"
+    }
+   else if(urgencyVal=="Performance Issue/Work Stoppage with moderate time/revenue sensitive(same week)")
+    {
+        priority="Priority 4"
+    }
+  else if(urgencyVal=="Something Broken/Investigation that is not time/revenue sensitive")
+    {
+        priority="Priority 4"
+    }
+}
+
+}
+
+else if(value=="Privacy Incident")
+	
+	{
+		
+	if(noOfUsersValue=="Customer facing application or Entire Company affected(More than 50 Users)")
+		
+		{
+			
+			priority="Priority 3"
+		}
+
+		else
+				
+				{
+			priority="Priority 4"
+
+				}	
+	
+		
+		
+		
+	}	
+
+
+FormField priorityField = getFieldById(IssueFieldConstants.PRIORITY)
+priorityField.setFormValue(priority)
+
+
+
+
+
+
+
+
+//Select the Urgency of the Issue
+
+
+
+
+
+
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+
+
+def urgency=getFieldByName("Select the Urgency of the Issue")
+def noOfUsers=getFieldByName("How many Users or Clients are Impacted")
+String priority=null
+def urgencyVal=urgency.getValue()
+def noOfUsersValue=noOfUsers.getValue()
+
+def incidentScreenType=getFieldByName("Incident Screen Type")
+def value=incidentScreenType.getValue()
+  
+  
+  
+  
+
+
+if(value=="General Incident")
+{
+if(urgencyVal=="Outage/Work Stoppage with time/revenue sensitive(same day)")
+    {
+   
+   if(noOfUsersValue=="Customer facing application or Entire Company affected(More than 50 Users)")
+	{
+ priority="Priority 1"
+ }
+ else if(noOfUsersValue=="Entire Business Unit affected(5 to 50 Users)")
+{
+priority="Priority 2"
+}
+else if(noOfUsersValue=="Teams/individuals affected(1 to 5 Users)")
+{
+priority="Priority 3"
+}
+}
+
+else if(urgencyVal=="Performance Issue/Work Stoppage with moderate time/revenue sensitive(same week)")
+    {
+   
+   if(noOfUsersValue=="Customer facing application or Entire Company affected(More than 50 Users)")
+	{
+ priority="Priority 2"
+ }
+ else if(noOfUsersValue=="Entire Business Unit affected(5 to 50 Users)")
+{
+priority="Priority 3"
+}
+else if(noOfUsersValue=="Teams/individuals affected(1 to 5 Users)")
+{
+priority="Priority 4"
+}
+}
+
+else if(urgencyVal=="Something Broken/Investigation that is not time/revenue sensitive")
+    {
+   
+   if(noOfUsersValue=="Customer facing application or Entire Company affected(More than 50 Users)")
+	{
+ priority="Priority 3"
+ }
+ else if(noOfUsersValue=="Entire Business Unit affected(5 to 50 Users)")
+{
+priority="Priority 4"
+}
+else if(noOfUsersValue=="Teams/individuals affected(1 to 5 Users)")
+{
+priority="Priority 4"
+}
+}
+
+
+}
+	
+
+FormField priorityField = getFieldById(IssueFieldConstants.PRIORITY)
+priorityField.setFormValue(priority)
+
+
+
+
+
+
+
+
+
+
+//

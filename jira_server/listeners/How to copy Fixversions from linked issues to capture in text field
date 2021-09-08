@@ -1,0 +1,25 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.project.version.Version
+
+def issueLinkManager = ComponentAccessor.issueLinkManager
+
+def inwardLinks = issueLinkManager.getInwardLinks(issue.id)
+log.warn("Inward links: " + inwardLinks)
+def fixVersionBlocking = [] as List<Version>
+//Collecting all the fix versions of the "blocking issues"
+inwardLinks.findAll {
+    if(it.issueLinkType.name == "Blocks"){
+        fixVersionBlocking.addAll(it.sourceObject.fixVersions)
+    }
+}
+
+//Transforming the array into a String with values separated by a comma
+def fixVersions = ""
+fixVersionBlocking.each {
+    if(fixVersions.length() > 0){
+        fixVersions += ", "
+    }
+    fixVersions += it.name
+}
+//Returning the formatted string
+return fixVersions

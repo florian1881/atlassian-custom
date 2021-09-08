@@ -1,0 +1,103 @@
+// initiliser
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.option.Option
+import com.atlassian.crowd.embedded.api.Group
+
+
+FormField parentFF = getFieldById("parentIssueId")
+FormField summaryFF = getFieldById("summary")
+FormField descriptionFF = getFieldById("description")
+FormField dateFF = getFieldByName("Date Need By")
+FormField FacilitiesRequesttypeff = getFieldByName("Facility Request Type")
+FormField SoftwareRequesttypeff = getFieldByName("Software Item")
+FormField HardwareRequesttypeff = getFieldByName("Hardware Item")
+FormField Justificationff = getFieldByName("Justification")
+FormField SecurityRequesttypeff = getFieldByName("Security Request Type")
+FormField SecurityCategorytypeff = getFieldByName("Security Services Category")
+if(parentFF == null || parentFF.getFormValue() == null) {
+	return
+}
+Long parentIssueId = parentFF.getFormValue() as Long
+
+if (parentIssueId == null) {
+	return
+}
+
+FormField requestorFF = getFieldByName("BU")
+FormField assignmentGroupFF = getFieldByName("Assignment Group")
+FormField assigneeFF = getFieldById("assignee")
+FormField RequesterFF = getFieldByName("Requester")
+
+
+def issueManager = ComponentAccessor.getIssueManager()
+def parentIssue = issueManager.getIssueObject(parentIssueId)
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+def requestorCf = customFieldManager.getCustomFieldObjectByName("BU")
+Map<String, Option> requestor = requestorCf.getValue(parentIssue) as Map<String, Option>
+if(requestor != null && !requestor.isEmpty()) {
+	requestorFF.setFormValue([ requestor.get(null).optionId ,requestor.get("1").optionId ])
+}
+
+
+def assignmentGroupCf = customFieldManager.getCustomFieldObjectByName("Assignment Group")
+List<Group> assignmentGroups = assignmentGroupCf.getValue(parentIssue) as List
+if(assignmentGroups != null && !assignmentGroups.isEmpty()) {
+	assignmentGroupFF.setFormValue(assignmentGroups.get(0).name)
+}
+def requesterCf = customFieldManager.getCustomFieldObjectByName("Requester")
+def JustificationCf = customFieldManager.getCustomFieldObjectByName("Justification")
+def datecf = customFieldManager.getCustomFieldObjectByName("Date Need By")
+def FacilitiesRequesttypeCf = customFieldManager.getCustomFieldObjectByName("Facility Request Type")
+//Map<String, Option> fcf = FacilitiesRequesttypeCf.getValue(parentIssue) as Map<String, Option>
+def SoftwareRequesttypeCf = customFieldManager.getCustomFieldObjectByName("Software Item")
+def hardwareRequesttypecf= customFieldManager.getCustomFieldObjectByName("Hardware Item")
+def securityRequesttypecf = customFieldManager.getCustomFieldObjectByName("Security Request Type")
+def securitycategorytypecf = customFieldManager.getCustomFieldObjectByName("Security Services Category")
+if(RequesterFF != null) {
+	RequesterFF.setFormValue(requesterCf.getValue(parentIssue)?.name)
+}
+if(JustificationCf.getValue(parentIssue) != null && JustificationCf.getValue(parentIssue) != "") {
+	Justificationff.setFormValue(JustificationCf.getValue(parentIssue))
+}
+
+if(datecf.getValue(parentIssue) != null && datecf.getValue(parentIssue) != "") {
+	dateFF.setFormValue(datecf.getValue(parentIssue).format("dd/MMM/yy"))
+}
+if(FacilitiesRequesttypeCf.getValue(parentIssue) != null && FacilitiesRequesttypeCf.getValue(parentIssue) != "") {
+	FacilitiesRequesttypeff.setFormValue(FacilitiesRequesttypeCf.getValue(parentIssue).optionId)
+}
+
+if(SoftwareRequesttypeCf.getValue(parentIssue) != null && SoftwareRequesttypeCf.getValue(parentIssue) != "") {
+	SoftwareRequesttypeff.setFormValue(SoftwareRequesttypeCf.getValue(parentIssue).optionId)
+}
+if(hardwareRequesttypecf.getValue(parentIssue) != null && hardwareRequesttypecf.getValue(parentIssue) != "") {
+	HardwareRequesttypeff.setFormValue(hardwareRequesttypecf.getValue(parentIssue).optionId)
+}
+if(securityRequesttypecf.getValue(parentIssue) != null && securityRequesttypecf.getValue(parentIssue) != "" && securityRequesttypecf.getValue(parentIssue) != "--Please Select Request Type--") {
+	SecurityRequesttypeff.setFormValue(securityRequesttypecf.getValue(parentIssue).optionId)
+}
+if(securitycategorytypecf.getValue(parentIssue) != null && securitycategorytypecf.getValue(parentIssue) != "" && securitycategorytypecf.getValue(parentIssue) != "--Please Select Category--") {
+	SecurityCategorytypeff.setFormValue(securitycategorytypecf.getValue(parentIssue).optionId)
+}
+
+if(assigneeFF == null) {
+	assigneeFF.setFormValue(parentIssue.assignee?.username)
+}
+
+if(summaryFF != null) {
+	summaryFF.setFormValue(parentIssue.summary)
+}
+if(descriptionFF != null) {
+	descriptionFF.setFormValue(parentIssue.description)
+}
+
+FormField priorityFF = getFieldById("priority")
+if(priorityFF != null && parentIssue.priority != null) {
+	priorityFF.setFormValue(parentIssue.priority.getId())
+}
+
+
+//

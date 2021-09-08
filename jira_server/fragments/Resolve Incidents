@@ -1,0 +1,1 @@
+issue.issueType.name.equals("Problem") && !(issue.status.name.equals("Closed") || "Canceled".equals(issue.status.name))

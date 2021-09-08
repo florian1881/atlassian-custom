@@ -1,0 +1,31 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.link.IssueLinkTypeManager
+import com.atlassian.jira.issue.Issue
+
+final String linkedIssue = "Linked Incidents"
+// the name of the issue link
+final String issueLinkName = "Problem/Incident"
+// the sequence of the link
+long sequence = 1L
+
+def issueType = event.issue.issueType
+if(issueType.name== "Problem") {
+    
+    def cfm = ComponentAccessor.customFieldManager
+    def linkedIssueCF = cfm.getCustomFieldObjectsByName(linkedIssue)[0]
+    Collection<Issue> issues = event.issue.getCustomFieldValue(linkedIssueCF) as Collection<Issue>
+    if(issues.isEmpty()) {
+        return
+    }
+    def loggedInUser = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+    def issueLinkTypeManager = ComponentAccessor.getComponent(IssueLinkTypeManager)
+
+    def availableIssueLinkTypes = issueLinkTypeManager.issueLinkTypes
+    def linkType = availableIssueLinkTypes.findByName(issueLinkName)
+    for(Issue destinationIssue: issues) {
+		ComponentAccessor.issueLinkManager.createIssueLink(destinationIssue.id, event.issue.id, linkType.id, sequence, loggedInUser)
+        sequence = sequence + 1
+    } 
+}
+
+

@@ -1,0 +1,9 @@
+Collection subTasks = issue.getParentObject().getSubTaskObjects()
+
+for(subTask in subTasks) 
+
+{ if (issue.issueType.name == "<issue type name>" && (issue.status?.name == 'Done' || issue.status?.name == 'Canceled')){ 
+
+return true 
+
+} }

@@ -1,0 +1,9 @@
+import com.atlassian.jira.component.ComponentAccessor
+Collection component = issue.getComponents()
+issue.setSummary(issue.summary + component)
+
+
+ 
+import com.atlassian.jira.component.pico.ComponentManager
+def components = issue.getComponentObjects().getAt(0)?.getName()
+issue.setSummary(issue.summary + " : "+ components)

@@ -1,0 +1,10 @@
+// This sql is used as a datasource for EazyBI to generate tempo related reports.
+// The report provides teamwise required and logged hours for the mentioned week.
+
+select t.name,sum(w.TIMEWORKED)/3600 Worked,count(distinct ms.TEAM_MEMBER_ID)*40 Required
+from AO_AEFED0_TEAM_V2 t
+join AO_AEFED0_TEAM_MEMBER_v2 tm on t.id=tm.team_id
+join AO_AEFED0_MEMBERSHIP ms on tm.id=ms.TEAM_MEMBER_ID
+join worklog w on tm.member_key=w.author
+where w.startdate >= Date '2019-04-14' and w.startdate < Date '2019-04-21'
+group by t.name

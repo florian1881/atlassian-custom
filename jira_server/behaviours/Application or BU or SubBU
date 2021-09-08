@@ -1,0 +1,85 @@
+import com.onresolve.jira.groovy.user.FormField
+FormField editFF = getFieldById("Edit")
+if(editFF != null) {
+    String edit = editFF.value
+    if("Update".equals(edit)) {
+        FormField applicationInitFF = getFieldByName("applicationInit")
+        applicationInitFF?.setFormValue("false")
+    }
+}
+
+
+// Fields
+
+
+import com.onresolve.scriptrunner.db.DatabaseUtil
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.onresolve.jira.groovy.user.FormField
+
+
+def username=getFieldByName("Application")
+def val=username.getValue()
+
+def bu=DatabaseUtil.withSql('qr') { sql ->
+
+sql.firstRow("Select \"businessunit\" from \"inc_map_application_bu_subbu\" WHERE \"application\" = ?", val )
+
+}
+
+
+def subbu=DatabaseUtil.withSql('qr') { sql ->
+
+sql.firstRow("Select \"subbusinessunit\" from \"inc_map_application_bu_subbu\" WHERE \"application\" = ?", val )
+
+}
+
+
+ //Behavior running while on page load -Start
+    FormField editFF = getFieldById("Edit")
+    if(editFF != null) {
+        String edit = editFF.value
+        FormField applicationInitFF = getFieldByName("applicationInit")
+        String applicationInit = applicationInitFF?.value
+        if("Update".equals(edit) && "false".equals(applicationInit)) {
+            applicationInitFF?.setFormValue("true")
+            applicationInitFF?.setHidden(true)
+            return
+        }
+    }
+
+
+
+def fieldName = "BU/COE & Sub BU/COE"
+FormField field = getFieldByName(fieldName)
+
+def optionsManager = ComponentAccessor.getComponent(OptionsManager)
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+
+def customField = customFieldManager.getCustomFieldObjectByName(fieldName)
+def fieldConfig = customField.getRelevantConfig(getIssueContext())
+def options = optionsManager.getOptions(fieldConfig)
+
+def parentOption = options.find {it.value== bu["businessunit"]}
+def	childOption = parentOption?.childOptions?.find {it.value == subbu["subbusinessunit"]}
+
+
+field.setFormValue([parentOption.optionId, childOption.optionId])
+
+
+
+
+def dlofapplication=DatabaseUtil.withSql('qr') { sql ->
+
+sql.firstRow("Select \"dlofapplication\" from \"inc_map_application_bu_subbu\" WHERE \"application\" = ?", val )
+
+}
+
+FormField dlfield = getFieldByName("DL Of Application")
+dlfield.setFormValue(dlofapplication['dlofapplication'])
+dlfield.setReadOnly(true)
+
+
+
+//

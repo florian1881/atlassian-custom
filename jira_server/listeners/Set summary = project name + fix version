@@ -1,0 +1,16 @@
+Custom script in postfunction.
+
+import com.atlassian.jira.project.version.Version
+//get project
+String project = issue.getProjectObject().getName();
+// get fix Versions
+Collection<Version> versions = issue.getFixVersions()
+String vName = "";
+// get first version
+if(!versions.isEmpty()){
+    for(Version v: versions){
+         vName = " " +v.getName();
+    }
+}
+
+issue.setSummary(" "+"project: "+project + vName);

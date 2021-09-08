@@ -1,0 +1,9 @@
+// This is used if you need to have an announcement project specific , board specific or group specific 
+
+<script type="text/javascript">
+    AJS.$(document).ready(function(){
+        if(AJS.$('#ghx-board-name').text()=='My Kanban'){
+            AJS.$('#announcement-banner').append("<b>Condition based announcement</b>");
+        }
+    });
+</script>

@@ -1,0 +1,2 @@
+def duration=groovy.time.TimeCategory.minus(new Date(),issue.created);
+return duration

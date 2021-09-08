@@ -1,0 +1,18 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+def issueLinkManager = ComponentAccessor.getIssueLinkManager()
+
+def cf = ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("Requester Unit")
+def ru = underlyingIssue.getCustomFieldValue(cf)
+
+if(ru.toString() in ["CBU-Mobility","CBU-Fixed","CBU-SS","CBU","CBU VP"]){
+    issueLinkManager.getInwardLinks(underlyingIssue.id).each() { issueLink ->
+        def linkedIssue = issueLink.getSourceObject()
+        if(linkedIssue.getProjectObject().getKey()=='UST'){
+            if(linkedIssue.getStatus().getName() in ["Dev In Progress","E2E in Progress","Under Review","Under Release","BRSD Deployed","BRSD Rejected","Cancelled"])
+            {
+             	getFieldById("customfield_10643").setReadOnly(true)   
+            }
+        }
+    }
+}

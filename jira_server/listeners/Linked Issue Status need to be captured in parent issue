@@ -1,0 +1,20 @@
+import com.atlassian.jira.component.ComponentAccessor
+
+def issueManager = ComponentAccessor.issueManager
+def issueLinkManager = ComponentAccessor.issueLinkManager
+
+def result = ""
+//Find all inward links to the current issue
+def outwardLinks = issueLinkManager.getInwardLinks(issue.id)
+outwardLinks.findAll{
+    //if the issuelink type is calle "Blocks" then we collect his status
+    if(it.issueLinkType.name == "Blocks"){
+        def linkedIssue = issueManager.getIssueObject(it.sourceId)
+        if(result.trim().length() > 0){
+            result += ", "   
+        }
+        result += linkedIssue.status.name
+    }
+}
+//returning the string with all the states inside
+return result

@@ -1,0 +1,6 @@
+// Customfields which have no value associated to them or which are not being used.
+
+SELECT t1.ID,t1.CFNAME
+FROM CUSTOMFIELD t1
+LEFT JOIN CUSTOMFIELDVALUE t2 ON t2.CUSTOMFIELD = t1.ID
+WHERE t2.CUSTOMFIELD IS NULL;

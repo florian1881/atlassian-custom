@@ -1,0 +1,53 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.event.type.EventDispatchOption
+import com.atlassian.jira.issue.MutableIssue
+import com.atlassian.jira.project.version.Version
+
+def issueManager = ComponentAccessor.issueManager
+def issueLinkManager = ComponentAccessor.issueLinkManager
+def loggedInUser = ComponentAccessor.jiraAuthenticationContext.loggedInUser
+
+def fixVersions = issue.getFixVersions()
+def inwardLinks = issueLinkManager.getInwardLinks(issue.id)
+inwardLinks.each {
+    def linkedIssue = issueManager.getIssueObject(it.sourceId)
+    def linkedVersions = linkedIssue.fixVersions
+    List<Version> versionsToAdd = getVersionsToAddToLinkedIssue(fixVersions, linkedVersions)
+
+    if(versionsToAdd.size() > 0){
+        versionsToAdd.each {
+            linkedVersions.add(it)
+        }
+        linkedIssue.setFixVersions(linkedVersions)
+        issueManager.updateIssue(loggedInUser, linkedIssue, EventDispatchOption.DO_NOT_DISPATCH, false)
+    }
+}
+
+def outwardLinks = issueLinkManager.getOutwardLinks(issue.id)
+outwardLinks.each {
+    def linkedIssue = issueManager.getIssueObject(it.destinationId)
+    def linkedVersions = linkedIssue.fixVersions
+    List<Version> versionsToAdd = getVersionsToAddToLinkedIssue(fixVersions, linkedVersions)
+
+    if(versionsToAdd.size() > 0){
+        versionsToAdd.each {
+            linkedVersions.add(it)
+        }
+        linkedIssue.setFixVersions(linkedVersions)
+        issueManager.updateIssue(loggedInUser, linkedIssue, EventDispatchOption.DO_NOT_DISPATCH, false)
+    }
+
+}
+
+private static List<Version> getVersionsToAddToLinkedIssue(fixVersions, linkedVersions) {
+    def versionsToAdd = [] as List<Version>
+    fixVersions.each { fixVersion ->
+        def existingIntoLinkedVersions = linkedVersions.find {
+            it.id == fixVersion.id
+        }
+        if (existingIntoLinkedVersions == null) {
+            versionsToAdd.add(fixVersion)
+        }
+    }
+    return versionsToAdd
+}

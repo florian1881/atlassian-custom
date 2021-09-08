@@ -1,0 +1,29 @@
+// required import statements
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.util.UserUtil
+import  java.util.Date.*
+    
+// Get pointers to my date field and get its value as a date
+def cf = getFieldById("customfield_10307")
+def cfval = cf.getValue() as Date
+
+// get todays date
+def today = new Date()
+// get yesterdays date
+def threedays = today.plus(3)
+
+// get the date three months in the future
+def threeMonthDate = today.plus(90)
+
+// if the date entered is before todays throw an error
+if(cfval.before(threedays)) {
+    cf.setError("You must select a date that is after threedays")
+// if the date entered is over three months throw an error
+}else if(cfval.after(threeMonthDate)) {
+    cf.setError("You must select a date that is before threemonths")
+}else{
+    cf.clearError()
+}
+
+
+Use Script behavior 

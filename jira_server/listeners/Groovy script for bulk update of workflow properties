@@ -1,0 +1,31 @@
+//These are scripts which will run on the script runner console to bulk update the workflow properties
+// For Transitions
+import com.atlassian.jira.component.ComponentAccessor
+
+def actions=ComponentAccessor.getWorkflowManager().getWorkflow("my_workflow_name").getAllActions()
+
+for(action in actions){
+   // to add
+   action.getMetaAttributes().put('jira.permission.assign.userCF','customfield_10502')
+   
+   // to remove 
+   /* There is an issue with this part and I am not able to figure out how to fix it.
+    The issue is that the properties re appear after some time probably the next day. 
+    I had to manually remove them */
+   action.getMetaAttributes().remove('jira.permission.assign.userCF')
+   
+}
+
+
+// For Statuses
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def steps=ComponentAccessor.getWorkflowManager().getWorkflow("my_workflow_name").getDescriptor().getSteps()
+
+for(step in steps){
+   // to add
+   step.getMetaAttributes().put('jira.permission.assign.userCF','customfield_10502')
+   
+   
+}

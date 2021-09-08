@@ -1,0 +1,6 @@
+// Fields
+
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import static com.atlassian.jira.issue.IssueFieldConstants.*
+//def Assignee=getFieldById("Assignee")
+//getFieldById(ASSIGNEE).setFormValue("")

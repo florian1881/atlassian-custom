@@ -1,0 +1,8 @@
+//Must be placed in announcement banner. Test and use at your own risk
+// If you are not sure what you are doing , please dont try the below workaround. 
+<script>
+if(window.location.href.indexOf("CreateIssue!default.jspa")>-1){
+alert("Kindly you must create your request by clicking on the Create button. This create link is restricted")
+window.close()
+}
+</script>

@@ -1,0 +1,206 @@
+//Initiliser
+
+import com.onresolve.jira.groovy.user.FormField
+
+String action = getActionName()
+
+FormField editFF = getFieldById("Edit")
+if(editFF != null) {
+	String edit = editFF.value
+    if("Update".equals(edit)) {
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		FormField assigneeFF = getFieldById("assignee")
+		applicationInitFF?.setFormValue("false")
+        assigneeFF?.setHidden(true)
+		applicationInitFF?.setHidden(true)
+    }
+}
+
+if("Create".equals(action)) {
+    String appF = "Application"
+    String buF = "Business Unit"
+    String sbuF = "Sub-Business Unit"
+    String groupF = "Assignment Group"
+
+    getFieldByName(groupF)?.setRequired(true)
+    getFieldByName(appF)?.setRequired(true)
+    getFieldByName(buF)?.setRequired(true)
+    getFieldByName(sbuF)?.setRequired(true)
+}
+
+//if("Close".equals(action)) {
+//    def assigneeFF = getFieldById("assignee")
+//    assigneeFF.setRequired(true)
+//}
+
+
+
+
+
+//Fields
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.issue.IssueFieldConstants
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+
+String buF = "Business Unit"
+String sbuF = "Sub-Business Unit"
+String technicalManagerF = "Technical Manager"
+String businessOF = "Business Owner"
+String supportManagerF = "Support Manager"
+String rfa = "Request for approval"
+String action = getActionName()
+String userNameC = "User Name"
+
+FormField buFF = getFieldByName(buF)
+FormField sbuFF = getFieldByName(sbuF)
+FormField appOthersFF = getFieldByName("Application Type")
+FormField specifyApplicationFF = getFieldByName("Please Specify the Application/Server Name")
+
+FormField appFF = getFieldById(getFieldChanged())
+String applicationKey = appFF.value
+
+if(applicationKey == null || "".equals(applicationKey)) {
+    buFF.setFormValue("")
+    sbuFF.setFormValue("")
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    return   
+}
+
+String cmdbKey = applicationKey.split("-")[0]
+int objectId = Integer.valueOf(applicationKey.split("-")[1])
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+
+def nameAttribute = objectFacade.loadObjectAttributeBean(objectId, "Name")
+def buAttribute = objectFacade.loadObjectAttributeBean(objectId, "BU")
+def sbuAttribute = objectFacade.loadObjectAttributeBean(objectId, "SBU")
+
+def nameAttributeValues = nameAttribute.getObjectAttributeValueBeans()
+def nameAttributeValue = nameAttributeValues[0]
+String application = nameAttributeValue.value
+
+
+if("Other".equals(application)) {
+    appOthersFF.setRequired(true)
+	appOthersFF.setHidden(false)
+
+    specifyApplicationFF.setRequired(true)
+	specifyApplicationFF.setHidden(false)  
+} else {
+    appOthersFF.setRequired(false)
+	appOthersFF.setHidden(true)
+
+    appOthersFF.setFormValue([""])
+    specifyApplicationFF.setFormValue("")
+    specifyApplicationFF.setRequired(false)
+	specifyApplicationFF.setHidden(true)
+    
+	if(application == null || "".equals(application)) {
+		buFF.setFormValue("")
+		sbuFF.setFormValue("")
+		return
+	}
+    
+	//Behavior running while on page load -Start
+	FormField editFF = getFieldById("Edit")
+	if(editFF != null || rfa.equals(action)) {
+		String edit = editFF.value
+		FormField applicationInitFF = getFieldByName("applicationInit")
+		String applicationInit = applicationInitFF?.value
+		if(("Update".equals(edit) || rfa.equals(action)) && "false".equals(applicationInit)) {
+			applicationInitFF?.setFormValue("true")
+			applicationInitFF?.setHidden(true)
+			return
+		}
+	}
+    if(buAttribute) {
+        def objectAttributeValues1 = buAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue1 = objectAttributeValues1[0]
+        String keyVal="${cmdbKey}-${objectAttributeValue1.value}"
+        
+        buFF?.setFormValue(keyVal)
+    }
+    
+    if(sbuAttribute) {
+        def objectAttributeValues12 = sbuAttribute.getObjectAttributeValueBeans()
+        def objectAttributeValue12 = objectAttributeValues12[0]
+        String keyVal12="${cmdbKey}-${objectAttributeValue12.value}"
+        sbuFF?.setFormValue(keyVal12)
+    }
+    
+	def applicationsAttribute = objectFacade.loadObjectAttributeBean(objectId, "Applications")
+	def applicationsAttributeValues = applicationsAttribute.getObjectAttributeValueBeans()
+	def applicationsAttributeValue = applicationsAttributeValues[0]
+	int applicationsId = applicationsAttributeValue.value as Integer
+
+	def technicalManagerAttribute = objectFacade.loadObjectAttributeBean(applicationsId, "Tech Manager")
+	def businessOwnerAttribute = objectFacade.loadObjectAttributeBean(applicationsId, "Business Owner")
+	def supportManagerAttribute = objectFacade.loadObjectAttributeBean(applicationsId, "Tech Support Lead")
+
+	// Fill Technical Manager, Business Owner, Support Manager
+    FormField technicalManagerFF = getFieldByName(technicalManagerF)
+	if(technicalManagerAttribute) {
+        def technicalManagerAttributeValues = technicalManagerAttribute.getObjectAttributeValueBeans()
+        def technicalManagerAttributeValue = technicalManagerAttributeValues[0]
+		def technicalManager = technicalManagerAttributeValue.value
+		
+        def technicalManagerEmailAddressAttribute = objectFacade.loadObjectAttributeBean(technicalManager, userNameC)
+        def technicalManagerEmailAddressAttributeValues = technicalManagerEmailAddressAttribute.getObjectAttributeValueBeans()
+        String technicalManagerEmailAddress = technicalManagerEmailAddressAttributeValues[0].value
+		
+		if(technicalManagerEmailAddress!=null) {
+			technicalManagerFF.setFormValue(technicalManagerEmailAddress)
+        } else {
+            technicalManagerFF.setFormValue("");
+        }
+	} else {
+        technicalManagerFF.setFormValue("")
+    }
+    
+    FormField businessOFF = getFieldByName(businessOF)
+	if(businessOwnerAttribute) {
+        def businessOwnerAttributeValues = businessOwnerAttribute.getObjectAttributeValueBeans()
+        def businessOwnerAttributeValue = businessOwnerAttributeValues[0]
+		def businessOwner = businessOwnerAttributeValue.value
+		
+        def businessOwnerEmailAddressAttribute = objectFacade.loadObjectAttributeBean(businessOwner, userNameC)
+        def businessOwnerEmailAddressAttributeValues = businessOwnerEmailAddressAttribute.getObjectAttributeValueBeans()
+        String businessOwnerEmailAddress = businessOwnerEmailAddressAttributeValues[0].value
+		if(businessOwnerEmailAddress!=null) {
+			businessOFF.setFormValue(businessOwnerEmailAddress)
+        } else {
+            businessOFF.setFormValue("")
+        }
+	} else {
+        businessOFF.setFormValue("")
+    }
+    
+    FormField supportManagerFF = getFieldByName(supportManagerF)
+	if(supportManagerAttribute) {
+        def supportManagerAttributeValues = supportManagerAttribute.getObjectAttributeValueBeans()
+        def supportManagerAttributeValue = supportManagerAttributeValues[0]
+		def supportManager = supportManagerAttributeValue.value
+
+        def supportManagerEmailAddressAttribute = objectFacade.loadObjectAttributeBean(supportManager, userNameC)
+        def supportManagerEmailAddressAttributeValues = supportManagerEmailAddressAttribute.getObjectAttributeValueBeans()
+        String supportManagerEmailAddress = supportManagerEmailAddressAttributeValues[0].value
+        if(supportManagerEmailAddress!=null) {
+            supportManagerFF.setFormValue(supportManagerEmailAddress)
+        } else {
+            supportManagerFF.setFormValue("")
+        }
+    } else {
+        supportManagerFF.setFormValue("")
+    }
+}
+
+
+
+//

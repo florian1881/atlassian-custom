@@ -1,0 +1,17 @@
+// This is a script console script valid for JIRA 7 +
+
+import com.atlassian.jira.issue.index.IssueIndexingService
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.util.ImportUtils
+import org.apache.log4j.Category
+
+def issueManager = ComponentAccessor.getIssueManager()
+def issueIndexingService = ComponentAccessor.getComponent(IssueIndexingService)
+Issue issue = issueManager.getIssueObject("the_issue_key");
+
+boolean wasIndexing = ImportUtils.isIndexIssues();
+ImportUtils.setIndexIssues(true);
+log.warn("Reindex issue ${issue.key} ${issue.id}")
+issueIndexingService.reIndex(issueManager.getIssueObject(issue.id));
+ImportUtils.setIndexIssues(wasIndexing);

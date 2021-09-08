@@ -1,0 +1,61 @@
+//Initialiser
+
+if(getActionName()=="Create")
+{
+
+def options=getFieldByName("Clients Impacted")
+options.setHidden(true)
+
+def clientName=getFieldByName("Select the Client Name")
+clientName.setHidden(true)
+    
+def addMultipleClientNames=getFieldByName("Add Multiple Client Names")
+addMultipleClientNames.setHidden(true)
+    
+def whichAuditsAreImpacted=getFieldByName("Which Audits are impacted")
+whichAuditsAreImpacted.setHidden(true)
+    
+    
+}
+
+
+//Fields
+
+import com.atlassian.jira.issue.fields.CustomField
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+
+Class objectFacadeClass = ComponentAccessor.getPluginAccessor().getClassLoader().findClass("com.riadalabs.jira.plugins.insight.channel.external.api.facade.ObjectFacade")
+def objectFacade = ComponentAccessor.getOSGiComponentInstanceOfType(objectFacadeClass)
+def insightKey = getFieldByName("Business Unit").value
+def value = objectFacade.loadObjectBean(insightKey)?.label    
+
+def options=getFieldByName("Clients Impacted")
+def clientname=getFieldByName("Select the Client Name")
+def auditsField=getFieldByName("Which Audits are impacted")
+   
+
+    
+ 
+if(value.toString().contains("PCA") || value.toString().contains("RCA") || value.toString().contains("CCV") || value.toString().equals("Retail"))
+{
+  options.setHidden(false)
+    clientname.setHidden(false)
+    clientname.setRequired(true)
+    auditsField.setHidden(false)  
+    
+    
+}
+
+else
+{
+    
+    options.setHidden(true)
+    clientname.setHidden(true)
+    clientname.setHelpText("")
+    auditsField.setHidden(true)
+
+}
+    
+
+

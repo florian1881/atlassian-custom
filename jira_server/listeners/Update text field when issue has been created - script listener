@@ -1,0 +1,10 @@
+import com.atlassian.jira.issue.Issue
+import com.atlassian.jira.issue.ModifiedValue
+import com.atlassian.jira.issue.util.DefaultIssueChangeHolder
+import com.atlassian.jira.component.ComponentAccessor
+
+def issue = event.issue as Issue
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+def tgtField = customFieldManager.getCustomFieldObjects(event.issue).find {it.name == "Textfield"}
+def changeHolder = new DefaultIssueChangeHolder()
+tgtField.updateValue(null, issue, new ModifiedValue(issue.getCustomFieldValue(tgtField), "Cable"),changeHolder)

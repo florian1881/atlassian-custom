@@ -1,0 +1,353 @@
+//Fields
+
+import com.onresolve.jira.groovy.user.FieldBehaviours
+
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+def rfc = getFieldByName("After Action RFC")
+
+def startDateField = getFieldByName("Planned start date")
+
+def startDateValue = startDateField.getValue() as Date
+
+def endDateField = getFieldByName("Planned end date")
+
+def endDateValue = endDateField.getValue() as Date
+
+Date latestdate = new Date();
+
+startDateField.clearError()
+
+endDateField.clearError()
+
+ 
+
+def strErrorText = "Due Date must be greater than Start Date"
+
+ 
+
+if (endDateValue != null && startDateValue != null && rfc.getValue()=="Yes" ){
+
+  if(startDateValue < endDateValue){
+
+    startDateField.setError("If RFC -yes should accept past values & Start date should be less than End date")
+
+  }
+
+    else{
+
+startDateField.setError("error")
+
+    }
+
+}
+
+else if (endDateValue != null && startDateValue != null && rfc.getValue()=="No" ){
+
+  if(startDateValue < endDateValue && startDateValue>latestdate &&  endDateValue>latestdate ){
+
+    startDateField.setError("If RFC -No should accept Future values & Start date should be less than End date")
+
+  }
+
+    else{
+
+startDateField.setError("error")
+
+    }
+
+}
+
+
+//Planned End Date
+
+
+
+import com.onresolve.jira.groovy.user.FieldBehaviours
+
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+def rfc = getFieldByName("After Action RFC")
+
+def startDateField = getFieldByName("Planned start date")
+
+def startDateValue = startDateField.getValue() as Date
+
+def endDateField = getFieldByName("Planned end date")
+
+def endDateValue = endDateField.getValue() as Date
+
+Date latestdate = new Date();
+
+
+
+ 
+
+def strErrorText = "Due Date must be greater than Start Date"
+
+ 
+
+if (endDateValue != null && startDateValue != null && rfc.getValue()=="Yes" ){
+
+  if(startDateValue < endDateValue){
+
+    startDateField.setError("If RFC -yes should accept past values & Start date should be less than End date")
+
+  }
+
+    else{
+
+startDateField.setError("error")
+
+    }
+
+}
+
+else if (endDateValue != null && startDateValue != null && rfc.getValue()=="No" ){
+
+  if(startDateValue < endDateValue && startDateValue>latestdate &&  endDateValue>latestdate ){
+
+    startDateField.setError("If RFC -No should accept Future values & Start date should be less than End date")
+
+  }
+
+    else{
+
+startDateField.setError("error")
+
+    }
+
+}
+
+
+
+//After Action RFC
+
+
+
+import com.onresolve.jira.groovy.user.FormField
+
+ 
+
+import com.atlassian.crowd.embedded.api.User
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def userManager = ComponentAccessor.getUserManager()
+
+def groupManager = ComponentAccessor.getGroupManager()
+
+//def group = userManager.getGroup("ApplicationSecurity")
+
+//def usersInGroup = groupManager.getUsersInGroup(group)
+
+ 
+
+List <String> myList = new ArrayList <String>();
+
+ 
+
+//usersInGroup.each {
+
+//  myList.add(it.emailAddress);
+
+//}
+
+ 
+
+ 
+
+def field1 = getFieldByName("After Action RFC")
+
+def field2 = getFieldByName("CMS Change")
+
+def field3 = getFieldByName("Security review")
+
+ 
+
+
+
+ 
+
+ 
+
+def value1 = field1.getValue()
+
+def value2 = field2.getValue()
+
+def value3 = field3.getValue()
+
+ 
+
+
+ 
+
+ 
+
+ 
+
+if (value1 == "No" && value2 == "Yes" && value3 == "Yes") {
+
+    myList.clear();
+
+    def group1 = userManager.getGroup("Application security group")
+
+    def group2 = userManager.getGroup("Security Approval Group")
+
+    def group3 = userManager.getGroup("Change Managers")
+
+   //Security Approval Group
+
+    //Change Mangers
+
+    //CAB
+
+    def usersInGroup1 = groupManager.getUsersInGroup(group1)
+
+    def usersInGroup2 = groupManager.getUsersInGroup(group2)
+
+    def usersInGroup3 = groupManager.getUsersInGroup(group3)
+
+    usersInGroup1.each {
+
+        myList.add(it.username);
+
+    }
+
+    usersInGroup2.each {
+
+        myList.add(it.username);
+
+    }
+
+    usersInGroup3.each {
+
+        myList.add(it.username);
+
+    }
+
+ 
+
+}
+
+ 
+
+if (value1 == "No" && value2 == "No" && value3 == "Yes") {
+
+    myList.clear();
+
+    def group4 = userManager.getGroup("Corp.InfoSecEngineering")
+
+    def group5 = userManager.getGroup("Change Managers")
+
+ 
+
+    //Change Mangers
+
+    //CAB
+
+    def usersInGroup4 = groupManager.getUsersInGroup(group4)
+
+    def usersInGroup5 = groupManager.getUsersInGroup(group5)
+
+ 
+
+    usersInGroup4.each {
+
+        myList.add(it.username);
+
+    }
+
+    usersInGroup5.each {
+
+        myList.add(it.username);
+
+    }
+
+ 
+
+}
+
+if (value1 == "No" && value2 == "Yes" && value3 == "No") {
+
+    //Security Approval Group
+
+    //Change Mangers
+
+    //CAB
+
+    myList.clear();
+
+    def group6 = userManager.getGroup("Security Approval Group")
+
+    def group7 = userManager.getGroup("Change Managers")
+
+ 
+
+    def usersInGroup6 = groupManager.getUsersInGroup(group6)
+
+    def usersInGroup7 = groupManager.getUsersInGroup(group7)
+
+ 
+
+    usersInGroup6.each {
+
+        myList.add(it.username);
+
+    }
+
+    usersInGroup7.each {
+
+        myList.add(it.username);
+
+    }
+
+}
+
+ 
+
+if (value1 == "No" && value2 == "No" && value3 == "No") {
+
+    //Change Mangers
+
+    //CAB
+
+    myList.clear();
+
+    def group8 = userManager.getGroup("Change Managers")
+
+ 
+
+ 
+
+    def usersInGroup8 = groupManager.getUsersInGroup(group8)
+
+ 
+
+ 
+
+    usersInGroup8.each {
+
+       myList.add(it.username);
+
+    }
+
+}
+
+ 
+
+
+ 
+
+FormField resultField = getFieldById("customfield_10103")
+
+resultField.setFormValue(myList.toString());
+
+
+
+
+//

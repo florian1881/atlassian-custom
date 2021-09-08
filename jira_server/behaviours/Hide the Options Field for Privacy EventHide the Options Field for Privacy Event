@@ -1,0 +1,8 @@
+// Initialiser
+
+
+
+def field1=getFieldByName("Options")
+field1.setHidden(true)
+
+

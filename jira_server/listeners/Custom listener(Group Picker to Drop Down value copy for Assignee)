@@ -1,0 +1,52 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.util.DefaultIssueChangeHolder
+import com.atlassian.jira.issue.ModifiedValue
+import com.atlassian.crowd.embedded.impl.ImmutableGroup
+
+CustomFieldManager customFieldManager = ComponentAccessor.getCustomFieldManager()
+def issueManager=ComponentAccessor.getIssueManager()
+
+
+def issue=event.issue
+if(issue.getIssueType().getName()=="Incident")
+{
+    log.info("Hello Friends..!!!!!!!")
+    def change=event?.getChangeLog()?.getRelated("ChildChangeItem")?.find{it.field=="Assignment Group"}    // Group Picker Name
+    
+    
+    if(change)
+    {
+        def obj= customFieldManager.getCustomFieldObjectByName("Assignment Group")  // Group Picker Name
+        def s=issue.getCustomFieldValue(obj)
+        log.info("Group Picekr Value"+s)
+        
+    ArrayList al1 = (ArrayList)s
+	ArrayList<ImmutableGroup> al2 = new ArrayList<ImmutableGroup>();
+
+	for(Object t:al1)
+	{
+    al2.add((ImmutableGroup)t)
+	}
+
+        
+        
+        
+        
+        
+        def cf = customFieldManager.getCustomFieldObjectByName("Assign To a Group")   //DropDown Name
+        def customFieldValue = issue.getCustomFieldValue(cf)
+       
+        
+ 
+        
+        def optionsManager = ComponentAccessor.getOptionsManager()
+		def fieldConfig = cf.getRelevantConfig(issue)
+		def cfNewValue  = optionsManager.getOptions(fieldConfig).find {it.value ==al2.get(0).getName()}
+        
+ 
+        cf.updateValue(null,issue,new ModifiedValue(customFieldValue, cfNewValue),new DefaultIssueChangeHolder())
+        
+    }
+}

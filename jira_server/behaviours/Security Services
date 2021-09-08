@@ -1,0 +1,651 @@
+// Initialiser
+
+
+import com.atlassian.jira.component.ComponentAccessor;
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+
+def requestorField = getFieldByName("Requester")
+
+def currentUserName = ComponentAccessor.jiraAuthenticationContext?.getLoggedInUser().getName()
+//def currentUserName=ComponentAccesor.getJiraAuthenticationContext().getLoggedInUser().getKey()
+
+requestorField.setFormValue(currentUserName)
+def requesttype = getFieldByName("Security Request Type")
+def Category = getFieldByName("Security Services Category")
+
+def catselectedOption = requesttype.getValue() as String
+def allowedOptions = null
+def description=getFieldById("description")
+def DateType = getFieldByName("Date")
+def justification=getFieldByName("Justification")
+def reviewinitiation=getFieldByName("Review Initiation Date")
+def baseslinepath=getFieldByName("Baseline Path")
+def baselinedata=getFieldByName("Baseline Data")
+def baselinejustification=getFieldByName("Baseline data incorrect justification")
+def trname=getFieldByName("Provide Name for Contact")
+def trphone=getFieldByName("Phone for Contact")
+def trmoredetails=getFieldByName("Provide more details about your trip, including a full itinerary if possible, or location and dates as a minimum")
+def trassistance=getFieldByName("What type of assistance is requested?")
+def scsproriyt=getFieldByName("Security Consultation Service Priority")
+def scsassistance=getFieldByName("Assistance Reason")
+
+def reqshortdescription=getFieldByName("Please provide a short description of the application (e.g. problem solved, use cases, business justification, etc.)")
+def reqnameofsw=getFieldByName("Name of software")
+def reqversion=getFieldByName("Version")
+def reqlatestreleasedate=getFieldByName("Latest Release date")
+def reqos=getFieldByName("Available operating systems")
+def reqosforreview=getFieldByName("Operating system requested for review")
+def reqdev=getFieldByName("Developer (e.g. Microsoft, Adobe, Java, etc.)")
+def reqcategory=getFieldByName("Risk Review Category")
+def reqlinks=getFieldByName("Please provide links or documentation to additional information (e.g. feature page, wiki), if available:")
+def reqduplicate=getFieldByName("Does this request duplicate or replace of another software?")
+def reqschd=getFieldByName("This review will be scheduled among other requested reviews. What is the urgency or needed completion date of this review?")
+def reqhelpprioritize=getFieldByName("To help prioritize this risk assessment request, does this application support a specific project?")
+def reqswclient=getFieldByName("Will this software interface with client data? (e.g. PHI, PII)")
+def reqportions=getFieldByName("Are there any portions of the software that interact with 3rd party services?")
+def requserdata=getFieldByName("Will this application collect user data?")
+def reqmissingdata=getFieldByName("If you feel something is missing here or you would like to provide other kind of feedback, feel free to do so here:")
+def reqpointofcontact=getFieldByName("Who is the point of contact(s) for this review?")
+
+
+def computerName=getFieldByName("Computer Name")
+def accessPHIorPII=getFieldByName("Do you have access to client data, specifically PHI or PII?")
+def typeOfExceptionPeriod=getFieldByName("Type of exception period")
+def dataIintendtoTransport=getFieldByName("The data I intend to transport or utilize for this request is classified as (check the highest level that applies):")
+def acknowledgeThat=getFieldByName("I acknowledge that")
+def blockedWebsite=getFieldByName("Please provide the URL of the blocked website")
+def securityOptions=getFieldByName("Security Options")
+def typeofAccess=getFieldByName("Select the type of Access")
+def temporaryExceptionDate=getFieldByName("Temporary Exception Date")
+
+
+computerName.setRequired(false)
+computerName.setHidden(true)
+accessPHIorPII.setRequired(false)
+accessPHIorPII.setHidden(true)
+typeOfExceptionPeriod.setRequired(false)
+typeOfExceptionPeriod.setHidden(true)
+dataIintendtoTransport.setRequired(false)
+dataIintendtoTransport.setHidden(true)
+acknowledgeThat.setRequired(false)
+acknowledgeThat.setHidden(true)
+blockedWebsite.setRequired(false)
+blockedWebsite.setHidden(true)
+securityOptions.setRequired(false)
+securityOptions.setHidden(true)
+typeofAccess.setHidden(true)
+temporaryExceptionDate.setHidden(true).setRequired(false)
+
+Category.setFormValue(null)
+DateType.setHidden(true)
+DateType.setRequired(false).setFormValue(null)
+justification.setHidden(true)
+justification.setRequired(false).setFormValue(null)
+reviewinitiation.setHidden(true)
+reviewinitiation.setRequired(false).setFormValue(null)
+trname.setHidden(true)
+trname.setRequired(false).setFormValue("")
+trphone.setHidden(true)
+trphone.setRequired(false).setFormValue(null)
+trmoredetails.setHidden(true)
+trmoredetails.setRequired(false).setFormValue(null)
+trassistance.setHidden(true)
+trassistance.setRequired(false).setFormValue(null)
+scsproriyt.setHidden(true)
+scsproriyt.setRequired(false).setFormValue(null)
+scsassistance.setHidden(true)
+scsassistance.setRequired(false).setFormValue(null)
+
+reqshortdescription.setHidden(true)
+reqshortdescription.setRequired(false).setFormValue(null)
+reqnameofsw.setHidden(true)
+reqnameofsw.setRequired(false).setFormValue(null)
+reqversion.setHidden(true)
+reqversion.setRequired(false).setFormValue(null)
+reqlatestreleasedate.setHidden(true)
+reqlatestreleasedate.setRequired(false).setFormValue(null)
+reqos.setHidden(true)
+reqos.setRequired(false).setFormValue(null)
+reqosforreview.setHidden(true)
+reqosforreview.setRequired(false).setFormValue(null)
+reqdev.setHidden(true)
+reqdev.setRequired(false).setFormValue(null)
+reqcategory.setHidden(true)
+reqcategory.setRequired(false).setFormValue(null)
+reqlinks.setHidden(true)
+reqlinks.setRequired(false).setFormValue(null)
+reqduplicate.setHidden(true)
+reqduplicate.setRequired(false).setFormValue(null)
+reqschd.setHidden(true)
+reqschd.setRequired(false).setFormValue(null)
+reqhelpprioritize.setHidden(true)
+reqhelpprioritize.setRequired(false).setFormValue(null)
+reqswclient.setHidden(true)
+reqswclient.setRequired(false).setFormValue(null)
+reqportions.setHidden(true)
+reqportions.setRequired(false).setFormValue(null)
+requserdata.setHidden(true)
+requserdata.setRequired(false).setFormValue(null)
+reqmissingdata.setHidden(true)
+reqmissingdata.setRequired(false).setFormValue(null)
+description.setHidden(true).setRequired(false)
+Category.setReadOnly(false)
+baseslinepath.setHidden(true)
+baseslinepath.setRequired(false).setFormValue(null)
+baselinedata.setHidden(true)
+baselinedata.setRequired(false).setFormValue(null)
+baselinejustification.setHidden(true)
+baselinejustification.setRequired(false).setFormValue(null)
+reqpointofcontact.setHidden(true)
+reqpointofcontact.setRequired(false).setFormValue("")
+
+
+getFieldByName("Select the type of Access").setHelpText('<script type="text/javascript">'+
+'AJS.$("#customfield_12402-1").change(function() { ' +
+'if(AJS.$("#customfield_12402-1").is(":checked")){AJS.$("#customfield_12402-2").attr("disabled", true);AJS.$("#customfield_12402-2").prop("checked",false);}else{AJS.$("#customfield_12402-2").attr("disabled", false);}});' +
+'AJS.$("#customfield_12402-3").change(function() {' +                                                       
+'if(AJS.$("#customfield_12402-3").is(":checked")){AJS.$("#customfield_12402-4").attr("disabled", true);AJS.$("#customfield_12402-4").prop("checked",false);}else{AJS.$("#customfield_12402-4").attr("disabled", false);}});' + 
+'AJS.$("#customfield_12402-5").change(function() {' +
+'if(AJS.$("#customfield_12402-5").is(":checked")){AJS.$("#customfield_12402-6").attr("disabled", true);AJS.$("#customfield_12402-6").prop("checked",false);}else{AJS.$("#customfield_12402-6").attr("disabled", false);}});' + 
+'AJS.$("#customfield_12402-7").change(function() {' +                                                        
+'if(AJS.$("#customfield_12402-7").is(":checked")){AJS.$("#customfield_12402-1").attr("disabled", true);AJS.$("#customfield_12402-1").prop("checked",false);' +
+' AJS.$("#customfield_12402-2").attr("disabled", true);AJS.$("#customfield_12402-2").prop("checked",false);  '+      
+' AJS.$("#customfield_12402-3").attr("disabled", true);AJS.$("#customfield_12402-3").prop("checked",false);  '+ 
+' AJS.$("#customfield_12402-4").attr("disabled", true);AJS.$("#customfield_12402-4").prop("checked",false);  '+ 
+' AJS.$("#customfield_12402-5").attr("disabled", true);AJS.$("#customfield_12402-5").prop("checked",false);  '+ 
+' AJS.$("#customfield_12402-6").attr("disabled", true);AJS.$("#customfield_12402-6").prop("checked",false);  '+ 
+'} else{AJS.$("#customfield_12402-1").attr("disabled", false);AJS.$("#customfield_12402-2").attr("disabled", false);AJS.$("#customfield_12402-3").attr("disabled", false);'+
+'AJS.$("#customfield_12402-4").attr("disabled", false);AJS.$("#customfield_12402-5").attr("disabled", false);AJS.$("#customfield_12402-6").attr("disabled", false);' +                                                       
+                                                        '}})</script>')
+
+
+//Fields
+
+
+import com.atlassian.jira.component.ComponentAccessor
+
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.config.FieldConfigImpl
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+def customField = customFieldManager.getCustomFieldObjectsByName("Security Services Category")[0]
+def config = customField.getRelevantConfig(getIssueContext())
+def options = optionsManager.getOptions(config)
+def requesttype = getFieldByName("Security Request Type")
+def Category = getFieldByName("Security Services Category")
+def Summary = getFieldById("summary")
+
+def catselectedOption = requesttype.getValue() as String
+def subcatselectedOption =Category.getValue() as String
+def allowedOptions = null
+def description=getFieldById("description")
+def DateType = getFieldByName("Date")
+def justification=getFieldByName("Justification")
+def reviewinitiation=getFieldByName("Review Initiation Date")
+def baseslinepath=getFieldByName("Baseline Path")
+def baselinedata=getFieldByName("Baseline Data")
+def baselinejustification=getFieldByName("Baseline data incorrect justification")
+def trname=getFieldByName("Provide Name for Contact")
+def trphone=getFieldByName("Phone for Contact")
+def trmoredetails=getFieldByName("Provide more details about your trip, including a full itinerary if possible, or location and dates as a minimum")
+def trassistance=getFieldByName("What type of assistance is requested?")
+def scsproriyt=getFieldByName("Security Consultation Service Priority")
+def scsassistance=getFieldByName("Assistance Reason")
+def reqpointofcontact=getFieldByName("Who is the point of contact(s) for this review?")
+def reqshortdescription=getFieldByName("Please provide a short description of the application (e.g. problem solved, use cases, business justification, etc.)")
+def reqnameofsw=getFieldByName("Name of software")
+def reqversion=getFieldByName("Version")
+def reqlatestreleasedate=getFieldByName("Latest Release date")
+def reqos=getFieldByName("Available operating systems")
+def reqosforreview=getFieldByName("Operating system requested for review")
+def reqdev=getFieldByName("Developer (e.g. Microsoft, Adobe, Java, etc.)")
+def reqcategory=getFieldByName("Risk Review Category")
+def reqlinks=getFieldByName("Please provide links or documentation to additional information (e.g. feature page, wiki), if available:")
+def reqduplicate=getFieldByName("Does this request duplicate or replace of another software?")
+def reqschd=getFieldByName("This review will be scheduled among other requested reviews. What is the urgency or needed completion date of this review?")
+def reqhelpprioritize=getFieldByName("To help prioritize this risk assessment request, does this application support a specific project?")
+def reqswclient=getFieldByName("Will this software interface with client data? (e.g. PHI, PII)")
+def reqportions=getFieldByName("Are there any portions of the software that interact with 3rd party services?")
+def requserdata=getFieldByName("Will this application collect user data?")
+def reqmissingdata=getFieldByName("If you feel something is missing here or you would like to provide other kind of feedback, feel free to do so here:")
+
+def computerName=getFieldByName("Computer Name")
+def accessPHIorPII=getFieldByName("Do you have access to client data, specifically PHI or PII?")
+def typeOfExceptionPeriod=getFieldByName("Type of exception period")
+def dataIintendtoTransport=getFieldByName("The data I intend to transport or utilize for this request is classified as (check the highest level that applies):")
+def acknowledgeThat=getFieldByName("I acknowledge that")
+def blockedWebsite=getFieldByName("Please provide the URL of the blocked website")
+def securityOptions=getFieldByName("Security Options")
+def typeofAccess=getFieldByName("Select the type of Access")
+
+Summary.setFormValue("")
+blockedWebsite.setFormValue("").setRequired(false).setHidden(true)
+securityOptions.setFormValue("").setHidden(true)
+dataIintendtoTransport.setFormValue("").setHidden(true)
+acknowledgeThat.setFormValue("").setHidden(true)
+computerName.setFormValue("").setRequired(false).setHidden(true)
+typeofAccess.setFormValue("").setHidden(true).setReadOnly(false)
+
+
+if(subcatselectedOption.equalsIgnoreCase("Send Attachments to Personal Email Accounts"))
+{
+    Summary.setFormValue("Send Attachments to Personal Email Accounts")
+}
+if(subcatselectedOption.equalsIgnoreCase("Web Gateway Rule Modification"))
+{
+    Summary.setFormValue("Web Gateway Rule Modification")
+    blockedWebsite.setRequired(true).setHidden(false)
+    securityOptions.setHidden(false)
+}
+if(subcatselectedOption.equalsIgnoreCase("Removable Media Access"))
+{
+    Summary.setFormValue("Removable Media Access")
+    dataIintendtoTransport.setHidden(false)
+	acknowledgeThat.setHidden(false)
+    typeofAccess.setHidden(false)
+}
+if(subcatselectedOption.equalsIgnoreCase("Local Administrator Access to Workstation"))
+{
+    Summary.setFormValue("Local Administrator Access to Workstation")
+    computerName.setRequired(true).setHidden(false)
+}
+
+
+
+if(subcatselectedOption.equalsIgnoreCase("Intrusion Detection Device Testing"))
+{
+    Summary.setFormValue("Generate complete quarterly Intrusion Detection Device Testing report for HITRUST")
+}
+if(subcatselectedOption.equalsIgnoreCase("Physical Access Alarm Event Log"))
+{
+    Summary.setFormValue("Generate required HITRUST quarterly  Alarm Event Log report")
+}
+if(subcatselectedOption.equalsIgnoreCase("Physical Access Device Inventory"))
+{
+    Summary.setFormValue("Generate Complete (90 days) Physical Security task to run an Access Device Inventory report for HITRUST reporting")
+}
+if(subcatselectedOption.equalsIgnoreCase("Physical Access Review for Data Center, MDFs, IDFs"))
+{
+    Summary.setFormValue("Generate required quarterly Access Review reports for Data Center, MDFs, IDFs")
+}
+if(subcatselectedOption.equalsIgnoreCase("Physical Access Visitor Log Review"))
+{
+    Summary.setFormValue("Generate required monthly Visitor Log report  for HITRUST reporting")
+}
+
+if(subcatselectedOption.equalsIgnoreCase("Security Consultation Service"))
+{ 
+    
+trname.setHidden(false)
+trname.setRequired(true)
+trphone.setHidden(false)
+trphone.setRequired(true)
+
+   
+scsproriyt.setHidden(false)
+scsproriyt.setRequired(true)
+scsassistance.setHidden(false)
+scsassistance.setRequired(true) 
+       trmoredetails.setHidden(true)
+trmoredetails.setRequired(false).setFormValue(null)
+       trassistance.setHidden(true)
+trassistance.setRequired(false).setFormValue(null)
+    
+
+}
+if(subcatselectedOption.equalsIgnoreCase("Travel Security Briefing"))
+{ 
+   trmoredetails.setHidden(false)
+trmoredetails.setRequired(true)
+       trassistance.setHidden(false)
+trassistance.setRequired(true)
+   trname.setHidden(false)
+trname.setRequired(true)
+trphone.setHidden(false)
+trphone.setRequired(true)
+scsproriyt.setHidden(true)
+scsproriyt.setRequired(false).setFormValue(null)
+scsassistance.setHidden(true)
+scsassistance.setRequired(false).setFormValue(null)
+  
+
+}
+
+if(subcatselectedOption.equalsIgnoreCase("Application Whitelist/Blacklist"))
+{
+    Summary.setFormValue("Annual Review of Application Whitelist/Blacklist")
+}
+
+if(subcatselectedOption.equalsIgnoreCase("New Desktop Software Review"))
+{
+    Summary.setFormValue("Task for Risk Review of New Desktop Software")
+}
+if(subcatselectedOption.equalsIgnoreCase("Security Consultation Service"))
+{
+    Summary.setFormValue("Security Consultation Service")
+}
+if(subcatselectedOption.equalsIgnoreCase("Travel Security Briefing"))
+{
+    Summary.setFormValue("Task for Travel Security Briefing")
+}
+if(subcatselectedOption.equalsIgnoreCase("Workstations (Macs, Windows)"))
+{
+    Summary.setFormValue("Review/Upload Baseline for Workstations (Macs, Windows)")
+}
+if(subcatselectedOption.equalsIgnoreCase("Mobile"))
+{
+    Summary.setFormValue("Review/Upload Baseline for Mobile")
+}
+
+if(subcatselectedOption.equalsIgnoreCase("Network Devices"))
+{
+    Summary.setFormValue("Review/Upload Baseline for Network Devices")
+}
+if(subcatselectedOption.equalsIgnoreCase("Oracle"))
+{
+    Summary.setFormValue("Review/Upload Baseline for Oracle")
+}
+if(subcatselectedOption.equalsIgnoreCase("Unix Servers"))
+{
+    Summary.setFormValue("Review/Upload Baseline for UNIX")
+}
+if(subcatselectedOption.equalsIgnoreCase("VDI & Citrix"))
+{
+    Summary.setFormValue("Review/Upload Baseline for VDI & Citrix")
+}
+
+
+
+//Security Request Type
+
+
+
+import com.atlassian.jira.component.ComponentAccessor
+
+import com.atlassian.jira.issue.CustomFieldManager
+import com.atlassian.jira.issue.fields.CustomField
+import com.atlassian.jira.issue.customfields.manager.OptionsManager
+import com.atlassian.jira.issue.fields.config.FieldConfigImpl
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+def customField = customFieldManager.getCustomFieldObjectsByName("Security Services Category")[0]
+def config = customField.getRelevantConfig(getIssueContext())
+def options = optionsManager.getOptions(config)
+def requesttype = getFieldByName("Security Request Type")
+def Category = getFieldByName("Security Services Category")
+
+def catselectedOption = requesttype.getValue() as String
+def allowedOptions = null
+def description=getFieldById("description")
+def DateType = getFieldByName("Date")
+def justification=getFieldByName("Justification")
+def reviewinitiation=getFieldByName("Review Initiation Date")
+def baseslinepath=getFieldByName("Baseline Path")
+def baselinedata=getFieldByName("Baseline Data")
+def baselinejustification=getFieldByName("Baseline data incorrect justification")
+def trname=getFieldByName("Provide Name for Contact")
+def trphone=getFieldByName("Phone for Contact")
+def trmoredetails=getFieldByName("Provide more details about your trip, including a full itinerary if possible, or location and dates as a minimum")
+def trassistance=getFieldByName("What type of assistance is requested?")
+def scsproriyt=getFieldByName("Security Consultation Service Priority")
+def scsassistance=getFieldByName("Assistance Reason")
+def reqpointofcontact=getFieldByName("Who is the point of contact(s) for this review?")
+def reqshortdescription=getFieldByName("Please provide a short description of the application (e.g. problem solved, use cases, business justification, etc.)")
+def reqnameofsw=getFieldByName("Name of software")
+def reqversion=getFieldByName("Version")
+def reqlatestreleasedate=getFieldByName("Latest Release date")
+def reqos=getFieldByName("Available operating systems")
+def reqosforreview=getFieldByName("Operating system requested for review")
+def reqdev=getFieldByName("Developer (e.g. Microsoft, Adobe, Java, etc.)")
+def reqcategory=getFieldByName("Risk Review Category")
+def reqlinks=getFieldByName("Please provide links or documentation to additional information (e.g. feature page, wiki), if available:")
+def reqduplicate=getFieldByName("Does this request duplicate or replace of another software?")
+def reqschd=getFieldByName("This review will be scheduled among other requested reviews. What is the urgency or needed completion date of this review?")
+def reqhelpprioritize=getFieldByName("To help prioritize this risk assessment request, does this application support a specific project?")
+def reqswclient=getFieldByName("Will this software interface with client data? (e.g. PHI, PII)")
+def reqportions=getFieldByName("Are there any portions of the software that interact with 3rd party services?")
+def requserdata=getFieldByName("Will this application collect user data?")
+def reqmissingdata=getFieldByName("If you feel something is missing here or you would like to provide other kind of feedback, feel free to do so here:")
+
+def computerName=getFieldByName("Computer Name")
+def accessPHIorPII=getFieldByName("Do you have access to client data, specifically PHI or PII?")
+def typeOfExceptionPeriod=getFieldByName("Type of exception period")
+def dataIintendtoTransport=getFieldByName("The data I intend to transport or utilize for this request is classified as (check the highest level that applies):")
+def acknowledgeThat=getFieldByName("I acknowledge that")
+def blockedWebsite=getFieldByName("Please provide the URL of the blocked website")
+def securityOptions=getFieldByName("Security Options")
+def typeofAccess=getFieldByName("Select the type of Access")
+def temporaryExceptionDate=getFieldByName("Temporary Exception Date")
+
+computerName.setRequired(false)
+computerName.setHidden(true)
+accessPHIorPII.setRequired(false)
+accessPHIorPII.setHidden(true)
+typeOfExceptionPeriod.setRequired(false)
+typeOfExceptionPeriod.setHidden(true)
+dataIintendtoTransport.setRequired(false)
+dataIintendtoTransport.setHidden(true)
+acknowledgeThat.setRequired(false)
+acknowledgeThat.setHidden(true)
+blockedWebsite.setRequired(false)
+blockedWebsite.setHidden(true)
+securityOptions.setRequired(false)
+securityOptions.setHidden(true)
+typeofAccess.setHidden(true)
+temporaryExceptionDate.setHidden(true).setRequired(false)
+
+trphone.setHidden(true)
+trphone.setRequired(false).setFormValue(null)
+Category.setFormValue(null)
+DateType.setHidden(true)
+DateType.setRequired(false).setFormValue(null)
+justification.setHidden(true)
+justification.setRequired(false).setFormValue(null)
+reviewinitiation.setHidden(true)
+reviewinitiation.setRequired(false).setFormValue(null)
+trname.setHidden(true)
+trname.setRequired(false).setFormValue("")
+trphone.setHidden(true)
+trphone.setRequired(false).setFormValue(null)
+trmoredetails.setHidden(true)
+trmoredetails.setRequired(false).setFormValue(null)
+trassistance.setHidden(true)
+trassistance.setRequired(false).setFormValue(null)
+scsproriyt.setHidden(true)
+scsproriyt.setRequired(false).setFormValue(null)
+scsassistance.setHidden(true)
+scsassistance.setRequired(false).setFormValue(null)
+reqpointofcontact.setHidden(true)
+reqpointofcontact.setRequired(false).setFormValue("")
+reqshortdescription.setHidden(true)
+reqshortdescription.setRequired(false).setFormValue(null)
+reqnameofsw.setHidden(true)
+reqnameofsw.setRequired(false).setFormValue(null)
+reqversion.setHidden(true)
+reqversion.setRequired(false).setFormValue(null)
+reqlatestreleasedate.setHidden(true)
+reqlatestreleasedate.setRequired(false).setFormValue(null)
+reqos.setHidden(true)
+reqos.setRequired(false).setFormValue(null)
+reqosforreview.setHidden(true)
+reqosforreview.setRequired(false).setFormValue(null)
+reqdev.setHidden(true)
+reqdev.setRequired(false).setFormValue(null)
+reqcategory.setHidden(true)
+reqcategory.setRequired(false).setFormValue(null)
+reqlinks.setHidden(true)
+reqlinks.setRequired(false).setFormValue(null)
+reqduplicate.setHidden(true)
+reqduplicate.setRequired(false).setFormValue(null)
+reqschd.setHidden(true)
+reqschd.setRequired(false).setFormValue(null)
+reqhelpprioritize.setHidden(true)
+reqhelpprioritize.setRequired(false).setFormValue(null)
+reqswclient.setHidden(true)
+reqswclient.setRequired(false).setFormValue(null)
+reqportions.setHidden(true)
+reqportions.setRequired(false).setFormValue(null)
+requserdata.setHidden(true)
+requserdata.setRequired(false).setFormValue(null)
+reqmissingdata.setHidden(true)
+reqmissingdata.setRequired(false).setFormValue(null)
+description.setHidden(true).setRequired(false)
+Category.setReadOnly(false)
+baseslinepath.setHidden(true)
+baseslinepath.setRequired(false).setFormValue(null)
+baselinedata.setHidden(true)
+baselinedata.setRequired(false).setFormValue(null)
+baselinejustification.setHidden(true)
+baselinejustification.setRequired(false).setFormValue(null)
+// Apply the empty map of options to the field to clear all of its values.
+//setCategory.setFieldOptions(optionsMap)
+//def options = optionsManager.getOptions(config)
+if(catselectedOption.equalsIgnoreCase("Other"))
+{ 
+    
+
+    allowedOptions = Category.setFieldOptions(options.findAll {
+       it.value in ["Other"]
+    })
+    Category.setFormValue("Other")   
+
+    description.setHidden(false).setRequired(true)
+
+}
+if(catselectedOption.equalsIgnoreCase("HITrust"))
+{ 
+    
+
+    allowedOptions = Category.setFieldOptions(options.findAll {
+       it.value in ["--Please Select Category--","Intrusion Detection Device Testing","Physical Access Alarm Event Log","Physical Access Device Inventory","Physical Access Review for Data Center, MDFs, IDFs","Physical Access Visitor Log Review"]
+    })
+    Category.setFormValue("--Please Select Category--") 
+
+}
+if(catselectedOption.equalsIgnoreCase("Annual Review"))
+{ 
+     
+   
+  //setCategory.setFormValue(-1)
+  
+ DateType.setHidden(false)
+//DateType.setRequired(true)
+   
+       allowedOptions = Category.setFieldOptions(options.findAll {
+       it.value in ["--Please Select Category--","Application Whitelist/Blacklist"]
+    })
+     Category.setFormValue("--Please Select Category--") 
+
+}
+if(catselectedOption.equalsIgnoreCase("Baseline Review"))
+{ 
+      //setCategory.setFormValue("")
+    
+reviewinitiation.setHidden(false)
+reviewinitiation.setRequired(false)
+    reviewinitiation.setFormValue(new Date().format("d/MMM/yy")).setReadOnly(true)
+    justification.setHidden(false)
+justification.setRequired(true)
+
+    allowedOptions = Category.setFieldOptions(options.findAll {
+       it.value in ["--Please Select Category--","Mobile","Network Devices","Oracle","Unix Servers","VDI & Citrix","Workstations (Macs, Windows)"]
+    })
+Category.setFormValue("--Please Select Category--") 
+}
+if(catselectedOption.equalsIgnoreCase("Security Consultation/Reporting"))
+{ 
+      //setCategory.setFormValue("None")
+
+       allowedOptions = Category.setFieldOptions(options.findAll {
+       it.value in ["--Please Select Category--","Security Consultation Service","Travel Security Briefing"]
+    })   
+Category.setFormValue("--Please Select Category--") 
+}
+if(catselectedOption.equalsIgnoreCase("Security Exception Request"))
+{
+    typeOfExceptionPeriod.setHidden(false).setRequired(true)
+    accessPHIorPII.setHidden(false).setRequired(true)
+    justification.setHidden(false).setRequired(true)
+    
+       allowedOptions = Category.setFieldOptions(options.findAll {
+       it.value in ["--Please Select Category--","Send Attachments to Personal Email Accounts","Web Gateway Rule Modification","Removable Media Access","Local Administrator Access to Workstation"]
+    })   
+Category.setFormValue("--Please Select Category--") 
+}
+if(catselectedOption.equalsIgnoreCase("Risk Review"))
+{ 
+  //setCategory.setFormValue(-1)
+       allowedOptions = Category.setFieldOptions(options.findAll {
+       it.value in ["--Please Select Category--","New Desktop Software Review"]
+    })
+Category.setFormValue("--Please Select Category--") 
+reqpointofcontact.setHidden(false)
+reqpointofcontact.setRequired(true)
+reqshortdescription.setHidden(false)
+reqshortdescription.setRequired(false)
+reqnameofsw.setHidden(false)
+reqnameofsw.setRequired(true)
+reqversion.setHidden(false)
+reqversion.setRequired(true)
+reqlatestreleasedate.setHidden(false)
+reqlatestreleasedate.setRequired(true)
+reqos.setHidden(false)
+reqos.setRequired(true)
+reqosforreview.setHidden(false)
+reqosforreview.setRequired(true)
+reqdev.setHidden(false)
+reqdev.setRequired(true)
+reqcategory.setHidden(false)
+reqcategory.setRequired(true)
+reqlinks.setHidden(false)
+reqlinks.setRequired(false)
+reqduplicate.setHidden(false)
+reqduplicate.setRequired(false)
+reqschd.setHidden(false)
+reqschd.setRequired(false)
+reqhelpprioritize.setHidden(false)
+reqhelpprioritize.setRequired(false)
+reqswclient.setHidden(false)
+reqswclient.setRequired(false)
+reqportions.setHidden(false)
+reqportions.setRequired(false)
+requserdata.setHidden(false)
+requserdata.setRequired(false)
+reqmissingdata.setHidden(false)
+reqmissingdata.setRequired(false)
+justification.setHidden(false)
+justification.setRequired(true)
+}
+if(catselectedOption.equalsIgnoreCase("--Please Select Request Type--"))
+{   
+
+    allowedOptions = Category.setFieldOptions(options.findAll {
+       it.value in ["--Please Select Category--"]
+    })
+Category.setFormValue("--Please Select Category--") 
+
+}
+
+
+//Requestor's Business Unit
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+String sbuF = "Requestor's Sub-Business Unit"
+FormField sbuFF = getFieldByName(sbuF)
+sbuFF.setFormValue("") 
+
+
+//Type of exception period
+
+def typeOfExceptionPeriod=getFieldByName("Type of exception period")
+def temporaryExceptionDate=getFieldByName("Temporary Exception Date")
+def typeOfExceptionPerioditemOption = typeOfExceptionPeriod.getValue() as String
+
+
+if(typeOfExceptionPerioditemOption.equalsIgnoreCase("Permanent"))
+{ temporaryExceptionDate.setFormValue("").setHidden(true).setRequired(false)}
+else{temporaryExceptionDate.setFormValue("").setHidden(false).setRequired(true)}

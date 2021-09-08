@@ -1,0 +1,244 @@
+// Initialisers
+
+import com.atlassian.jira.component.ComponentAccessor
+getFieldByName("Adobe Creative Cloud Apps").setHidden(true)
+getFieldByName("Adobe Acrobat Options").setHidden(true)
+getFieldByName("Plugin Name").setHidden(true)
+getFieldByName("Plugin ID").setHidden(true)
+getFieldByName("Plugin Category").setHidden(true)
+getFieldByName("Link to the Plugin in the Chrome Store").setHidden(true)
+getFieldByName("Select Domain for Citrix VDI").setHidden(true)
+getFieldByName("Desktop Type").setHidden(true)
+getFieldByName("Select Application").setHidden(true)
+getFieldByName("What is the timeline for the request to be completed (normal delivery is between three and four weeks)?").setHidden(true)
+getFieldByName("Are there any new pricing systems included this month? (ProdOps would need to confirm the new systems are available on the Update Wizard, and if they are not to check the online catalog)").setHidden(true)
+getFieldById("summary").setHidden(true)
+getFieldByName("Software Item")
+def currentUser=ComponentAccessor.jiraAuthenticationContext?.getLoggedInUser().getName()
+getFieldByName("Requester").setFormValue(currentUser)
+
+//Fields
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+def customField = customFieldManager.getCustomFieldObjectByName("Select Application")
+def config = customField.getRelevantConfig(getIssueContext())
+def options = optionsManager.getOptions(config)
+def softwarerequesttype = getFieldByName("Software Item")
+def pluginname = getFieldByName("Plugin Name").setHidden(true)
+def pluginid = getFieldByName("Plugin ID").setHidden(true)
+def plugincategory = getFieldByName("Plugin Category").setHidden(true)
+def pluginchromestore  = getFieldByName("Link to the Plugin in the Chrome Store").setHidden(true)
+def domaincitrixVDI  = getFieldByName("Select Domain for Citrix VDI").setHidden(true)
+def desktoptype  = getFieldByName("Desktop Type").setHidden(true)
+def selectapplication  = getFieldByName("Select Application").setHidden(true)
+def requesttimeline = getFieldByName("What is the timeline for the request to be completed (normal delivery is between three and four weeks)?").setHidden(true)
+def pricingsystem = getFieldByName("Are there any new pricing systems included this month? (ProdOps would need to confirm the new systems are available on the Update Wizard, and if they are not to check the online catalog)").setHidden(true)
+def adobepluginapp = getFieldByName("Adobe Creative Cloud Apps").setHidden(true).setFormValue("")
+def adobepluinappoption = getFieldByName("Adobe Acrobat Options").setHidden(true).setFormValue("")
+def allowedOptions = null
+def softwareitem = getFieldByName("Software Item")
+
+def softwareitemOption = softwareitem.getValue() as String
+//getFieldByName("Adobe Acrobat Options").setFormValue("")
+def summary = getFieldById("summary")
+summary.setFormValue(softwareitemOption)
+
+if(softwareitemOption.equalsIgnoreCase("Chrome Plugin Whitelist Request"))
+{ 
+    pluginname.setHidden(false).setRequired(true)
+    pluginid.setHidden(false).setRequired(true)
+    plugincategory.setHidden(false).setRequired(true)
+    pluginchromestore.setHidden(false)    
+}
+else if(softwareitemOption.equalsIgnoreCase("XenDesktop"))
+{ 
+    domaincitrixVDI.setHidden(false).setRequired(true)
+    desktoptype.setHidden(false).setRequired(true)  
+    
+   allowedOptions = desktoptype.setFieldOptions(options.findAll {
+       it.value in ["None"]
+    })
+}
+else if(softwareitemOption.equalsIgnoreCase("Lotus Notes"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)
+     allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["App on Xen App","App on Laptop"]
+    })
+    //selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("Microsoft Project"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)
+    selectapplication.setHidden(false).setRequired(true)
+     allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["App on Laptop"]
+    })
+    //selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("Microsoft Visio"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)
+     selectapplication.setHidden(false).setRequired(true)
+    selectapplication.setHidden(false).setRequired(true)
+     allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["App on Laptop"]
+    })
+    //selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("WebStrat Update"))
+{ 
+    requesttimeline.setHidden(false).setRequired(true)
+    pricingsystem.setHidden(false).setRequired(true)
+}
+else if(softwareitemOption.equalsIgnoreCase("Araxis Merge (x64)"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)  
+    
+     allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["App on Xen App","App on Laptop"]
+    })
+   // selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("Business Rule Assessment Tool"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)    
+   
+     allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["Business Rule Assesment Tool(production)","Business Rule Assesment Tool Development","Business Rule Assesment Tool Production- PMPRD2","Business Rule Assesment Tool UAT"]
+    })
+    //selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("CAT Manager"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)
+    allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["CAT Manager Configuration","CAT Manager Production","CAT Manager UAT"]
+    })
+        //selectapplication.setFormValue("--Please Select--") 
+
+}
+else if(softwareitemOption.equalsIgnoreCase("Client Decision Manager"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)
+     allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["Client Decision Manager Development","Client Decision Manager Production","Client Decision Manager UAT"]
+    })
+       // selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("Electronic Logic Library"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)
+     allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["Electronic Logic Library Development","Electronic Logic Library Production","Electronic Logic Library UAT"]
+    })
+       // selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("ICRS Configuration"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)
+    allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["ICRS Configuration R","ICRS Configuration UAT"]
+    })
+        //selectapplication.setFormValue("--Please Select--")
+}
+else if(softwareitemOption.equalsIgnoreCase("UltraEdit"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)
+    allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["App on Xen App","App on Laptop"]
+    })
+    //selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("WinSCP 4.2.9"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)  
+    allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["App on Xen App","App on Laptop"]
+    })
+   // selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("TortoiseSVN 1.6.16.21511 (64 bit)"))
+{ 
+    selectapplication.setHidden(false).setRequired(true)  
+    allowedOptions = selectapplication.setFieldOptions(options.findAll {
+       it.value in ["App on Xen App","App on Laptop"]
+    })
+   // selectapplication.setFormValue("--Please Select--") 
+}
+else if(softwareitemOption.equalsIgnoreCase("Adobe Creative Cloud Applications"))
+{ 
+   adobepluginapp.setHidden(false).setRequired(true) 
+}
+
+getFieldByName("Software Item").setHelpText('<script>AJS.$("#customfield_12602-label").find("span").remove();AJS.$("#customfield_10447-label").find("span").remove()</script>')
+
+
+
+
+// Select Domain for Citrix VDI
+
+import com.atlassian.jira.component.ComponentAccessor
+
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+def customField = customFieldManager.getCustomFieldObjectByName("Desktop Type")
+def config = customField.getRelevantConfig(getIssueContext())
+def options = optionsManager.getOptions(config)
+
+def citrixvdi = getFieldByName("Select Domain for Citrix VDI")
+def citrixvdiOption = citrixvdi.getValue() as String
+
+def desktoptype = getFieldByName("Desktop Type")
+
+def allowedOptions = null
+
+if(citrixvdiOption.equalsIgnoreCase("Cotiviti Citrix VDI's"))
+{
+     allowedOptions = desktoptype.setFieldOptions(options.findAll {
+       it.value in ["None","COTV-BaseAllXD","COTV-FinFAXD","COTV-BaseXD","CCV-GlobalXD","COTV-STDXD","COTV-TrnXD","COTV-DevXD","COTV-SDeskXD","COTV-ConXD","Private XD","COTV-ICRSXD","ConLV-XD","COTV-DigitalApps"]
+    })
+    desktoptype.setFormValue("None")
+}
+else if(citrixvdiOption.equalsIgnoreCase("Cotiviti Citrix VDI's_Norwalk"))
+{
+   allowedOptions = desktoptype.setFieldOptions(options.findAll {
+       it.value in ["None","SW-XD"]
+    }) 
+    desktoptype.setFormValue("None") 
+}
+else if(citrixvdiOption.equalsIgnoreCase("LV VDI's"))
+{
+    allowedOptions = desktoptype.setFieldOptions(options.findAll {
+       it.value in ["None","LV Offshore Analysts (UST)","LV Onshore Analysts (UST)","LV Offshore Platinum","LV Offshore Gold","LV Offshore for Cotiviti","LV Onshore MIPS","LV Onshore Call Center","LV Onshore ChartNav","LV QI for Cigna","LV QI for Humana","LV QI for CHP"]
+    })
+    desktoptype.setFormValue("None") 
+}
+
+
+//Requestor's Business Unit
+
+import com.onresolve.jira.groovy.user.FormField
+import com.atlassian.jira.component.ComponentAccessor
+String sbuF = "Requestor's Sub-Business Unit"
+FormField sbuFF = getFieldByName(sbuF)
+sbuFF.setFormValue("") 
+
+
+//Adobe Creative Cloud Apps
+
+def adobepluginapp = getFieldByName("Adobe Creative Cloud Apps")
+def checkBoxFieldVal = adobepluginapp.getValue().toString()
+getFieldByName("Adobe Acrobat Options").setHidden(true).setFormValue("")
+
+if(checkBoxFieldVal=='Adobe Acrobat'){
+   getFieldByName("Adobe Acrobat Options").setHidden(false).setRequired(true)  
+}
+else if(checkBoxFieldVal.indexOf('Adobe Acrobat')>1){
+   getFieldByName("Adobe Acrobat Options").setHidden(false).setRequired(true)  
+}else{
+   getFieldByName("Adobe Acrobat Options").setHidden(true)
+}
+

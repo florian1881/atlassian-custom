@@ -1,0 +1,49 @@
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+log.warn("--- Start Behaviour ------------------------------------")
+
+def dpa = getFieldById("customfield_16768")
+log.warn("dpa = $dpa")
+
+def wwsr2d2num = getFieldById("customfield_10107")
+log.warn("wwsr2d2num = $wwsr2d2num")
+
+def wwsr2d2date = getFieldById("customfield_16805")
+log.warn("wwsr2d2date = $wwsr2d2date")
+
+def taleo = getFieldById("customfield_12802")
+log.warn("taleo = $taleo")
+
+def taleodate = getFieldById("customfield_16807")
+log.warn("taleodate = $taleodate")
+
+def sector = getFieldById("customfield_16761")
+log.warn("sector = $sector")
+
+def dpaValue = dpa.getValue()
+log.warn("dpaValue = $dpaValue")
+
+if (dpaValue == "Yes"){
+    log.warn("Version set to visible!")
+	wwsr2d2num.setHidden(false)
+	wwsr2d2date.setHidden(false)
+	taleo.setHidden(false)
+	taleodate.setHidden(false)
+	sector.setHidden(false)
+    wwsr2d2num.setRequired(true)
+	wwsr2d2date.setRequired(true)
+} else {
+    log.warn("Version set to hidden!")
+	wwsr2d2num.setHidden(true)
+    wwsr2d2date.setHidden(true)
+	taleo.setHidden(true)
+	taleodate.setHidden(true)
+	sector.setHidden(true)
+    wwsr2d2num.setRequired(false)
+	wwsr2d2date.setRequired(false)
+}
+
+log.warn("------------------------------------ End Behaviour ------")

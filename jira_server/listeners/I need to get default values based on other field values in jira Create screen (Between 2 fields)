@@ -1,0 +1,28 @@
+import com.onresolve.jira.groovy.user.FieldBehaviours 
+import groovy.transform.BaseScript 
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def fieldA = getFieldByName("Required")
+def fieldB = getFieldByName("Source")
+
+def optionsManager = ComponentAccessor.getOptionsManager()
+
+def customFieldB = ComponentAccessor.getCustomFieldManager().getCustomFieldObjectByName("Source")
+def fieldConfigB = customFieldB.getRelevantConfig(getIssueContext())
+def optionsB = optionsManager.getOptions(fieldConfigB)
+def optionBI = optionsB.find {it.value == "Email"}
+def optionBII = optionsB.find {it.value == "Phone"}
+def optionBIII = optionsB.find {it.value == "Customer"}
+
+if (fieldA.getValue() == "Yes") {
+ fieldB.setFormValue(optionBI.optionId)
+}
+else if (fieldA.getValue() == "No") {
+ fieldB.setFormValue(optionBII.optionId)
+}
+else if (fieldA.getValue() == "may be") {
+ fieldB.setFormValue(optionBIII.optionId)
+}

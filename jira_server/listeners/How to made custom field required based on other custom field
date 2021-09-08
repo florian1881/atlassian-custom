@@ -1,0 +1,8 @@
+def singleText = getFieldByName("TextFieldA")
+def dateField = getFieldByName("First DateTime")
+
+if (singleText.getValue() == "") {
+    dateField.setRequired(true)
+} else {
+    dateField.setRequired(false)
+}

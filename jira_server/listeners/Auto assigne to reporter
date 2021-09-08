@@ -1,0 +1,4 @@
+if(!issue.assignee)
+{
+ issue.assignee = issue.reporter
+}

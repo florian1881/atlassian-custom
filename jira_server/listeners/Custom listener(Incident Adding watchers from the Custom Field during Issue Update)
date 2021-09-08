@@ -1,0 +1,31 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.atlassian.jira.user.ApplicationUser
+def customFieldManager = ComponentAccessor.getCustomFieldManager()
+
+def issue=event.issue
+
+def change = event?.getChangeLog()?.getRelated("ChildChangeItem")?.find {it.field == "Who else needs to be notified"}
+
+if (change) {
+
+def obj=customFieldManager.getCustomFieldObjectByName("Who else needs to be notified")
+
+def obj1=issue.getCustomFieldValue(obj)
+
+ArrayList al1= (ArrayList) obj1
+
+ArrayList<ApplicationUser> al34=new ArrayList<ApplicationUser>();
+for(Object s:al1)
+{
+    ApplicationUser d=(ApplicationUser)s
+    al34.add(d)
+}
+
+def watcherManager=ComponentAccessor.getWatcherManager()
+
+for(ApplicationUser a: al34)
+{
+   watcherManager.startWatching(a,issue) 
+}
+    
+}

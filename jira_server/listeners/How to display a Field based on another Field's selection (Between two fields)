@@ -1,0 +1,17 @@
+import com.onresolve.jira.groovy.user.FormField
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import com.atlassian.jira.issue.priority.Priority
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+def application = getFieldById("customfield_10301")
+
+def FlexADAccountID = getFieldByName("Flex AD Account ID")
+
+if (application.getValue() == "NetSuite") {
+    
+FlexADAccountID.setHidden(false) }
+else {
+FlexADAccountID.setHidden(true)
+}

@@ -1,0 +1,32 @@
+import com.atlassian.jira.component.ComponentAccessor
+import com.onresolve.jira.groovy.user.FieldBehaviours
+import groovy.transform.BaseScript
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+log.warn("--- Start Behaviour ------------------------------------")
+
+def multisSelectList  = getFieldById("customfield_14544")
+def Minor = getFieldById("customfield_14545")
+def Partialremark = getFieldById("customfield_14547")
+def Minorremark = getFieldById("customfield_14546")
+
+// Get the Value of My Select Field
+def selectVal = multisSelectList.getValue()
+
+// Get the Value of My Select Field
+def selectVal1 = Minor.getValue()
+
+// If the first option is selected in the multi select list then make the text field required.
+if(selectVal.toString().contains("Others")){
+    Partialremark.setHidden(false)
+    Partialremark.setRequired(true) // Make text field required
+}else if(selectVal1.toString().contains("Others")){
+    Minorremark.setHidden(false)
+    Minorremark.setRequired(true) // Make text field optional
+}
+
+else {
+    Partialremark.setHidden(true)
+    Minorremark.setHidden(true)
+}

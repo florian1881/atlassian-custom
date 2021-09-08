@@ -1,0 +1,29 @@
+import com.onresolve.jira.groovy.user.FieldBehaviours 
+import groovy.transform.BaseScript 
+
+@BaseScript FieldBehaviours fieldBehaviours
+
+import com.atlassian.jira.component.ComponentAccessor
+
+def instanceFld = getFieldByName("Instance")
+def estimatedDateFld = getFieldByName("Estimated end date")
+instanceFld.clearError()
+estimatedDateFld.clearError()
+
+if(instanceFld.value instanceof ArrayList){
+   instanceFld.setError("Please select only one")
+   return  
+}
+if(estimatedDateFld.value){
+   if(!instanceFld.value){
+      instanceFld.setError("Please select at least one instance before selecting a date")
+      estimatedDateFld.setFormValue(null)
+      return 
+   }
+   def today = new Date()
+   def dueDateInterval = estimatedDateFld.value - today
+   def instanceMinDays = [Production:15, Dev:5, Stage:10]
+   if(dueDateInterval <= instanceMinDays["$instanceFld.value.value"]){
+      estimatedDateFld.setError("Estimated end date must be more than ${instanceMinDays["$instanceFld.value.value"]} days from now")
+   } 
+}
