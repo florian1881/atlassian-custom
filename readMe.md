@@ -1,6 +1,6 @@
 Greeting ! 
 
-I'm Florian PEREZ, Atlassian passionate & Atlassian spécialist.
+I'm Florian PEREZ, Atlassian passionate & Atlassian specialist.
 
 This repo is a compilation of all the content I've found during my research about Atlassian product.
 
