@@ -1,8 +1,6 @@
 <img src="https://github.com/florian1881/atlassian-custom/blob/main/atlassianCustom.png"></img>
-<a href="https://www.university.atlassian.com/profiles/florian1881gmailcom91891d51"><img src="https://github.com/florian1881/atlassian-custom/blob/main/ATLASSIAN%20PROFILE.png" width="150" style="border-radius: 50px; margin-right: 100px"></img></a>
+<a href="https://github.com/florian1881/atlassian-custom/blob/main/Atlassian%20profile.png"><img src="https://github.com/florian1881/atlassian-custom/blob/main/ATLASSIAN%20PROFILE.png" width="150" style="border-radius: 50px; margin-right: 100px"></img></a>
 <a href="https://www.linkedin.com/in/florianperez/"><img src="https://github.com/florian1881/atlassian-custom/blob/main/Linkedin%20PROFILE.png" width="150"></img></a>
-
-![]()
 
 Greeting ! 
 
