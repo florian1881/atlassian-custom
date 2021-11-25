@@ -13,11 +13,15 @@ Collection<JiraWorkflow> workflows = workflowManager.getWorkflows();
 workflows.removeAll(workflowManager.getActiveWorkflows());
 
 workflows.each {
+    //In case of innactive system worfklow uncomment the following if
+    //if (it.getName()!='sytemworflowname'){
     if (workflowSchemeManager.getSchemesForWorkflow(it).size() == 0) {
         report.append(it.getName());
         report.append(" | ")
         workflowManager.deleteWorkflow(it);
     }
+    //}
+        
 }
 return report.toString();
 
